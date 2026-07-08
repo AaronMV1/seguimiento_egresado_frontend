@@ -1,0 +1,215 @@
+<section class="contenedor-dashboard">
+
+	<header class="encabezado-dashboard">
+
+		<h2>Modelo de Competencias del Egresado</h2>
+
+		<!-- <p>
+			Fases dinámicas según el año actual ({{ anioActual }}). Al cambiar el año,
+			las cohortes se recalculan automáticamente.
+		</p> -->
+
+		<p>
+			Fases dinámicas según el año actual ({{ anioActual }}).
+		</p>
+
+		<p>
+			Visualiza el desarrollo profesional de los egresados mediante el modelo institucional de seguimiento, 
+			organizado en cuatro fases que reflejan su evolución desde la inserción laboral hasta la innovación e 
+			investigación. Este panel facilita el análisis de indicadores estratégicos para fortalecer la empleabilidad, 
+			la formación continua y la mejora permanente de la calidad académica
+		</p>
+
+	</header>
+
+	<div class="cantidad">
+		<div class="cantidad-item">
+			<span class="cantidad-etiqueta">Cantidad de Egresados:</span>
+			<span class="cantidad-valor">{{ cantidadEgresados }}</span>
+		</div>
+	</div>
+
+	<section class="tarjeta-linea-tiempo">
+
+		<h3>Línea de Tiempo de Competencias Complejas</h3>
+
+		<div class="lista-linea-tiempo">
+
+			<button
+				type="button"
+				class="item-linea-tiempo"
+				*ngFor="let fase of fases; trackBy: identificarFase"
+				[class.activo]="fase.id === idFaseSeleccionada"
+				(click)="seleccionarFase(fase.id)">
+				<span class="fase-linea-tiempo">{{ fase.titulo }}</span>
+				<span class="cohorte-linea-tiempo">Cohorte: {{ fase.etiquetaCohorte }}</span>
+				<span class="anios-linea-tiempo">Años: {{ fase.anios.join(', ') }}</span>
+				<span class="cantidad-linea-tiempo">Egresados: {{ fase.egresados.length }}</span>
+			</button>
+
+		</div>
+
+	</section>
+
+	<section class="grilla-graficos">
+
+		<article class="tarjeta-grafico">
+			
+			<h3 style="font-size: 3rem; text-align: left; margin-top: .5rem;">{{ faseSeleccionada?.titulo || 'Fase no seleccionada' }}</h3>
+			<!-- <h3>{{ faseSeleccionada?.titulo ? (faseSeleccionada?.titulo | slice:0:6) : 'Fase no seleccionada' }}</h3> -->
+			
+			<div class="contenido-grafico-imagen">
+
+				<div class="">
+
+					<p class="descripcion-linea-tiempo" *ngIf="faseSeleccionada; else sinFaseSeleccionada">
+						Cohorte: {{ faseSeleccionada.etiquetaCohorte }}
+					</p>
+
+					<p class="descripcion-linea-tiempo" *ngIf="faseSeleccionada; else sinFaseSeleccionada">
+						Años: {{ faseSeleccionada.anios.join(', ') }}
+					</p>
+
+					<p class="descripcion-linea-tiempo" *ngIf="faseSeleccionada; else sinFaseSeleccionada">
+						{{ faseSeleccionada.descripcion }}
+					</p>
+
+					<ng-template #sinFaseSeleccionada>
+						<p class="descripcion-linea-tiempo">Selecciona una fase para visualizar su descripción.</p>
+					</ng-template>
+
+				</div>
+
+				<div class="">
+
+					<img *ngIf="faseSeleccionada as fase" [src]="fase.imagen" [alt]="fase.titulo" class="imagen-fase" />
+
+				</div>
+
+			</div>
+
+		</article>
+
+		<article class="tarjeta-grafico">
+			<h3>Distribución por fase</h3>
+
+			<div class="lista-barras">
+				<div class="fila-barra" *ngFor="let fase of fases; trackBy: identificarFase">
+					<div class="etiqueta-barra">{{ fase.titulo }}</div>
+
+					<div class="pista-barra">
+						<div class="relleno-barra" [style.width.%]="obtenerAnchoBarraFase(fase)"></div>
+					</div>
+
+					<div class="valor-barra">{{ fase.egresados.length }}</div>
+				</div>
+			</div>
+		</article>
+
+		<article class="tarjeta-grafico">
+
+			<h3>{{ faseSeleccionada?.titulo }}: egresados por año</h3>
+
+			<div class="lista-barras" *ngIf="filasAniosFaseSeleccionada.length > 0">
+				<div class="fila-barra" *ngFor="let fila of filasAniosFaseSeleccionada">
+					<div class="etiqueta-barra">{{ fila.anio }}</div>
+
+					<div class="pista-barra">
+						<div class="relleno-barra alterno" [style.width.%]="obtenerAnchoBarraAnio(fila.cantidad)"></div>
+					</div>
+
+					<div class="valor-barra">{{ fila.cantidad }}</div>
+				</div>
+			</div>
+		</article>
+
+	</section>
+
+	<section class="tarjeta-egresados">
+
+		<h3>Egresados en {{ faseSeleccionada?.titulo }} ({{ egresadosVisibles.length }})</h3>
+
+		<div class="filtros-tabla">
+
+			<div class="campo-filtro campo-filtro-busqueda">
+				<label for="filtroTexto">Buscar en la tabla</label>
+				<input
+					id="filtroTexto"
+					type="text"
+					[(ngModel)]="textoBusqueda"
+					(input)="aplicarFiltroTexto()"
+					placeholder="Nombre, año, correo, carrera, sede o facultad" />
+			</div>
+
+			<div class="campo-filtro">
+				<label for="filtroCarrera">Carrera</label>
+				<select id="filtroCarrera" [(ngModel)]="seleccionCarrera">
+					<option value="">Todas</option>
+					<option *ngFor="let carrera of opcionesCarrera" [value]="carrera">{{ carrera }}</option>
+				</select>
+			</div>
+
+			<div class="campo-filtro">
+				<label for="filtroFacultad">Facultad</label>
+				<select id="filtroFacultad" [(ngModel)]="seleccionFacultad">
+					<option value="">Todas</option>
+					<option *ngFor="let facultad of opcionesFacultad" [value]="facultad">{{ facultad }}</option>
+				</select>
+			</div>
+
+			<div class="campo-filtro">
+				<label for="filtroSede">Sede</label>
+				<select id="filtroSede" [(ngModel)]="seleccionSede">
+					<option value="">Todas</option>
+					<option *ngFor="let sede of opcionesSede" [value]="sede">{{ sede }}</option>
+				</select>
+			</div>
+
+			<div class="campo-filtro">
+				<label for="filtroAnio">Año</label>
+				<select id="filtroAnio" [(ngModel)]="seleccionAnio">
+					<option value="">Todos</option>
+					<option *ngFor="let anio of opcionesAnio" [value]="anio">{{ anio }}</option>
+				</select>
+			</div>
+
+			<div class="acciones-filtro">
+				<button type="button" class="boton-filtrar" (click)="aplicarFiltros()">Filtrar</button>
+				<button type="button" class="boton-reiniciar" (click)="reiniciarFiltros()">Reiniciar</button>
+			</div>
+
+		</div>
+
+		<p class="estado-vacio" *ngIf="mostrarTodosEgresadosComoRespaldo">
+			No hay egresados en la fase seleccionada. Se muestran todos los egresados registrados.
+		</p>
+
+		<div class="tabla-egresados" *ngIf="egresadosVisibles.length > 0">
+
+			<div class="cabecera-tabla">
+				<span>Nombre completo</span>
+				<span>Egreso</span>
+				<span>Correo Institucional</span>
+				<span>Sede</span>
+				<span>Facultad</span>
+				<span>Carrera Profesional</span>
+			</div>
+
+			<div class="fila-tabla" *ngFor="let egresado of egresadosVisibles; trackBy: identificarEgresado">
+				<span>{{ obtenerNombreCompleto(egresado) }}</span>
+				<span>{{ egresado.anioEgreso }}</span>
+				<span>{{ egresado.correoIInstitucional }}</span>
+				<span>{{ egresado.sedeFilial }}</span>
+				<span>{{ egresado.facultad }}</span>
+				<span>{{ egresado.carrera }}</span>
+			</div>
+
+		</div>
+
+		<p class="estado-vacio" *ngIf="egresadosVisibles.length === 0">
+			No hay egresados registrados para mostrar.
+		</p>
+
+	</section>
+
+</section>

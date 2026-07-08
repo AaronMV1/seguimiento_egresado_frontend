@@ -1,0 +1,166 @@
+
+
+<section class="modelo-wrapper" aria-labelledby="modelo-titulo">
+
+    <header class="cabecera-modelo">
+
+        <div class="titulo-extremos">
+        </div>
+
+        <div class="titulo-principal">
+            <h1 id="modelo-titulo">Modelo de Gestión del Seguimiento al Egresado UPSJB</h1>
+            <p>"Acompañamos tu crecimiento profesional durante toda la vida"</p>
+        </div>
+
+        <div class="titulo-extremos" aria-hidden="true">
+        </div>
+
+    </header>
+
+    <section class="objetivo-general" aria-label="Objetivo general del modelo">
+        <strong>Objetivo general:</strong>
+        <p> Acompañar al egresado en cada etapa de su desarrollo profesional, potenciando sus competencias complejas y generando valor para la sociedad. </p>
+    </section>
+
+    <section class="bloque-base" aria-label="Base del modelo y competencias">
+
+        <article class="en-universidad">
+
+            <h2>Competencias</h2>
+
+            <p>Se desarrollan durante la formación académica</p>
+
+            <div class="chips-competencias">
+                @for (competencia of competenciasUniversidad; track competencia.nombre) {
+                    <div class="chip">
+                        <i class="ti" [class]="'ti ' + competencia.icono" aria-hidden="true"></i>
+                        <h3>{{ competencia.nombre }}</h3>
+                        <p>{{ competencia.descripcion }}</p>
+                    </div>
+                }
+            </div>
+
+        </article>
+
+        <article class="base-del-medio">
+
+            <i class="ti" [class]="'ti ti-arrow-big-right'" aria-hidden="true"></i>
+
+            <div class="base-medio-texto">
+                <p>Al egresar, se desarrollan</p>
+                <h3>COMPETENCIAS COMPLEJAS</h3>
+                <p>Que solo se consolidan con la experiencia profesional.</p>
+            </div>
+
+            <i class="ti" [class]="'ti ti-arrow-big-right'" aria-hidden="true"></i>
+            
+        </article>
+
+        <article class="base-modelo">
+
+            <h2>Competencias Complejas</h2>
+
+            <p>Se desarrollan durante la vida profesional</p>
+
+            <div class="chips-complejas">
+                @for (competencia of competenciasComplejas; track competencia.nombre) {
+                    <div class="chip-complejo">
+                        <i class="ti" [class]="'ti ' + competencia.icono" aria-hidden="true"></i>
+                        <h3>{{ competencia.nombre }}</h3>
+                        <p>{{ competencia.descripcion }}</p>
+                    </div>
+                }
+            </div>
+
+        </article>
+
+        <div class="bloque-base-titulo">
+            <p>La Base del Modelo: Competencias</p>
+        </div>
+
+    </section>
+
+    <section class="fases-grid" aria-label="Cuatro fases del modelo">
+
+        @for (fase of fases; track fase.numero) {
+
+            <article class="fase fase-{{ fase.numero }}">
+
+                <header>
+
+                    <div class="fase-numero">{{ fase.numero }}</div>
+
+                    <div>
+                        <h2>{{ fase.titulo }}</h2>
+                        <p>{{ fase.rango }}</p>
+                    </div>
+
+                    <div class="fase-numero">
+                        <i class="icono-fase ti" [class]="'icono-fase ti ' + fase.icono" aria-hidden="true"></i>
+                    </div>
+
+                </header>
+
+                <div class="fase-imagen">
+                    <img src="{{ fase.imagen }}" alt="Imagen representativa de la fase {{ fase.numero }}">
+                    <p class="competencia">{{ fase.competencia }}</p>
+                </div>                
+
+                <h3>Objetivo</h3>
+
+                <p style="text-align: center;">{{ fase.objetivo }}</p>
+
+                <h3>{{ fase.pregunta }}</h3>
+
+                <ul>
+                    @for (accion of fase.accionesEgresado; track accion) {
+                        <li>{{ accion }}</li>
+                    }
+                </ul>
+
+                <h3>¿Qué hace la universidad?</h3>
+                
+                <ul>
+                    @for (accion of fase.accionesUniversidad; track accion) {
+                        <li>{{ accion }}</li>
+                    }
+                </ul>
+
+                <p class="ejemplo"><strong>Ejemplo:</strong> {{ fase.ejemplo }}</p>
+
+            </article>
+
+        }
+
+    </section>
+
+    <section class="bloques-finales">
+
+        <article class="pilares">
+            <h2>Pilares transversales del modelo</h2>
+            <div>
+                @for (pilar of pilaresTransversales; track pilar) {
+                    <span>
+                        <i class="ti" [class]="'ti ' + pilar.icono" aria-hidden="true"></i>
+                        {{ pilar.texto }}
+                    </span>
+                }
+            </div>
+        </article>
+
+        <article class="resultados">
+            <h2>Resultados e impacto esperado</h2>
+            <div>
+                @for (resultado of resultadosEsperados; track resultado) {
+                    <span>
+                        <i class="ti" [class]="'ti ' + resultado.icono" aria-hidden="true"></i>
+                        {{ resultado.texto }}
+                    </span>
+                }
+            </div>
+        </article>
+
+    </section>
+
+</section>
+

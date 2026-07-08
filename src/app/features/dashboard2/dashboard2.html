@@ -1,0 +1,177 @@
+
+
+<div class="dashboard-container">
+
+
+    <section class="dashboard-header">
+        <div>
+            <h1>Dashboard de Egresados</h1>
+            <p>Distribución de egresados por fases y cohortes dinámicas.</p>
+        </div>
+
+        <div class="year-badge">
+            Año base: {{ currentYear }}
+        </div>
+    </section>
+
+
+    <section class="kpi-grid">
+
+        <div class="kpi-card">
+            <span>Total egresados</span>
+            <strong>{{ totalEgresados }}</strong>
+        </div>
+
+        <div class="kpi-card">
+            <span>Fase seleccionada</span>
+            <strong>{{ selectedFase.titulo }}</strong>
+        </div>
+
+        <div class="kpi-card">
+            <span>Egresados en fase</span>
+            <strong>{{ totalSelectedFase }}</strong>
+        </div>
+
+        <div class="kpi-card">
+            <span>Cohortes</span>
+            <strong>{{ selectedFase.anios.join(', ') }}</strong>
+        </div>
+
+    </section>
+
+
+    <section class="timeline">
+
+        <button
+            type="button"
+            class="timeline-item"
+            *ngFor="let fase of fases"
+            [class.active]="fase.id === selectedFaseId"
+            (click)="selectFase(fase.id)"
+        >
+
+            <div class="fase-number">
+                {{ fase.id }}
+            </div>
+
+            <div class="fase-info">
+                <h3>{{ fase.titulo }}</h3>
+                <p>{{ fase.rango }}</p>
+                <small>{{ fase.anios.join(', ') }}</small>
+            </div>
+
+            <div class="fase-count">
+                <strong>{{ countByFase(fase) }}</strong>
+                <span>{{ getFasePercentage(fase) }}%</span>
+            </div>
+
+        </button>
+
+    </section>
+
+
+    <section class="dashboard-grid">
+
+        <div class="chart-card">
+
+            <h2>Egresados por cohorte</h2>
+            <p>{{ selectedFase.titulo }} — {{ selectedFase.rango }}</p>
+
+            <div class="vertical-chart">
+
+                <div class="vertical-item" *ngFor="let item of chartByYear">
+
+                    <div class="vertical-value">
+                        {{ item.total }}
+                    </div>
+
+                    <div class="vertical-track">
+                        <div
+                            class="vertical-fill"
+                            [style.height.%]="item.percentage">
+                        </div>
+                    </div>
+
+                    <div class="vertical-label">
+                        {{ item.anio }}
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="chart-card">
+
+            <h2>Distribución por fase</h2>
+
+            <div class="fase-bars">
+
+                <div class="fase-bar-item" *ngFor="let fase of fases">
+
+                    <div class="fase-bar-header">
+                        <span>{{ fase.titulo }}</span>
+                        <strong>{{ countByFase(fase) }} egresados</strong>
+                    </div>
+
+                    <div class="fase-bar-track">
+                        <div
+                            class="fase-bar-fill"
+                            [style.width.%]="getFasePercentage(fase)">
+                        </div>
+                    </div>
+
+                    <small>{{ getFasePercentage(fase) }}%</small>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <section class="table-card">
+
+        <div class="table-header">
+            <div>
+                <h2>Egresados en fase: {{ selectedFase.titulo }}</h2>
+                <p>{{ totalSelectedFase }} egresados encontrados</p>
+            </div>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Nombre completo</th>
+                    <th>Año egreso</th>
+                    <th>Carrera</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr *ngFor="let egresado of egresadosFiltrados">
+                    <td>
+                        {{ egresado.nombre }}
+                        {{ egresado.apellidoPaterno }}
+                        {{ egresado.apellidoMaterno }}
+                    </td>
+                    <td>{{ egresado.annoEgreso }}</td>
+                    <td>{{ egresado.carrera }}</td>
+                </tr>
+
+                <tr *ngIf="egresadosFiltrados.length === 0">
+                    <td colspan="3" class="empty-message">
+                        No hay egresados para esta fase.
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+    </section>
+
+
+</div>
+

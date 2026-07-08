@@ -1,0 +1,82 @@
+@import '@tabler/icons-webfont/dist/tabler-icons.min.css';
+
+html {
+    box-sizing: border-box;
+    font-size: 62.5%;
+    font-family: 'poppins-bold' !important;
+    caret-color: transparent;
+}
+
+*,
+*::before,
+*::after {
+    line-height: 2rem !important;
+    box-sizing: inherit;
+    margin: 0;
+    padding: 0;
+}
+
+input {
+    caret-color: auto;
+}
+
+
+
+/*  TEXTO  */
+
+
+
+h2 {
+    font-size: 3rem;
+    color: var(--primary);
+    text-align: center;
+    margin: 2rem 0;
+}
+
+p {
+    font-size: 1.5rem;
+}
+
+
+
+/*  UTILIDADES  */
+
+
+
+.container {
+    width: 100%;
+    max-width: 120rem;
+    margin: 0 auto;
+}
+
+
+
+/*  ROOT Y FONT  */
+
+
+
+@font-face {
+    font-family: 'poppins-bold';
+    src: url("app/assets//fonts/poppins-bold.ttf") format('opentype');
+}
+
+@font-face {
+    font-family: 'poppins-regular';
+    src: url("app/assets//fonts/poppins-regular.ttf") format('opentype');
+}
+
+
+:root {
+    --primary: #345269;
+    --primary-dark: #ffffff;
+    --secondary: #527083;
+
+    --background: #011526;
+    --surface: #263C4D;
+
+    --text-primary: #FFFFFF;
+    --text-secondary: #505050;
+
+    --accent: #D48046;
+    --accent-dark: #773F2A;
+}

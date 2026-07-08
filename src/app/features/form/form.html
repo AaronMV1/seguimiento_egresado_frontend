@@ -1,0 +1,139 @@
+<div class="container">
+
+    <div class="formulario">
+
+        <h2 class="form-titulo">ENCUESTA DE EGRESADO</h2>
+
+        <p>
+            Tenemos un obsequio exclusivo para egresados que llenan la encuesta
+            (aceptando la política de privacidad). Solicita tu kit de egresado en la
+            Subdirección / Coordinadores de Seguimiento al Egresado.
+        </p>
+
+        <p>
+            Cuando envíe este formulario, no recopilará automáticamente sus detalles,
+            como el nombre y la dirección de correo electrónico, a menos que lo
+            proporcione usted mismo.
+        </p>
+
+        <form *ngIf="!showDashboard" [formGroup]="form" (ngSubmit)="onSubmit()" class="dynamic-form">
+
+            <div class="section">
+
+                <p class="section-progress">
+                    Sección {{ currentSectionIndex + 1 }} de {{ sections.length }}
+                </p>
+
+                <h3 class="section-title">{{ currentSection.title }}</h3>
+
+                <ng-container *ngFor="let question of currentSection.questions; trackBy: trackByQuestionId">
+
+                    <div class="question" *ngIf="isQuestionVisible(question)">
+
+                        <label [attr.for]="question.id" class="question-label">
+                            <div class="question-number">
+                                {{ question.numero }}
+                            </div>
+                            {{ question.label }}
+                            <span *ngIf="question.required" class="required">*</span>
+                        </label>
+
+                        <div class="question-content">
+
+                            <ng-container [ngSwitch]="question.type">
+
+                                <input *ngSwitchCase="'text'" [id]="question.id"
+                                    [placeholder]="question.placeholder || 'Escriba su respuesta'"
+                                    [formControlName]="question.id" type="text" class="text-input" />
+
+                                <div *ngSwitchCase="'radio'" class="radio-group">
+                                    <label class="radio-option" *ngFor="let option of question.options">
+                                        <input type="radio" [formControlName]="question.id" [value]="option.value" />
+                                        <span>{{ option.text }}</span>
+                                    </label>
+                                </div>
+
+                            </ng-container>
+
+                            <p class="field-error" *ngIf="isFieldInvalid(question.id)">
+                                Este campo es obligatorio o contiene un formato inválido.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </ng-container>
+
+            </div>
+
+            <div class="form-buttons">
+
+                <button type="button" class="btn-submit" *ngIf="!isFirstSection" (click)="previousSection()">
+                    Atrás
+                </button>
+
+                <button type="button" class="btn-submit" *ngIf="!isLastSection && !shouldFinishCurrentSection"
+                    (click)="nextSection()">
+                    Siguiente
+                </button>
+
+                <button type="submit" class="btn-submit" *ngIf="shouldFinishCurrentSection">
+                    Finalizar
+                </button>
+
+                <button type="submit" class="btn-submit" *ngIf="isLastSection && !shouldFinishCurrentSection">
+                    Enviar
+                </button>
+
+            </div>
+
+        </form>
+
+        <div *ngIf="showDashboard" class="dashboard-results">
+
+            <h2 class="form-titulo">Resultados de la encuesta</h2>
+
+            <div class="chart-cards">
+
+                <div class="chart-card" *ngFor="let question of dashboardQuestions">
+
+                    <h3>{{ question.numero }}. {{ question.dashboard?.title || question.label }}</h3>
+
+                    <!-- Aquí luego iría el gráfico -->
+
+                    <div class="bar-chart">
+
+                        <div class="bar-item" *ngFor="let option of question.options">
+
+                            <div class="bar-label">
+                                {{ option.text }}
+                            </div>
+
+                            <div class="bar-track">
+                                <div class="bar-fill" [style.width.%]="getOptionPercentage(question.id, option.value)">
+                                </div>
+                            </div>
+
+                            <div class="bar-value">
+                                {{ getOptionCount(question.id, option.value) }}
+                                ({{ getOptionPercentage(question.id, option.value) }}%)
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <p *ngIf="!hasDashboardData" class="field-error">
+                No hay preguntas configuradas para mostrar en el dashboard final.
+            </p>
+
+        </div>
+
+    </div>
+
+</div>
