@@ -10,43 +10,53 @@ type QuestionType = 'text' | 'radio' | 'action';
 
 
 interface FormSection {
-id: string;
-title: string;
-questions: FormQuestion[];
+    id: string;
+    title: string;
+    description?: string;
+    questions: FormQuestion[];
 }
 
 
 interface FormOption {
-value: string;
-text: string;
-finishForm?: boolean;
-targetSectionId?: string;
+    value: string;
+    text: string;
+    finishForm?: boolean;
+    targetSectionId?: string;
 }
 
 
 interface FormQuestion {
-id: string;
-numero: number;
-label: string;
-type: QuestionType;
-required: boolean;
-placeholder?: string;
-actionLabel?: string;
-options?: FormOption[];
-visibleWhen?: {
-    questionId: string;
-    value: string;
-};
-dashboard?: {
-    enabled: boolean;
-    chartType: 'bar' | 'pie' | 'doughnut';
-    title?: string;
-};
-validators?: {
-    pattern?: string;
-    minLength?: number;
-    maxLength?: number;
-};
+    id: string;
+    numero: number;
+    label: string;
+    link?: {
+           text: string;
+           action?: 'url' | 'popup' | 'function';
+        url?: string;
+        func?: string;
+           popupTitle?: string;
+           popupMessage?: string;
+    };
+    type: QuestionType;
+    required: boolean;
+    disabled?: boolean;
+    placeholder?: string;
+    actionLabel?: string;
+    options?: FormOption[];
+    visibleWhen?: {
+        questionId: string;
+        value: string;
+    };
+    dashboard?: {
+        enabled: boolean;
+        chartType: 'bar' | 'pie' | 'doughnut';
+        title?: string;
+    };
+    validators?: {
+        pattern?: string;
+        minLength?: number;
+        maxLength?: number;
+    };
 }
 
 
@@ -70,6 +80,18 @@ interface PlantillaFase {
 
 export class Formulario implements OnInit {
 
+
+    readonly politicaPrivacidadMessage =
+    `Con su aceptación autoriza a la Universidad Privada San Juan Bautista S.A.C. (UPSJB SAC), a través de la Subdirección de Seguimiento al Egresado para que, de manera indefinida o hasta que usted solicite que se revoque su consentimiento, pueda tratar todos los datos personales que provea como egresado de nuestra casa de estudios, así como todos aquellos relacionados a cualquier otro servicio y beneficio que la UPSJB SAC le haya brindado en su calidad de miembro de la comunidad universitaria.
+
+    Sus datos personales serán tratados con la finalidad de mantener contacto con usted para informarle acerca de los servicios y beneficios ofrecidos para los egresados de la UPSJB SAC, ponerlo al tanto de oportunidades profesionales y académicas, así para recoger su valiosa opinión respecto a la universidad, siempre garantizando la seguridad y confidencialidad de sus datos.
+
+    Su información será almacenada en la base de datos de propiedad de la UPSJB SAC y será tratada de manera confidencial. La UPSJB SAC no vende ni cede a terceros la información personal recibida. Su autorización es obligatoria para llevar a cabo las actividades aquí descritas, las cuales no se podrán realizar a cabalidad en caso de negativa. Usted tiene la facultad de ejercer cualquiera de los derechos previstos en la Ley N° 29733, Ley de Protección de Datos Personales, de manera gratuita, enviando una comunicación al correo electrónico.
+
+    Correo: seguimiento.egresado@upsjb.edu.pe
+    `;
+
+
     readonly testData = {
         terminos_condiciones: 'acepto',
         nombresApellidos: 'Christian Aarón Mori Valdivia',
@@ -83,6 +105,7 @@ export class Formulario implements OnInit {
         tiene_trabajo: 'si',
         empresa_actual: 'Universidad Privada San Juan Bautista',
     };
+
 
     readonly plantillasFases: PlantillaFase[] = [
 		{ id: 'fase_1', titulo: 'Fase 1: Información', aniosMinimosDesdeEgreso: 0, aniosMaximosDesdeEgreso: 3, etiquetaCohorte: '0 - 3 años', descripcion: 'Corresponde a los egresados que inician su vida profesional. En esta etapa se realiza el seguimiento de su inserción laboral, la actualización de sus datos y el fortalecimiento de su empleabilidad mediante oportunidades de trabajo, capacitación inicial y acompañamiento profesional.' },
@@ -101,8 +124,13 @@ export class Formulario implements OnInit {
             {
             id: 'terminos_condiciones',
             numero: 1,
-            label:
-                'Al aceptar la política de privacidad, autorizas a la UPSJB SAC a hacer uso de tus datos personales en los términos y condiciones.',
+            label: 'Autorizo a la UPSJB S.A.C. al tratamiento de mis datos personales de conformidad con la Política de Privacidad y la',
+            link: {
+                text: 'Política de Privacidad',
+                action: 'popup',
+                popupTitle: 'Política de Privacidad',
+                popupMessage: this.politicaPrivacidadMessage,
+            },
             type: 'radio',
             required: true,
             options: [
@@ -131,6 +159,7 @@ export class Formulario implements OnInit {
             label: 'Por favor ingrese sus nombres y apellidos',
             type: 'text',
             required: true,
+            disabled: true,
             placeholder: 'Escriba su respuesta',
             validators: {
                 minLength: 5,
@@ -142,6 +171,7 @@ export class Formulario implements OnInit {
             label: 'Ingrese su DNI',
             type: 'text',
             required: true,
+            disabled: true,
             placeholder: 'Escriba su respuesta',
             validators: {
                 pattern: '^[0-9]{8}$',
@@ -153,6 +183,7 @@ export class Formulario implements OnInit {
             label: 'Sexo',
             type: 'radio',
             required: true,
+            disabled: true,
             options: [
                 { value: 'masculino', text: 'Masculino' },
                 { value: 'femenino', text: 'Femenino' },
@@ -164,11 +195,12 @@ export class Formulario implements OnInit {
             label: '¿En qué sede/filial estudió?',
             type: 'radio',
             required: true,
+            disabled: true,
             options: [
-                { value: 'CP001', text: 'Lima - Chorrillos' },
-                { value: 'CP002', text: 'Lima - San Borja' },
-                { value: 'CP003', text: 'Ica' },
-                { value: 'CP005', text: 'Chincha' },
+                { value: 'CP001', text: 'Sede Chorrillos' },
+                { value: 'CP002', text: 'Sede San Borja' },
+                { value: 'CP003', text: 'Filial Ica' },
+                { value: 'CP005', text: 'Filial Chincha' },
                 { value: 'Otro', text: 'Otro (Lima norte, etc.)' },
             ],
             dashboard: {
@@ -183,6 +215,7 @@ export class Formulario implements OnInit {
             label: 'Año de egreso',
             type: 'text',
             required: true,
+            disabled: true,
             placeholder: 'Escriba su respuesta',
             validators: {
                 pattern: '^[0-9]{4}$',
@@ -306,6 +339,7 @@ export class Formulario implements OnInit {
         {
         id: 'fase_1',
         title: 'SECCIÓN 3: FASE 1 - INFORMACIÓN (0 - 3 AÑOS)',
+        description: 'Esta encuesta tiene como objetivo, actualizar sus datos y acompañarlos en su proceso de inserción laboral para ofrecerle oportunidades laborales en bolsa de trabajo, actualización de su Curriculum vitae y acompañamiento en procesos clave de su profesión (SERUMS, colegiatura, etc.).',
         questions: [
             {
             id: 'fase_1_cursos_empleabilidad',
@@ -419,6 +453,7 @@ export class Formulario implements OnInit {
         {
         id: 'fase_2',
         title: 'SECCIÓN 3: FASE 2 - FORMACIÓN (4 - 5 AÑOS)',
+        description: 'Esta encuesta tiene como objetivo conocer su percepción y el de su empleador; analizar y detectar brechas para la mejora del Plan Curricular de la escuela profesional.',
         questions: [
             {
             id: 'fase_2_satisfaccion_utilidad_conocimientos',
@@ -493,6 +528,7 @@ export class Formulario implements OnInit {
         {
         id: 'fase_3',
         title: 'SECCIÓN 3: FASE 3 - AUTOCAPACITACIÓN (6 - 7 AÑOS)',
+        description: 'Esta encuesta tiene como objetivo de ofrecerle Educación Continua y acompañarlos en su desarrollo profesional.',
         questions: [
             {
             id: 'fase_3_nivel_especialidad_grados',
@@ -556,6 +592,7 @@ export class Formulario implements OnInit {
         {
         id: 'fase_4',
         title: 'SECCIÓN 3: FASE 4 - INNOVACIÓN (8 A MÁS AÑOS)',
+        description: 'Esta encuesta tiene como objetivo promover la investigación e innovación, capacitar en patentes y publicaciones científicas, compartir sus logros como egresado exitoso generando red y alianzas estratégicas.',
         questions: [
             {
             id: 'fase_4_realiza_investigacion',
@@ -612,6 +649,9 @@ export class Formulario implements OnInit {
     showDashboard = false;
     correoPersona = 'christian.mori@upsjb.edu.pe';
     selectedFaseSectionId: string | null = null;
+    isPopupVisible = false;
+    popupTitle = 'Informacion';
+    popupMessage = '';
     form!: ReturnType<FormBuilder['group']>;
     //#endregion
 
@@ -781,6 +821,37 @@ export class Formulario implements OnInit {
         return question.id;
     }
 
+    isUrlLink(link: FormQuestion['link']): boolean {
+        if (!link) {
+            return false;
+        }
+
+        return this.resolveLinkAction(link) === 'url' && Boolean(link.url);
+    }
+
+    onQuestionLinkClick(link: FormQuestion['link'], event: MouseEvent): void {
+        if (!link) {
+            return;
+        }
+
+        event.preventDefault();
+
+        const action = this.resolveLinkAction(link);
+
+        if (action === 'popup') {
+            this.openPopup(link.popupMessage ?? '', link.popupTitle ?? 'Informacion');
+            return;
+        }
+
+        if (action === 'function' && link.func) {
+            this.executeLinkFunction(link.func);
+        }
+    }
+
+    closePopup(): void {
+        this.isPopupVisible = false;
+    }
+
     onCorreoPersonaChange(event: Event): void {
         this.correoPersona = (event.target as HTMLInputElement).value;
     }
@@ -876,6 +947,48 @@ export class Formulario implements OnInit {
 
         return validators;
     }
+
+    private resolveLinkAction(link: NonNullable<FormQuestion['link']>): 'url' | 'popup' | 'function' | null {
+        if (link.action) {
+            return link.action;
+        }
+
+        if (link.url) {
+            return 'url';
+        }
+
+        if (link.popupMessage) {
+            return 'popup';
+        }
+
+        if (link.func) {
+            return 'function';
+        }
+
+        return null;
+    }
+
+    private openPopup(message: string, title = 'Informacion'): void {
+        this.popupTitle = title;
+        this.popupMessage = message;
+        this.isPopupVisible = true;
+    }
+
+    private executeLinkFunction(functionName: string): void {
+        const handlers: Record<string, () => void> = {
+            politicaPrivacidad: () => this.openPopup(this.politicaPrivacidadMessage, 'Política de Privacidad'),
+            popupInformativo: () => this.popupInformativo(),
+        };
+
+        const handler = handlers[functionName];
+
+        if (!handler) {
+            console.warn(`No existe un manejador para la funcion: ${functionName}`);
+            return;
+        }
+
+        handler();
+    }
     //#endregion
 
 
@@ -918,6 +1031,13 @@ export class Formulario implements OnInit {
 
     }
 
+    popupInformativo() {
+
+        this.openPopup(
+            'Se ha enviado un correo electronico a su correo institucional con la informacion de su perfil. Por favor, revise su bandeja de entrada.',
+            'Informacion',
+        );
+    }
 
 
 }

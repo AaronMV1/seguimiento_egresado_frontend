@@ -26,6 +26,10 @@
     font-size: 1.6rem;
     letter-spacing: 0.02em;
     color: #4a2f4f;
+    margin-top: 2rem;
+}
+
+.section-description {
     margin-top: 4rem;
 }
 
@@ -47,10 +51,10 @@
 }
 
 .question-number {
+    min-height: 3rem;
+    min-width: 3rem;
     font-size: 1.4rem;
     font-weight: bold;
-    width: 3rem;
-    height: 3rem;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -68,6 +72,20 @@
 
 .required {
     color: #be2e2e;
+}
+
+.question-link {
+    color: #5c2a63;
+    font-weight: 600;
+    text-decoration: underline;
+}
+
+.question-link-button {
+    border: none;
+    background: none;
+    padding: 0;
+    font: inherit;
+    cursor: pointer;
 }
 
 .text-input {
@@ -203,4 +221,56 @@
 
 .bar-value {
     font-weight: 600;
+}
+
+
+/*  POPUP  */
+
+.popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.popup-content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2rem;
+    height: auto;
+    width: min(860px, 92vw);
+    max-height: 85vh;
+    background-color: #fff;
+    padding: 4rem;
+    border-radius: 8px;
+    text-align: left;
+}
+
+.popup-title {
+    margin: 0;
+    margin-bottom: 2rem;
+    color: #323232;
+    font-size: 2rem;
+    text-align: center;
+    width: 100%;
+}
+
+.popup-text {
+    margin: 0;
+    color: #3b3b3b;
+    white-space: pre-line;
+    line-height: 1.5;
+    overflow-y: auto;
+    text-align: justify;
+}
+
+.popup .btn-submit {
+    margin-top: 2rem;
+    align-self: center;
 }

@@ -6,13 +6,7 @@
         <h2 class="form-titulo">ENCUESTA PARA EGRESADO</h2>
 
         <p>
-            Esta encuesta tiene como objetivo, actualizar sus datos y acompañarlos en su proceso de inserción laboral
-            para ofrecerle oportunidades laborales en bolsa de trabajo, actualización de su Curriculum vitae y
-            acompañamiento en procesos clave de su profesión (SERUMS, colegiatura, etc.)
-        </p>
-
-        <p>
-            por ello solicitamos a usted su valiosa colaboración mediante las respuestas que brinde al siguiente cuestionario.
+            Solicitamos a usted su valiosa colaboración mediante las respuestas que brinde al siguiente cuestionario.
             Recuerde que nuestro propósito es ofrecer un mejor servicio educativo.
             Le agradecemos de antemano, por su disposición a colaborar en este esfuerzo.
         </p>
@@ -27,16 +21,35 @@
 
                 <h3 class="section-title">{{ currentSection.title }}</h3>
 
+                <p class="section-description" *ngIf="currentSection.description">{{ currentSection.description }}</p>
+
                 <ng-container *ngFor="let question of currentSection.questions; trackBy: trackByQuestionId">
 
                     <div class="question" *ngIf="isQuestionVisible(question)">
 
                         <label [attr.for]="question.id" class="question-label">
-                            <div class="question-number">
-                                {{ question.numero }}
-                            </div>
+
+                            <div class="question-number">{{ question.numero }}</div>
+
                             {{ question.label }}
+
+                            <a *ngIf="question.link && isUrlLink(question.link)"
+                                [href]="question.link.url"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                class="question-link">
+                                {{ question.link.text }}
+                            </a>
+
+                            <button *ngIf="question.link && !isUrlLink(question.link)"
+                                type="button"
+                                class="question-link question-link-button"
+                                (click)="onQuestionLinkClick(question.link, $event)">
+                                {{ question.link.text }}
+                            </button>
+
                             <span *ngIf="question.required" class="required">*</span>
+
                         </label>
 
                         <div class="question-content">
@@ -45,7 +58,9 @@
 
                                 <input *ngSwitchCase="'text'" [id]="question.id"
                                     [placeholder]="question.placeholder || 'Escriba su respuesta'"
-                                    [formControlName]="question.id" type="text" class="text-input" />
+                                    [formControlName]="question.id" type="text" class="text-input"
+                                    [readonly]="question.disabled ?? false"
+                                />
 
                                 <div *ngSwitchCase="'action'" class="action-controls">
                                     <input [id]="question.id" type="email" class="text-input"
@@ -58,7 +73,7 @@
 
                                 <div *ngSwitchCase="'radio'" class="radio-group">
                                     <label class="radio-option" *ngFor="let option of question.options">
-                                        <input type="radio" [formControlName]="question.id" [value]="option.value" />
+                                        <input type="radio" [formControlName]="question.id" [value]="option.value" [disabled]="question.disabled ?? false" />
                                         <span>{{ option.text }}</span>
                                     </label>
                                 </div>
@@ -129,6 +144,19 @@
             </p>
 
         </div>
+
+    </div>
+
+</div>
+
+
+<div class="popup" *ngIf="isPopupVisible">
+
+    <div class="popup-content" (click)="$event.stopPropagation()">
+
+        <h3 class="popup-title">{{ popupTitle }}</h3>
+        <p class="popup-text">{{ popupMessage }}</p>
+        <button type="button" class="btn-submit" (click)="closePopup()">Cerrar</button>
 
     </div>
 

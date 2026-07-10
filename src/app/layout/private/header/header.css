@@ -49,9 +49,11 @@ header .container {
 
 .main-nav {
     display: flex;
-    gap: 1rem;
+    gap: 2rem;
 
     a {
+        width: 12rem;
+        text-align: center;
         text-decoration: none;
         font-size: 1.4rem;
         color: #1a3c57;
