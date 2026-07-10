@@ -610,7 +610,7 @@ export class Formulario implements OnInit {
     currentSectionIndex = 0;
     submitted = false;
     showDashboard = false;
-    correoPersona = 'willian.sanchez@upsjb.edu.pe';
+    correoPersona = 'christian.mori@upsjb.edu.pe';
     selectedFaseSectionId: string | null = null;
     form!: ReturnType<FormBuilder['group']>;
     //#endregion

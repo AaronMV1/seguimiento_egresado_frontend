@@ -14,7 +14,7 @@ export const routes: Routes = [
 
     {
         path: '',
-        redirectTo: 'private/formulario-encuesta',
+        redirectTo: 'private/formulario',
         pathMatch: 'full'
     },
 
@@ -26,7 +26,7 @@ export const routes: Routes = [
         path: 'private',
         component: PrivateContentFull,
         children: [
-            { path: '', redirectTo: 'formulario-encuesta', pathMatch: 'full' },
+            { path: '', redirectTo: 'formulario', pathMatch: 'full' },
             { path: 'formulario', component: Formulario },
             { path: 'formulario-encuesta', component: Form },
             { path: 'dashboard', component: Dashboard },
