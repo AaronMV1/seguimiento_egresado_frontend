@@ -1,7 +1,7 @@
 
 
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { NgOptimizedImage } from '@angular/common';
+import { NgOptimizedImage, NgIf } from '@angular/common';
 
 
 interface CompetenciaUniversidad {
@@ -27,6 +27,7 @@ interface FaseModelo {
     accionesEgresado: string[];
     accionesUniversidad: string[];
     ejemplo: string;
+    ejemplo2?: string;
     icono: string;
 }
 
@@ -38,7 +39,7 @@ interface ItemIconoTexto {
 
 @Component({
     selector: 'app-modelo-gestion',
-    imports: [NgOptimizedImage],
+    imports: [NgOptimizedImage, NgIf],
     templateUrl: './modelo-gestion.html',
     styleUrl: './modelo-gestion.css',
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -82,7 +83,7 @@ export class ModeloGestion {
                 'Acompaña en procesos clave (SERUMS, colegiatura, etc.).',
             ],
             ejemplo:
-                'Un empleador evalúa el desempeño de uno de nuestros egresados, destacando sus fortalezas y señalando las debilidades identificadas durante el ejercicio profesional. Esta información sirve como insumo para fortalecer las competencias del perfil de egreso y realizar mejoras en los planes curriculares.',
+                'Un egresado de Ingeniería se encuentra desempeñando un trabajo ajeno a su profesion. La universidad lo contacta, le brinda orientación y lo vincula con oportunidades laborales acordes a su perfil profesional.',
             icono: 'ti-id-badge-2',
         },
         {
@@ -105,7 +106,9 @@ export class ModeloGestion {
                 'Realimenta y mejora el plan curricular.',
             ],
             ejemplo:
-                'Un medico descubre que en investigación y salud publica no fue bien formado. La universidad ajusta su plan para fortalecer esas areas.',
+                ' Un médico descubre que en la línea de carrera de investigación y salud pública de su plan curricular tiene debilidades de formación, entonces retroalimenta a la universidad estas debilidades con la finalidad de que puedan ser fortalecidas para los futuros egresados.',
+            ejemplo2:
+                ' Un empleador evalúa el desempeño de uno de nuestros egresados, destacando sus fortalezas y señalando las debilidades identificadas durante el ejercicio profesional. Esta información sirve como insumo para fortalecer las competencias del perfil de egreso y realizar mejoras en los planes curriculares.',
             icono: 'ti-clipboard-check',
         },
         {

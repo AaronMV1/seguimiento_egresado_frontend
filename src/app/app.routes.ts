@@ -7,6 +7,7 @@ import { Form } from './features/form/form';
 import { Dashboard } from './features/dashboard/dashboard';
 import { Dashboard2 } from './features/dashboard2/dashboard2';
 import { ModeloGestion } from './features/modelo-gestion/modelo-gestion';
+import { Formulario } from './features/formulario/formulario';
 
 
 export const routes: Routes = [
@@ -26,6 +27,7 @@ export const routes: Routes = [
         component: PrivateContentFull,
         children: [
             { path: '', redirectTo: 'formulario-encuesta', pathMatch: 'full' },
+            { path: 'formulario', component: Formulario },
             { path: 'formulario-encuesta', component: Form },
             { path: 'dashboard', component: Dashboard },
             { path: 'dashboard2', component: Dashboard2 },
