@@ -188,28 +188,28 @@ export class Formulario implements OnInit {
                 pattern: '^[0-9]{4}$',
             },
             },
-            {
-            id: 'grupos',
-            numero: 7,
-            label:
-                'Durante sus estudios en la UPSJB SAC, ¿Usted perteneció a alguno de los siguientes grupos?',
-            type: 'radio',
-            required: true,
-            options: [
-                { value: 'conadis', text: 'CONADIS' },
-                { value: 'becado', text: 'Becado' },
-                { value: 'ninguno', text: 'Ninguno' },
-                { value: 'otras', text: 'Otras' },
-            ],
-            dashboard: {
-                enabled: true,
-                chartType: 'pie',
-                title: 'Pertenencia a grupos durante sus estudios',
-            },
-            },
+            // {
+            // id: 'grupos',
+            // numero: 7,
+            // label:
+            //     'Durante sus estudios en la UPSJB SAC, ¿Usted perteneció a alguno de los siguientes grupos?',
+            // type: 'radio',
+            // required: true,
+            // options: [
+            //     { value: 'conadis', text: 'CONADIS' },
+            //     { value: 'becado', text: 'Becado' },
+            //     { value: 'ninguno', text: 'Ninguno' },
+            //     { value: 'otras', text: 'Otras' },
+            // ],
+            // dashboard: {
+            //     enabled: true,
+            //     chartType: 'pie',
+            //     title: 'Pertenencia a grupos durante sus estudios',
+            // },
+            // },
             {
             id: 'correo_personal',
-            numero: 8,
+            numero: 7,
             label:
                 'Por favor ingrese un correo electrónico para informarle de oportunidades profesionales y académicas',
             type: 'text',
@@ -221,7 +221,7 @@ export class Formulario implements OnInit {
             },
             {
             id: 'celular_personal',
-            numero: 9,
+            numero: 8,
             label:
                 'Por favor un número de celular mediante el cual la UPSJB SAC pueda comunicarse con usted',
             type: 'text',
@@ -231,76 +231,76 @@ export class Formulario implements OnInit {
                 pattern: '^[0-9]{9}$',
             },
             },
-            {
-            id: 'estudios_concluidos',
-            numero: 10,
-            label:
-                'Considerando únicamente estudios realizados en la UPSJB SAC, usted concluyó estudios de:',
-            type: 'radio',
-            required: true,
-            options: [
-                { value: 'Pregrado', text: 'Solo Pregrado', targetSectionId: 'pregrado' },
-                { value: 'Maestría', text: 'Solo Maestría', targetSectionId: 'maestria' },
-                {
-                value: 'Segunda Especialidad / Residentado',
-                text: 'Segunda Especialidad / Residentado',
-                targetSectionId: 'segunda_especialidad',
-                },
-                {
-                value: 'Pregrado y Maestría',
-                text: 'Pregrado y Maestría',
-                targetSectionId: 'pregrado_maestria',
-                },
-                {
-                value: 'Pregrado y Segunda Especialidad / Residentado',
-                text: 'Pregrado y Segunda Especialidad / Residentado',
-                targetSectionId: 'pregrado_segunda_especialidad',
-                },
-                {
-                value: 'Maestría y Segunda Especialidad / Residentado',
-                text: 'Maestría y Segunda Especialidad / Residentado',
-                targetSectionId: 'maestria_segunda_especialidad',
-                },
-                {
-                value: 'Pregrado, Maestría y Segunda Especialidad / Residentado',
-                text: 'Pregrado, Maestría y Segunda Especialidad / Residentado',
-                targetSectionId: 'pregrado_maestria_segunda_especialidad',
-                },
-                {
-                value: 'Ninguna de las anteriores',
-                text: 'Ninguna de las anteriores',
-                finishForm: true,
-                },
-            ],
-            dashboard: {
-                enabled: true,
-                chartType: 'pie',
-                title: 'Estudios concluidos en la UPSJB SAC',
-            },
-            },
-            {
-            id: 'tiene_trabajo',
-            numero: 11,
-            label: '¿Actualmente se encuentra trabajando?',
-            type: 'radio',
-            required: true,
-            options: [
-                { value: 'si', text: 'Sí' },
-                { value: 'no', text: 'No' },
-            ],
-            },
-            {
-            id: 'empresa_actual',
-            numero: 12,
-            label: 'Ingrese el nombre de la empresa donde trabaja',
-            type: 'text',
-            required: true,
-            placeholder: 'Escriba su respuesta',
-            visibleWhen: {
-                questionId: 'tiene_trabajo',
-                value: 'si',
-            },
-            },
+            // {
+            // id: 'estudios_concluidos',
+            // numero: 10,
+            // label:
+            //     'Considerando únicamente estudios realizados en la UPSJB SAC, usted concluyó estudios de:',
+            // type: 'radio',
+            // required: true,
+            // options: [
+            //     { value: 'Pregrado', text: 'Solo Pregrado', targetSectionId: 'pregrado' },
+            //     { value: 'Maestría', text: 'Solo Maestría', targetSectionId: 'maestria' },
+            //     {
+            //     value: 'Segunda Especialidad / Residentado',
+            //     text: 'Segunda Especialidad / Residentado',
+            //     targetSectionId: 'segunda_especialidad',
+            //     },
+            //     {
+            //     value: 'Pregrado y Maestría',
+            //     text: 'Pregrado y Maestría',
+            //     targetSectionId: 'pregrado_maestria',
+            //     },
+            //     {
+            //     value: 'Pregrado y Segunda Especialidad / Residentado',
+            //     text: 'Pregrado y Segunda Especialidad / Residentado',
+            //     targetSectionId: 'pregrado_segunda_especialidad',
+            //     },
+            //     {
+            //     value: 'Maestría y Segunda Especialidad / Residentado',
+            //     text: 'Maestría y Segunda Especialidad / Residentado',
+            //     targetSectionId: 'maestria_segunda_especialidad',
+            //     },
+            //     {
+            //     value: 'Pregrado, Maestría y Segunda Especialidad / Residentado',
+            //     text: 'Pregrado, Maestría y Segunda Especialidad / Residentado',
+            //     targetSectionId: 'pregrado_maestria_segunda_especialidad',
+            //     },
+            //     {
+            //     value: 'Ninguna de las anteriores',
+            //     text: 'Ninguna de las anteriores',
+            //     finishForm: true,
+            //     },
+            // ],
+            // dashboard: {
+            //     enabled: true,
+            //     chartType: 'pie',
+            //     title: 'Estudios concluidos en la UPSJB SAC',
+            // },
+            // },
+            // {
+            // id: 'tiene_trabajo',
+            // numero: 11,
+            // label: '¿Actualmente se encuentra trabajando?',
+            // type: 'radio',
+            // required: true,
+            // options: [
+            //     { value: 'si', text: 'Sí' },
+            //     { value: 'no', text: 'No' },
+            // ],
+            // },
+            // {
+            // id: 'empresa_actual',
+            // numero: 9,
+            // label: 'Ingrese el nombre de la empresa donde trabaja',
+            // type: 'text',
+            // required: true,
+            // placeholder: 'Escriba su respuesta',
+            // visibleWhen: {
+            //     questionId: 'tiene_trabajo',
+            //     value: 'si',
+            // },
+            // },
         ],
         },
         {
@@ -309,7 +309,7 @@ export class Formulario implements OnInit {
         questions: [
             {
             id: 'fase_1_cursos_empleabilidad',
-            numero: 5,
+            numero: 9,
             label: 'Usted participa en cursos de y/o talleres de empleabilidad organizados por la UPSJB SAC:',
             type: 'radio',
             required: true,
@@ -323,7 +323,7 @@ export class Formulario implements OnInit {
             },
             {
             id: 'fase_1_situacion_actual',
-            numero: 6,
+            numero: 10,
             label: 'Su situación actual es:',
             type: 'radio',
             required: true,
@@ -341,7 +341,7 @@ export class Formulario implements OnInit {
             },
             {
             id: 'fase_1_situacion_laboral_actual',
-            numero: 7,
+            numero: 11,
             label: 'Actualmente, usted se encuentra trabajando:',
             type: 'radio',
             required: true,
@@ -363,7 +363,7 @@ export class Formulario implements OnInit {
             },
             {
             id: 'fase_1_primer_empleo_profesion',
-            numero: 8,
+            numero: 12,
             label: 'El primer empleo vinculado directamente a su profesión lo consiguió:',
             type: 'radio',
             required: true,
@@ -390,7 +390,7 @@ export class Formulario implements OnInit {
             },
             {
             id: 'fase_1_medio_empleo_actual',
-            numero: 9,
+            numero: 13,
             label: '¿Cuál de esos medios le permitió conseguir su empleo actual?',
             type: 'radio',
             required: true,
@@ -422,7 +422,7 @@ export class Formulario implements OnInit {
         questions: [
             {
             id: 'fase_2_satisfaccion_utilidad_conocimientos',
-            numero: 5,
+            numero: 9,
             label:
                 'Satisfacción con la utilidad de los conocimientos adquiridos durante su formación en la UPSJB SAC respecto al empleo',
             type: 'radio',
@@ -437,7 +437,7 @@ export class Formulario implements OnInit {
             },
             {
             id: 'fase_2_participacion_gestion_curricular',
-            numero: 6,
+            numero: 10,
             label: 'Usted forma parte o ha participado en los procesos de gestión curricular.',
             type: 'radio',
             required: true,
@@ -448,7 +448,7 @@ export class Formulario implements OnInit {
             },
             {
             id: 'fase_2_satisfaccion_servicio_educativo',
-            numero: 7,
+            numero: 11,
             label:
                 '¿Qué tan satisfecho se encuentra usted con el servicio educativo brindado por la UPSJB SAC, durante su formación?',
             type: 'radio',
@@ -463,7 +463,7 @@ export class Formulario implements OnInit {
             },
             {
             id: 'fase_2_participacion_planificacion_estrategica',
-            numero: 8,
+            numero: 12,
             label: 'Usted forma parte o ha participado en la planificación estratégica.',
             type: 'radio',
             required: true,
@@ -474,7 +474,7 @@ export class Formulario implements OnInit {
             },
             {
             id: 'fase_2_empresa_actual',
-            numero: 9,
+            numero: 13,
             label: 'Podría informarnos el nombre de la Empresa en la que actualmente labora:',
             type: 'text',
             required: true,
@@ -496,7 +496,7 @@ export class Formulario implements OnInit {
         questions: [
             {
             id: 'fase_3_nivel_especialidad_grados',
-            numero: 5,
+            numero: 9,
             label: 'Mencione actualmente el nivel de especialidad o grados que ha logrado:',
             type: 'radio',
             required: true,
@@ -513,7 +513,7 @@ export class Formulario implements OnInit {
             },
             {
             id: 'fase_3_participacion_educacion_continua_upsjb',
-            numero: 6,
+            numero: 10,
             label:
                 'Usted participa en cursos de educación continua o de especialidad organizados por la UPSJB SAC:',
             type: 'radio',
@@ -528,7 +528,7 @@ export class Formulario implements OnInit {
             },
             {
             id: 'fase_3_necesidad_educacion_continua',
-            numero: 7,
+            numero: 11,
             label:
                 '¿Cuál sería actualmente la necesidad de educación continua que Usted como egresado de la UPSJB SAC, requiere:',
             type: 'radio',
@@ -559,7 +559,7 @@ export class Formulario implements OnInit {
         questions: [
             {
             id: 'fase_4_realiza_investigacion',
-            numero: 5,
+            numero: 9,
             label: '¿Usted realiza investigación?',
             type: 'radio',
             required: true,
@@ -570,7 +570,7 @@ export class Formulario implements OnInit {
             },
             {
             id: 'fase_4_participacion_capacitaciones_innovacion',
-            numero: 6,
+            numero: 10,
             label:
                 'Usted participa en capacitaciones para realizar investigaciones o proyectos de innovación organizados por la UPSJB SAC:',
             type: 'radio',
@@ -585,7 +585,7 @@ export class Formulario implements OnInit {
             },
             {
             id: 'fase_4_satisfaccion_capacitaciones_innovacion',
-            numero: 7,
+            numero: 11,
             label:
                 '¿Qué tan satisfecho se encuentra usted con las capacitaciones para realizar investigaciones o proyectos de innovación organizados por la UPSJB SAC?',
             type: 'radio',
