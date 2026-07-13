@@ -1009,14 +1009,35 @@ export class Formulario implements OnInit {
 
             (res) => {
 
+                const statusCodeRaw = res?.status_code ?? res?.statusCode;
+                const statusCode = typeof statusCodeRaw === 'string'
+                    ? Number.parseInt(statusCodeRaw, 10)
+                    : statusCodeRaw;
+
+                const persona = res?.result;
+                const detalleAcademico = persona?.detalleInformacionAcademica?.[0];
+                const tieneDatosPersona = Boolean(
+                    persona?.nombre &&
+                    persona?.apellidoPaterno &&
+                    persona?.apellidoMaterno &&
+                    persona?.nacionalidadId &&
+                    persona?.sexo &&
+                    detalleAcademico,
+                );
+
+                if ((statusCode !== undefined && statusCode !== null && statusCode !== 200) || !tieneDatosPersona) {
+                    this.openPopup('No se encontro al usuario ingresado.', 'Informacion');
+                    return;
+                }
+
                 console.log(res);
 
                 this.form.patchValue({
-                    nombresApellidos: res.result.nombre + ' ' + res.result.apellidoPaterno + ' ' + res.result.apellidoMaterno,
-                    dni: res.result.nacionalidadId,
-                    sexo: res.result.sexo === 'M' ? 'masculino' : 'femenino',
-                    sede: res.result.detalleInformacionAcademica[0].campus === 'CP001' ? 'CP001' : res.result.detalleInformacionAcademica[0].campus === 'CP002' ? 'CP002' : res.result.detalleInformacionAcademica[0].campus === 'CP003' ? 'CP003' : res.result.detalleInformacionAcademica[0].campus === 'CP005' ? 'CP005' : 'Otro',
-                    anio_egreso: res.result.detalleInformacionAcademica[0].desAcadTerm.substring(0, 4),
+                    nombresApellidos: persona.nombre + ' ' + persona.apellidoPaterno + ' ' + persona.apellidoMaterno,
+                    dni: persona.nacionalidadId,
+                    sexo: persona.sexo === 'M' ? 'masculino' : 'femenino',
+                    sede: detalleAcademico.campus === 'CP001' ? 'CP001' : detalleAcademico.campus === 'CP002' ? 'CP002' : detalleAcademico.campus === 'CP003' ? 'CP003' : detalleAcademico.campus === 'CP005' ? 'CP005' : 'Otro',
+                    anio_egreso: (detalleAcademico.desAcadTerm ?? '').substring(0, 4),
 
 
                 });
@@ -1025,7 +1046,10 @@ export class Formulario implements OnInit {
 
                 console.log()
 
-            }
+            },
+            () => {
+                this.openPopup('No se encontro al usuario ingresado.', 'Informacion');
+            },
 
         );
 
