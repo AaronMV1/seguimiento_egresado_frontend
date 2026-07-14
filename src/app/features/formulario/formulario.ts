@@ -109,9 +109,9 @@ export class Formulario implements OnInit {
 
     readonly plantillasFases: PlantillaFase[] = [
 		{ id: 'fase_1', titulo: 'Fase 1: Información', aniosMinimosDesdeEgreso: 0, aniosMaximosDesdeEgreso: 3, etiquetaCohorte: '0 - 3 años', descripcion: 'Corresponde a los egresados que inician su vida profesional. En esta etapa se realiza el seguimiento de su inserción laboral, la actualización de sus datos y el fortalecimiento de su empleabilidad mediante oportunidades de trabajo, capacitación inicial y acompañamiento profesional.' },
-		{ id: 'fase_2', titulo: 'Fase 2: Formación', aniosMinimosDesdeEgreso: 4, aniosMaximosDesdeEgreso: 5, etiquetaCohorte: '4 - 5 años', descripcion: 'Comprende a los egresados que han consolidado experiencia laboral. Se recopila información sobre su desempeño, logros y formación continua, además de obtener retroalimentación para contribuir a la mejora del plan curricular y de la calidad académica.' },
-		{ id: 'fase_3', titulo: 'Fase 3: Autocapacitación', aniosMinimosDesdeEgreso: 6, aniosMaximosDesdeEgreso: 7, etiquetaCohorte: '6 - 7 años', descripcion: 'En esta etapa se evalúa el crecimiento académico y profesional del egresado, identificando estudios de posgrado, especializaciones, certificaciones y otros procesos de actualización que fortalecen su perfil profesional.' },
-		{ id: 'fase_4', titulo: 'Fase 4: Innovación', aniosMinimosDesdeEgreso: 8, aniosMaximosDesdeEgreso: null, etiquetaCohorte: '8 - X años', descripcion: 'Corresponde a los egresados con una trayectoria profesional consolidada. Se identifican sus aportes en investigación, innovación, emprendimiento, liderazgo y generación de conocimiento, evidenciando su impacto en la sociedad y en el desarrollo de su profesión.' },
+		{ id: 'fase_2', titulo: 'Fase 2: Formación', aniosMinimosDesdeEgreso: 4, aniosMaximosDesdeEgreso: 5, etiquetaCohorte: '3 - 5 años', descripcion: 'Comprende a los egresados que han consolidado experiencia laboral. Se recopila información sobre su desempeño, logros y formación continua, además de obtener retroalimentación para contribuir a la mejora del plan curricular y de la calidad académica.' },
+		{ id: 'fase_3', titulo: 'Fase 3: Autocapacitación', aniosMinimosDesdeEgreso: 6, aniosMaximosDesdeEgreso: 7, etiquetaCohorte: '5 - 7 años', descripcion: 'En esta etapa se evalúa el crecimiento académico y profesional del egresado, identificando estudios de posgrado, especializaciones, certificaciones y otros procesos de actualización que fortalecen su perfil profesional.' },
+		{ id: 'fase_4', titulo: 'Fase 4: Innovación', aniosMinimosDesdeEgreso: 8, aniosMaximosDesdeEgreso: null, etiquetaCohorte: '7 - X años', descripcion: 'Corresponde a los egresados con una trayectoria profesional consolidada. Se identifican sus aportes en investigación, innovación, emprendimiento, liderazgo y generación de conocimiento, evidenciando su impacto en la sociedad y en el desarrollo de su profesión.' },
 	];
 
     //#region Configuracion del cuestionario
@@ -452,7 +452,7 @@ export class Formulario implements OnInit {
         },
         {
         id: 'fase_2',
-        title: 'SECCIÓN 3: FASE 2 - FORMACIÓN (4 - 5 AÑOS)',
+        title: 'SECCIÓN 3: FASE 2 - FORMACIÓN (3 - 5 AÑOS)',
         description: 'Esta encuesta tiene como objetivo conocer su percepción y el de su empleador; analizar y detectar brechas para la mejora del Plan Curricular de la escuela profesional.',
         questions: [
             {
@@ -527,7 +527,7 @@ export class Formulario implements OnInit {
         },
         {
         id: 'fase_3',
-        title: 'SECCIÓN 3: FASE 3 - AUTOCAPACITACIÓN (6 - 7 AÑOS)',
+        title: 'SECCIÓN 3: FASE 3 - AUTOCAPACITACIÓN (5 - 7 AÑOS)',
         description: 'Esta encuesta tiene como objetivo de ofrecerle Educación Continua y acompañarlos en su desarrollo profesional.',
         questions: [
             {
@@ -591,7 +591,7 @@ export class Formulario implements OnInit {
         },
         {
         id: 'fase_4',
-        title: 'SECCIÓN 3: FASE 4 - INNOVACIÓN (8 A MÁS AÑOS)',
+        title: 'SECCIÓN 3: FASE 4 - INNOVACIÓN (7 A MÁS AÑOS)',
         description: 'Esta encuesta tiene como objetivo promover la investigación e innovación, capacitar en patentes y publicaciones científicas, compartir sus logros como egresado exitoso generando red y alianzas estratégicas.',
         questions: [
             {

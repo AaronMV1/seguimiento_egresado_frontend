@@ -76,19 +76,19 @@ export class Dashboard2 {
             {
                 id: 2,
                 titulo: 'Formación',
-                rango: '4 - 5 años',
+                rango: '3 - 5 años',
                 anios: this.getYearsFromOffset(4, 5),
             },
             {
                 id: 3,
                 titulo: 'Autocapacitación',
-                rango: '6 - 7 años',
+                rango: '5 - 7 años',
                 anios: this.getYearsFromOffset(6, 7),
             },
             {
                 id: 4,
                 titulo: 'Innovación',
-                rango: '8 años a más',
+                rango: '7 años a más',
                 anios: this.getInnovationYears(),
             },
         ];

@@ -89,7 +89,7 @@ export class ModeloGestion {
         {
             numero: 2,
             titulo: 'Fase 2',
-            rango: '4 a 5 años de egreso',
+            rango: '3 a 5 años de egreso',
             imagen: 'assets/images/modelo/F2.png',
             competencia: 'Formación',
             objetivo: 'Evaluar la formación recibida y retroalimentar el currículo.',
@@ -114,7 +114,7 @@ export class ModeloGestion {
         {
             numero: 3,
             titulo: 'Fase 3',
-            rango: '6 a 7 años de egreso',
+            rango: '5 a 7 años de egreso',
             imagen: 'assets/images/modelo/F3.png',
             competencia: 'Autocapacitación',
             objetivo: 'Impulsar el crecimiento y la especialización profesional.',
@@ -137,7 +137,7 @@ export class ModeloGestion {
         {
             numero: 4,
             titulo: 'Fase 4',
-            rango: '8 años a más de egreso',
+            rango: '7 años a más de egreso',
             imagen: 'assets/images/modelo/F4.png',
             competencia: 'Innovación',
             objetivo: 'Fomentar la innovación, investigación y generación de impacto.',
