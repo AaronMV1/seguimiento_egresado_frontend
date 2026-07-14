@@ -1,0 +1,59 @@
+
+
+SEGUIMIENTO AL EGRESADO
+
+
+DATOS GENERALES
+
+1. DNI					            input			egresadoDNI
+2. Nombres				            input			egresadoNombres
+3. Apellido Paterno			        input			egresadoApellidoPaterno
+4. Apellido Materno			        input			egresadoApellidoMaterno
+5. Sexo					            radio			egresadoSexo
+6. Correo Institucional			    input			egresadoCorreoInstitucional
+7. Sede / Filial			        radio			egresadoSedeFilial
+8. Facultad				            drop			egresadoFacultad
+9. Carrera				            drop			egresadoCarrera
+10. Año de Egreso			        input			egresadoAnnoEgreso
+11. Correo Electrónico Personal		input			egresadoCorreoPersonal
+12. Celular				            input			egresadoCelular
+
+
+FASE 1:	INFORMACIÓN
+
+13. Frecuencia en Cursos USPJB		radio			frecuenciaParticipacionEmpleabilidad
+14. Situación Actual			    radio			situacionActual
+15. Trabajando?				        radio			situacionLaboral
+16. Primer Empleo			        radio			tiempoPrimerEmpleoProfesional
+17. Medios				            radio			medioObtencionEmpleo
+
+
+FASE 2: FORMACIÓN
+
+13. Satisfacción Conocimientos		radio			satisfaccionUtilidadConocimientos
+14. Gestión Curricular			    radio			participaGestionCurricular
+15. Satisfacción Servicio Educativo	radio			satisfaccionServicioEducativo
+16. Planificación Estratégica		radio			participaPlanificacionEstrategica
+17. Nombre Empresa			        input			empresaNombre
+18. Nombre Correo Jefe Inmediato
+    18.1 Nombre				        input			jefeInmediatoNombre
+    18.2 Correo				        input			jefeInmediatoCorreo
+
+
+FASE 3: AUTOCAPACITACIÓN
+
+13. Nivel Especialidad			    radio			nivelEspecialidadGrado
+14. Educación Continua			    radio			frecuenciaParticipacionEducacionContinua
+15. Educación Continua Requiere		radio			necesidadEducacionContinua
+
+
+FASE 4: INNOVACIÓN
+
+13. Investigación			        radio			realizaInvestigacion
+14. Capacitaciones			        radio			frecuenciaParticipacionInvestigacion
+15. Satisfacción			        radio			satisfaccionCapacitacionInvestigacion
+
+
+
+
+

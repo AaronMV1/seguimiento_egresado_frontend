@@ -6,7 +6,7 @@ import { FormBuilder, ReactiveFormsModule, ValidatorFn, Validators } from '@angu
 import { Http } from '../../core/services/http';
 
 
-type QuestionType = 'text' | 'radio' | 'action';
+type QuestionType = 'text' | 'radio' | 'select' | 'action';
 
 
 interface FormSection {
@@ -43,6 +43,8 @@ interface FormQuestion {
     placeholder?: string;
     actionLabel?: string;
     options?: FormOption[];
+    dependsOnQuestionId?: string;
+    optionsByValue?: Record<string, FormOption[]>;
     visibleWhen?: {
         questionId: string;
         value: string;
@@ -81,15 +83,14 @@ interface PlantillaFase {
 export class Formulario implements OnInit {
 
 
-    readonly politicaPrivacidadMessage =
-    `Con su aceptación autoriza a la Universidad Privada San Juan Bautista S.A.C. (UPSJB SAC), a través de la Subdirección de Seguimiento al Egresado para que, de manera indefinida o hasta que usted solicite que se revoque su consentimiento, pueda tratar todos los datos personales que provea como egresado de nuestra casa de estudios, así como todos aquellos relacionados a cualquier otro servicio y beneficio que la UPSJB SAC le haya brindado en su calidad de miembro de la comunidad universitaria.
+    readonly politicaPrivacidadMessage = `Con su aceptación autoriza a la Universidad Privada San Juan Bautista S.A.C. (UPSJB SAC), a través de la Subdirección de Seguimiento al Egresado para que, de manera indefinida o hasta que usted solicite que se revoque su consentimiento, pueda tratar todos los datos personales que provea como egresado de nuestra casa de estudios, así como todos aquellos relacionados a cualquier otro servicio y beneficio que la UPSJB SAC le haya brindado en su calidad de miembro de la comunidad universitaria.
 
-    Sus datos personales serán tratados con la finalidad de mantener contacto con usted para informarle acerca de los servicios y beneficios ofrecidos para los egresados de la UPSJB SAC, ponerlo al tanto de oportunidades profesionales y académicas, así para recoger su valiosa opinión respecto a la universidad, siempre garantizando la seguridad y confidencialidad de sus datos.
+        Sus datos personales serán tratados con la finalidad de mantener contacto con usted para informarle acerca de los servicios y beneficios ofrecidos para los egresados de la UPSJB SAC, ponerlo al tanto de oportunidades profesionales y académicas, así para recoger su valiosa opinión respecto a la universidad, siempre garantizando la seguridad y confidencialidad de sus datos.
 
-    Su información será almacenada en la base de datos de propiedad de la UPSJB SAC y será tratada de manera confidencial. La UPSJB SAC no vende ni cede a terceros la información personal recibida. Su autorización es obligatoria para llevar a cabo las actividades aquí descritas, las cuales no se podrán realizar a cabalidad en caso de negativa. Usted tiene la facultad de ejercer cualquiera de los derechos previstos en la Ley N° 29733, Ley de Protección de Datos Personales, de manera gratuita, enviando una comunicación al correo electrónico.
+        Su información será almacenada en la base de datos de propiedad de la UPSJB SAC y será tratada de manera confidencial. La UPSJB SAC no vende ni cede a terceros la información personal recibida. Su autorización es obligatoria para llevar a cabo las actividades aquí descritas, las cuales no se podrán realizar a cabalidad en caso de negativa. Usted tiene la facultad de ejercer cualquiera de los derechos previstos en la Ley N° 29733, Ley de Protección de Datos Personales, de manera gratuita, enviando una comunicación al correo electrónico.
 
-    Correo: seguimiento.egresado@upsjb.edu.pe
-    `;
+        Correo: seguimiento.egresado@upsjb.edu.pe
+    |`;
 
 
     readonly testData = {
@@ -113,6 +114,7 @@ export class Formulario implements OnInit {
 		{ id: 'fase_3', titulo: 'Fase 3: Autocapacitación', aniosMinimosDesdeEgreso: 6, aniosMaximosDesdeEgreso: 7, etiquetaCohorte: '5 - 7 años', descripcion: 'En esta etapa se evalúa el crecimiento académico y profesional del egresado, identificando estudios de posgrado, especializaciones, certificaciones y otros procesos de actualización que fortalecen su perfil profesional.' },
 		{ id: 'fase_4', titulo: 'Fase 4: Innovación', aniosMinimosDesdeEgreso: 8, aniosMaximosDesdeEgreso: null, etiquetaCohorte: '7 - X años', descripcion: 'Corresponde a los egresados con una trayectoria profesional consolidada. Se identifican sus aportes en investigación, innovación, emprendimiento, liderazgo y generación de conocimiento, evidenciando su impacto en la sociedad y en el desarrollo de su profesión.' },
 	];
+
 
     //#region Configuracion del cuestionario
     // Define la estructura del cuestionario: secciones, preguntas, opciones y reglas.
@@ -210,8 +212,58 @@ export class Formulario implements OnInit {
             },
             },
             {
-            id: 'anio_egreso',
+            id: 'facultad',
             numero: 6,
+            label: '¿Qué facultad estudió?',
+            type: 'select',
+            required: true,
+            options: [
+                { value: 'ciencias_salud', text: 'Ciencias de la Salud' },
+                { value: 'ingenierias', text: 'Ingenierías' },
+                { value: 'derecho_empresariales', text: 'Derecho y Ciencias Empresariales' },
+                { value: 'comunicacion_admin', text: 'Comunicación y Ciencias Administrativas' },
+            ],
+            },
+            {
+            id: 'carrera',
+            numero: 7,
+            label: '¿Qué carrera estudió?',
+            type: 'select',
+            required: true,
+            placeholder: 'Primero seleccione una facultad',
+            dependsOnQuestionId: 'facultad',
+            optionsByValue: {
+                ciencias_salud: [
+                    { value: 'medicina_humana', text: 'Medicina Humana' },
+                    { value: 'enfermeria', text: 'Enfermería' },
+                    { value: 'estomatologia', text: 'Estomatología' },
+                    { value: 'odontologia', text: 'Odontología' },
+                    { value: 'psicologia', text: 'Psicología' },
+                    { value: 'tecnologia_medica', text: 'Tecnología Médica' },
+                    { value: 'medicina_veterinaria', text: 'Medicina Veterinaria' },
+                ],
+                derecho_empresariales: [
+                    { value: 'derecho', text: 'Derecho' },
+                    { value: 'administracion_empresas', text: 'Administración de Empresas' },
+                    { value: 'contabilidad', text: 'Contabilidad' },
+                    { value: 'administracion_negocios', text: 'Administración de Negocios Internacionales' },
+                    { value: 'administracion_marketing', text: 'Administración y Marketing' },
+                ],
+                ingenierias: [
+                    { value: 'ingenieria_sistemas', text: 'Ingeniería de Sistemas' },
+                    { value: 'ingenieria_agroindustrial', text: 'Ingeniería Agroindustrial' },
+                    { value: 'ingenieria_civil', text: 'Ingeniería Civil' },
+                    { value: 'ingenieria_enologia', text: 'Ingeniería en Enología y Viticultura' },
+                ],
+                comunicacion_admin: [
+                    { value: 'ciencias_comunicacion', text: 'Ciencias de la Comunicación' },
+                    { value: 'turismo_hoteleria_gastronomia', text: 'Turismo, Hotelería y Gastronomía' },
+                ],
+            },
+            },
+            {
+            id: 'anio_egreso',
+            numero: 8,
             label: 'Año de egreso',
             type: 'text',
             required: true,
@@ -242,7 +294,7 @@ export class Formulario implements OnInit {
             // },
             {
             id: 'correo_personal',
-            numero: 7,
+            numero: 9,
             label:
                 'Por favor ingrese un correo electrónico para informarle de oportunidades profesionales y académicas',
             type: 'text',
@@ -254,7 +306,7 @@ export class Formulario implements OnInit {
             },
             {
             id: 'celular_personal',
-            numero: 8,
+            numero: 10,
             label:
                 'Por favor un número de celular mediante el cual la UPSJB SAC pueda comunicarse con usted',
             type: 'text',
@@ -655,7 +707,6 @@ export class Formulario implements OnInit {
     form!: ReturnType<FormBuilder['group']>;
     //#endregion
 
-
     //#region Constructor
     constructor(private readonly fb: FormBuilder,public _http: Http) {
         this.form = this.buildForm();
@@ -666,6 +717,9 @@ export class Formulario implements OnInit {
 
     ngOnInit(): void {
         // Se mantiene por contrato de OnInit; la carga de datos ahora es manual desde el botón.
+        this.form.get('facultad')?.valueChanges.subscribe(() => {
+            this.form.get('carrera')?.reset('');
+        });
     }
 
 
@@ -819,6 +873,32 @@ export class Formulario implements OnInit {
 
     trackByQuestionId(_: number, question: FormQuestion): string {
         return question.id;
+    }
+
+    getQuestionOptions(question: FormQuestion): FormOption[] {
+        if (!question.dependsOnQuestionId || !question.optionsByValue) {
+            return question.options ?? [];
+        }
+
+        const dependencyValue = this.form.get(question.dependsOnQuestionId)?.value;
+
+        if (typeof dependencyValue !== 'string') {
+            return [];
+        }
+
+        return question.optionsByValue[dependencyValue] ?? [];
+    }
+
+    isQuestionControlDisabled(question: FormQuestion): boolean {
+        if (question.disabled ?? false) {
+            return true;
+        }
+
+        if (question.type !== 'select' || !question.dependsOnQuestionId) {
+            return false;
+        }
+
+        return this.getQuestionOptions(question).length === 0;
     }
 
     isUrlLink(link: FormQuestion['link']): boolean {
@@ -990,7 +1070,6 @@ export class Formulario implements OnInit {
         handler();
     }
     //#endregion
-
 
 
     obtenerInformacionPersona() {

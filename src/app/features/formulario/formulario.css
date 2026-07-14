@@ -274,3 +274,7 @@
     margin-top: 2rem;
     align-self: center;
 }
+
+select option {
+    width: 100% !important;
+}

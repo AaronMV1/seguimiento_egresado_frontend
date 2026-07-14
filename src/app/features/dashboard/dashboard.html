@@ -14,9 +14,9 @@
 		</p>
 
 		<p>
-			Visualiza el desarrollo profesional de los egresados mediante el modelo institucional de seguimiento, 
-			organizado en cuatro fases que reflejan su evolución desde la inserción laboral hasta la innovación e 
-			investigación. Este panel facilita el análisis de indicadores estratégicos para fortalecer la empleabilidad, 
+			Visualiza el desarrollo profesional de los egresados mediante el modelo institucional de seguimiento,
+			organizado en cuatro fases que reflejan su evolución desde la inserción laboral hasta la innovación e
+			investigación. Este panel facilita el análisis de indicadores estratégicos para fortalecer la empleabilidad,
 			la formación continua y la mejora permanente de la calidad académica
 		</p>
 
@@ -54,10 +54,10 @@
 	<section class="grilla-graficos">
 
 		<article class="tarjeta-grafico">
-			
+
 			<h3 style="font-size: 3rem; text-align: left; margin-top: .5rem;">{{ faseSeleccionada?.titulo || 'Fase no seleccionada' }}</h3>
 			<!-- <h3>{{ faseSeleccionada?.titulo ? (faseSeleccionada?.titulo | slice:0:6) : 'Fase no seleccionada' }}</h3> -->
-			
+
 			<div class="contenido-grafico-imagen">
 
 				<div class="">
@@ -141,15 +141,29 @@
 					placeholder="Nombre, año, correo, carrera, sede o facultad" />
 			</div>
 
-			<div class="campo-filtro">
-				<label for="filtroCarrera">Carrera</label>
-				<select id="filtroCarrera" [(ngModel)]="seleccionCarrera">
-					<option value="">Todas</option>
-					<option *ngFor="let carrera of opcionesCarrera" [value]="carrera">{{ carrera }}</option>
+            <div class="campo-filtro">
+				<label for="filtroAnio">Año</label>
+				<select id="filtroAnio" [(ngModel)]="seleccionAnio">
+					<option value="">Todos</option>
+					<option *ngFor="let anio of opcionesAnio" [value]="anio">{{ anio }}</option>
 				</select>
 			</div>
 
-			<div class="campo-filtro">
+            <div class="campo-filtro">
+				<label for="filtroSede">Sede</label>
+				<select id="filtroSede" [(ngModel)]="seleccionSede">
+					<option value="">Todas</option>
+					<option *ngFor="let sede of opcionesSede" [value]="sede">{{ sede }}</option>
+				</select>
+			</div>
+
+            <div class="campo-filtro">
+                <button type="button" class="boton-filtrar" (click)="aplicarFiltros()">Filtrar</button>
+            </div>
+
+            <div class="campo-filtro"></div>
+
+            <div class="campo-filtro">
 				<label for="filtroFacultad">Facultad</label>
 				<select id="filtroFacultad" [(ngModel)]="seleccionFacultad">
 					<option value="">Todas</option>
@@ -158,23 +172,14 @@
 			</div>
 
 			<div class="campo-filtro">
-				<label for="filtroSede">Sede</label>
-				<select id="filtroSede" [(ngModel)]="seleccionSede">
+				<label for="filtroCarrera">Carrera</label>
+				<select id="filtroCarrera" [(ngModel)]="seleccionCarrera">
 					<option value="">Todas</option>
-					<option *ngFor="let sede of opcionesSede" [value]="sede">{{ sede }}</option>
-				</select>
-			</div>
-
-			<div class="campo-filtro">
-				<label for="filtroAnio">Año</label>
-				<select id="filtroAnio" [(ngModel)]="seleccionAnio">
-					<option value="">Todos</option>
-					<option *ngFor="let anio of opcionesAnio" [value]="anio">{{ anio }}</option>
+					<option *ngFor="let carrera of opcionesCarrera" [value]="carrera">{{ carrera }}</option>
 				</select>
 			</div>
 
 			<div class="acciones-filtro">
-				<button type="button" class="boton-filtrar" (click)="aplicarFiltros()">Filtrar</button>
 				<button type="button" class="boton-reiniciar" (click)="reiniciarFiltros()">Reiniciar</button>
 			</div>
 

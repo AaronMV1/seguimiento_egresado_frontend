@@ -78,6 +78,11 @@
                                     </label>
                                 </div>
 
+                                <select *ngSwitchCase="'select'" [id]="question.id" [formControlName]="question.id" class="text-input" [disabled]="isQuestionControlDisabled(question)">
+                                    <option value="" disabled selected>{{ question.placeholder || 'Seleccione una opción' }}</option>
+                                    <option *ngFor="let option of getQuestionOptions(question)" [value]="option.value">{{ option.text }}</option>
+                                </select>
+
                             </ng-container>
 
                             <p class="field-error" *ngIf="isFieldInvalid(question.id)">
