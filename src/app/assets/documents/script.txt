@@ -3,57 +3,63 @@
 SEGUIMIENTO AL EGRESADO
 
 
+1. ID
+
+
 DATOS GENERALES
 
-1. DNI					            input			egresadoDNI
-2. Nombres				            input			egresadoNombres
-3. Apellido Paterno			        input			egresadoApellidoPaterno
-4. Apellido Materno			        input			egresadoApellidoMaterno
-5. Sexo					            radio			egresadoSexo
-6. Correo Institucional			    input			egresadoCorreoInstitucional
-7. Sede / Filial			        radio			egresadoSedeFilial
-8. Facultad				            drop			egresadoFacultad
-9. Carrera				            drop			egresadoCarrera
-10. Año de Egreso			        input			egresadoAnnoEgreso
-11. Correo Electrónico Personal		input			egresadoCorreoPersonal
-12. Celular				            input			egresadoCelular
+2. DNI					            input			egresadoDNI
+3. Nombres				            input			egresadoNombres
+4. Apellido Paterno			        input			egresadoApellidoPaterno
+5. Apellido Materno			        input			egresadoApellidoMaterno
+6. Sexo					            radio			egresadoSexo
+7. Correo Institucional			    input			egresadoCorreoInstitucional
+8. Sede / Filial			        radio			egresadoSedeFilial
+9. Facultad				            drop			egresadoFacultad
+10. Carrera				            drop			egresadoCarrera
+11. Año de Egreso			        input			egresadoAnnoEgreso
+12. Correo Electrónico Personal		input			egresadoCorreoPersonal
+13. Celular				            input			egresadoCelular
 
 
 FASE 1:	INFORMACIÓN
 
-13. Frecuencia en Cursos USPJB		radio			frecuenciaParticipacionEmpleabilidad
-14. Situación Actual			    radio			situacionActual
-15. Trabajando?				        radio			situacionLaboral
-16. Primer Empleo			        radio			tiempoPrimerEmpleoProfesional
-17. Medios				            radio			medioObtencionEmpleo
+14. Frecuencia en Cursos USPJB		radio			frecuenciaParticipacionEmpleabilidad
+15. Situación Actual			    radio			situacionActual
+16. Trabajando?				        radio			situacionLaboral
+17. Primer Empleo			        radio			tiempoPrimerEmpleoProfesional
+18. Medios				            radio			medioObtencionEmpleo
 
 
 FASE 2: FORMACIÓN
 
-13. Satisfacción Conocimientos		radio			satisfaccionUtilidadConocimientos
-14. Gestión Curricular			    radio			participaGestionCurricular
-15. Satisfacción Servicio Educativo	radio			satisfaccionServicioEducativo
-16. Planificación Estratégica		radio			participaPlanificacionEstrategica
-17. Nombre Empresa			        input			empresaNombre
-18. Nombre Correo Jefe Inmediato
-    18.1 Nombre				        input			jefeInmediatoNombre
-    18.2 Correo				        input			jefeInmediatoCorreo
+19. Satisfacción Conocimientos		radio			satisfaccionUtilidadConocimientos
+20. Gestión Curricular			    radio			participaGestionCurricular
+21. Satisfacción Servicio Educativo	radio			satisfaccionServicioEducativo
+22. Planificación Estratégica		radio			participaPlanificacionEstrategica
+23. Nombre Empresa			        input			empresaNombre
+24. Nombre Correo Jefe Inmediato
+    24.1 Nombre				        input			jefeInmediatoNombre
+    24.2 Correo				        input			jefeInmediatoCorreo
 
 
 FASE 3: AUTOCAPACITACIÓN
 
-13. Nivel Especialidad			    radio			nivelEspecialidadGrado
-14. Educación Continua			    radio			frecuenciaParticipacionEducacionContinua
-15. Educación Continua Requiere		radio			necesidadEducacionContinua
+25. Nivel Especialidad			    radio			nivelEspecialidadGrado
+26. Educación Continua			    radio			frecuenciaParticipacionEducacionContinua
+27. Educación Continua Requiere		radio			necesidadEducacionContinua
 
 
 FASE 4: INNOVACIÓN
 
-13. Investigación			        radio			realizaInvestigacion
-14. Capacitaciones			        radio			frecuenciaParticipacionInvestigacion
-15. Satisfacción			        radio			satisfaccionCapacitacionInvestigacion
+28. Investigación			        radio			realizaInvestigacion
+29. Capacitaciones			        radio			frecuenciaParticipacionInvestigacion
+30. Satisfacción			        radio			satisfaccionCapacitacionInvestigacion
 
 
 
+31. Fecha Creación
+32. Fecha Modificación
+33. Activo
 
 

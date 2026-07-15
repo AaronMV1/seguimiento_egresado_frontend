@@ -15,7 +15,47 @@ import { environment } from '../../../environments/environment';
 export class Http {
 
 
-    constructor(private http:HttpClient) { }
+    constructor(private http: HttpClient) { }
+
+
+    public get(collection: string): Observable<any> {
+
+        const url = environment.apiBackend.backend + collection;
+
+        return this.http.get<any>(url).pipe(
+            tap((data: any) => {
+
+            }),
+            catchError(err => {
+                throw 'Error in source. Details: ' + err;
+            }),
+        );
+
+    }
+
+
+    public getUPSJBIntegracionesEgresado(
+        req: { tipo: string; documento: string },
+        collection: string,
+    ): Observable<any> {
+
+        const url = environment.apiUniversidad.integraciones.egresado.apiURL + collection;
+
+        return this.http.get<any>(url, {
+            params: {
+                tipo: req.tipo,
+                documento: req.documento,
+            },
+        }).pipe(
+            tap((data: any) => {
+
+            }),
+            catchError(err => {
+                throw 'Error in source. Details: ' + err;
+            }),
+        );
+
+    }
 
 
     public postUPSJBIntegracionesAcademico(req: any, collection: string): Observable<any> {
@@ -28,7 +68,7 @@ export class Http {
                 'Content-Type': 'application/json',
                 'country': 'PE',
                 'provider': 'integracion',
-                'apiKey': environment.apiUniversidad.integraciones.academico.apiKEY
+                'apiKey': environment.apiUniversidad.integraciones.academico.apiKEY,
             }),
         };
 
@@ -43,4 +83,6 @@ export class Http {
 
     }
 
+
 }
+

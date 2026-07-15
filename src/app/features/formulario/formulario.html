@@ -25,7 +25,7 @@
 
                 <ng-container *ngFor="let question of currentSection.questions; trackBy: trackByQuestionId">
 
-                    <div class="question" *ngIf="isQuestionVisible(question)">
+                    <div class="question" *ngIf="isQuestionVisible(question) && question.id !== 'numeroDocumento'">
 
                         <label [attr.for]="question.id" class="question-label">
 
@@ -54,6 +54,33 @@
 
                         <div class="question-content">
 
+                            <ng-container *ngIf="question.id === 'tipoDocumentos'; else standardQuestion" [formGroup]="form">
+
+                                <div class="documento-inline-row">
+                                    <select [id]="'tipoDocumentos'" formControlName="tipoDocumentos" class="text-input documento-select">
+                                        <option value="" disabled>Seleccione una opción</option>
+                                        <option *ngFor="let option of getQuestionOptions(question)" [value]="option.value">
+                                            {{ option.text }}
+                                        </option>
+                                    </select>
+
+                                    <input id="numeroDocumento" formControlName="numeroDocumento" type="text"
+                                        class="text-input documento-input"
+                                        placeholder="Escriba su respuesta" />
+
+                                    <button type="button" class="btn-submit documento-button" (click)="validarDatoEgresado()">
+                                        Validar datos
+                                    </button>
+                                </div>
+
+                                <p class="field-error" *ngIf="isFieldInvalid('tipoDocumentos') || isFieldInvalid('numeroDocumento')">
+                                    Complete el tipo y número de documento correctamente.
+                                </p>
+
+                            </ng-container>
+
+                            <ng-template #standardQuestion>
+
                             <ng-container [ngSwitch]="question.type">
 
                                 <input *ngSwitchCase="'text'" [id]="question.id"
@@ -63,17 +90,14 @@
                                 />
 
                                 <div *ngSwitchCase="'action'" class="action-controls">
-                                    <input [id]="question.id" type="email" class="text-input"
-                                        [placeholder]="question.placeholder || 'Ingrese su correo'"
-                                        [value]="correoPersona" (input)="onCorreoPersonaChange($event)" />
-                                    <button type="button" class="btn-submit" (click)="obtenerInformacionPersona()">
+                                    <button type="button" class="btn-submit" (click)="validarDatoEgresado()">
                                         {{ question.actionLabel || 'Ejecutar' }}
                                     </button>
                                 </div>
 
                                 <div *ngSwitchCase="'radio'" class="radio-group">
                                     <label class="radio-option" *ngFor="let option of question.options">
-                                        <input type="radio" [formControlName]="question.id" [value]="option.value" [disabled]="question.disabled ?? false" />
+                                        <input type="radio" [name]="question.id" [formControlName]="question.id" [value]="option.value" [disabled]="question.disabled ?? false" />
                                         <span>{{ option.text }}</span>
                                     </label>
                                 </div>
@@ -84,6 +108,8 @@
                                 </select>
 
                             </ng-container>
+
+                            </ng-template>
 
                             <p class="field-error" *ngIf="isFieldInvalid(question.id)">
                                 Este campo es obligatorio o contiene un formato inválido.

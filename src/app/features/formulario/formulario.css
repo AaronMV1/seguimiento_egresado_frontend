@@ -102,6 +102,33 @@
     outline: none;
 }
 
+.documento-inline-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.documento-inline-row > * {
+    min-width: 30% !important;
+    max-width: 30% !important;
+}
+
+.documento-select {
+    flex: 0 0 220px;
+}
+
+.documento-input {
+    flex: 1 1 260px;
+    min-width: 220px;
+}
+
+.documento-button {
+    flex: 0 0 auto;
+}
+
 .action-controls {
     display: flex;
     flex-wrap: wrap;

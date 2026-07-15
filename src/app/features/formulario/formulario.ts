@@ -1,736 +1,102 @@
 
 
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, ValidatorFn, Validators } from '@angular/forms';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule, ValidatorFn, Validators, } from '@angular/forms';
+import { distinctUntilChanged, Subject, takeUntil } from 'rxjs';
+import { FormOption, FormQuestion, FormSection, QuestionLink, SedeApiItem } from './formulario.models';
 import { Http } from '../../core/services/http';
-
-
-type QuestionType = 'text' | 'radio' | 'select' | 'action';
-
-
-interface FormSection {
-    id: string;
-    title: string;
-    description?: string;
-    questions: FormQuestion[];
-}
-
-
-interface FormOption {
-    value: string;
-    text: string;
-    finishForm?: boolean;
-    targetSectionId?: string;
-}
-
-
-interface FormQuestion {
-    id: string;
-    numero: number;
-    label: string;
-    link?: {
-           text: string;
-           action?: 'url' | 'popup' | 'function';
-        url?: string;
-        func?: string;
-           popupTitle?: string;
-           popupMessage?: string;
-    };
-    type: QuestionType;
-    required: boolean;
-    disabled?: boolean;
-    placeholder?: string;
-    actionLabel?: string;
-    options?: FormOption[];
-    dependsOnQuestionId?: string;
-    optionsByValue?: Record<string, FormOption[]>;
-    visibleWhen?: {
-        questionId: string;
-        value: string;
-    };
-    dashboard?: {
-        enabled: boolean;
-        chartType: 'bar' | 'pie' | 'doughnut';
-        title?: string;
-    };
-    validators?: {
-        pattern?: string;
-        minLength?: number;
-        maxLength?: number;
-    };
-}
-
-
-interface PlantillaFase {
-	id: string;
-	titulo: string;
-	aniosMinimosDesdeEgreso: number;
-	aniosMaximosDesdeEgreso: number | null;
-	etiquetaCohorte: string;
-	descripcion: string;
-}
+import { DASHBOARD_QUESTION_IDS, PLANTILLAS_FASES, POLITICA_PRIVACIDAD_MESSAGE } from './formulario.constants';
+import { FORMULARIO_SECTIONS } from './formulario.config';
 
 
 @Component({
     selector: 'app-formulario',
-    imports: [CommonModule, ReactiveFormsModule],
+    imports: [
+        CommonModule,
+        ReactiveFormsModule,
+    ],
     templateUrl: './formulario.html',
     styleUrl: './formulario.css',
 })
 
 
-export class Formulario implements OnInit {
+export class Formulario implements OnInit, OnDestroy {
 
 
-    readonly politicaPrivacidadMessage = `Con su aceptación autoriza a la Universidad Privada San Juan Bautista S.A.C. (UPSJB SAC), a través de la Subdirección de Seguimiento al Egresado para que, de manera indefinida o hasta que usted solicite que se revoque su consentimiento, pueda tratar todos los datos personales que provea como egresado de nuestra casa de estudios, así como todos aquellos relacionados a cualquier otro servicio y beneficio que la UPSJB SAC le haya brindado en su calidad de miembro de la comunidad universitaria.
-
-        Sus datos personales serán tratados con la finalidad de mantener contacto con usted para informarle acerca de los servicios y beneficios ofrecidos para los egresados de la UPSJB SAC, ponerlo al tanto de oportunidades profesionales y académicas, así para recoger su valiosa opinión respecto a la universidad, siempre garantizando la seguridad y confidencialidad de sus datos.
-
-        Su información será almacenada en la base de datos de propiedad de la UPSJB SAC y será tratada de manera confidencial. La UPSJB SAC no vende ni cede a terceros la información personal recibida. Su autorización es obligatoria para llevar a cabo las actividades aquí descritas, las cuales no se podrán realizar a cabalidad en caso de negativa. Usted tiene la facultad de ejercer cualquiera de los derechos previstos en la Ley N° 29733, Ley de Protección de Datos Personales, de manera gratuita, enviando una comunicación al correo electrónico.
-
-        Correo: seguimiento.egresado@upsjb.edu.pe
-    |`;
+    // Configuración
 
 
-    readonly testData = {
-        terminos_condiciones: 'acepto',
-        nombresApellidos: 'Christian Aarón Mori Valdivia',
-        dni: '75116260',
-        sexo: 'masculino',
-        sede: 'lima-chorrillos',
-        grupos: 'ninguno',
-        correo_personal: 'christian.mori@upsjb.edu.pe',
-        celular_personal: '933216749',
-        estudios_concluidos: 'Pregrado',
-        tiene_trabajo: 'si',
-        empresa_actual: 'Universidad Privada San Juan Bautista',
-    };
+    readonly sections: FormSection[] = structuredClone(FORMULARIO_SECTIONS);
+    readonly plantillasFases = PLANTILLAS_FASES;
+    readonly dashboardQuestionIds = DASHBOARD_QUESTION_IDS;
+    readonly politicaPrivacidadMessage = POLITICA_PRIVACIDAD_MESSAGE;
 
 
-    readonly plantillasFases: PlantillaFase[] = [
-		{ id: 'fase_1', titulo: 'Fase 1: Información', aniosMinimosDesdeEgreso: 0, aniosMaximosDesdeEgreso: 3, etiquetaCohorte: '0 - 3 años', descripcion: 'Corresponde a los egresados que inician su vida profesional. En esta etapa se realiza el seguimiento de su inserción laboral, la actualización de sus datos y el fortalecimiento de su empleabilidad mediante oportunidades de trabajo, capacitación inicial y acompañamiento profesional.' },
-		{ id: 'fase_2', titulo: 'Fase 2: Formación', aniosMinimosDesdeEgreso: 4, aniosMaximosDesdeEgreso: 5, etiquetaCohorte: '3 - 5 años', descripcion: 'Comprende a los egresados que han consolidado experiencia laboral. Se recopila información sobre su desempeño, logros y formación continua, además de obtener retroalimentación para contribuir a la mejora del plan curricular y de la calidad académica.' },
-		{ id: 'fase_3', titulo: 'Fase 3: Autocapacitación', aniosMinimosDesdeEgreso: 6, aniosMaximosDesdeEgreso: 7, etiquetaCohorte: '5 - 7 años', descripcion: 'En esta etapa se evalúa el crecimiento académico y profesional del egresado, identificando estudios de posgrado, especializaciones, certificaciones y otros procesos de actualización que fortalecen su perfil profesional.' },
-		{ id: 'fase_4', titulo: 'Fase 4: Innovación', aniosMinimosDesdeEgreso: 8, aniosMaximosDesdeEgreso: null, etiquetaCohorte: '7 - X años', descripcion: 'Corresponde a los egresados con una trayectoria profesional consolidada. Se identifican sus aportes en investigación, innovación, emprendimiento, liderazgo y generación de conocimiento, evidenciando su impacto en la sociedad y en el desarrollo de su profesión.' },
-	];
+    // Formulario
 
 
-    //#region Configuracion del cuestionario
-    // Define la estructura del cuestionario: secciones, preguntas, opciones y reglas.
-    readonly sections: FormSection[] = [
-        {
-        id: 'consentimiento_informado',
-        title: 'SECCIÓN 1: CONSENTIMIENTO INFORMADO',
-        questions: [
-            {
-            id: 'terminos_condiciones',
-            numero: 1,
-            label: 'Autorizo a la UPSJB S.A.C. al tratamiento de mis datos personales de conformidad con la Política de Privacidad y la',
-            link: {
-                text: 'Política de Privacidad',
-                action: 'popup',
-                popupTitle: 'Política de Privacidad',
-                popupMessage: this.politicaPrivacidadMessage,
-            },
-            type: 'radio',
-            required: true,
-            options: [
-                { value: 'acepto', text: 'Acepto' },
-                { value: 'no_acepto', text: 'No acepto', finishForm: true },
-            ],
-            },
-        ],
-        },
-        {
-        id: 'informacion_personal',
-        title: 'SECCIÓN 2: INFORMACIÓN PERSONAL DEL EGRESADO',
-        questions: [
-            {
-            id: 'actualizar_datos_personales',
-            numero: 1,
-            label: 'Si desea completar automáticamente sus datos personales, use el siguiente botón.',
-            type: 'action',
-            required: false,
-            placeholder: 'Ingrese su correo institucional',
-            actionLabel: 'Validar correo institucional',
-            },
-            {
-            id: 'nombresApellidos',
-            numero: 2,
-            label: 'Por favor ingrese sus nombres y apellidos',
-            type: 'text',
-            required: true,
-            disabled: true,
-            placeholder: 'Escriba su respuesta',
-            validators: {
-                minLength: 5,
-            },
-            },
-            {
-            id: 'dni',
-            numero: 3,
-            label: 'Ingrese su DNI',
-            type: 'text',
-            required: true,
-            disabled: true,
-            placeholder: 'Escriba su respuesta',
-            validators: {
-                pattern: '^[0-9]{8}$',
-            },
-            },
-            {
-            id: 'sexo',
-            numero: 4,
-            label: 'Sexo',
-            type: 'radio',
-            required: true,
-            disabled: true,
-            options: [
-                { value: 'masculino', text: 'Masculino' },
-                { value: 'femenino', text: 'Femenino' },
-            ],
-            },
-            {
-            id: 'sede',
-            numero: 5,
-            label: '¿En qué sede/filial estudió?',
-            type: 'radio',
-            required: true,
-            disabled: true,
-            options: [
-                { value: 'CP001', text: 'Sede Chorrillos' },
-                { value: 'CP002', text: 'Sede San Borja' },
-                { value: 'CP003', text: 'Filial Ica' },
-                { value: 'CP005', text: 'Filial Chincha' },
-                { value: 'Otro', text: 'Otro (Lima norte, etc.)' },
-            ],
-            dashboard: {
-                enabled: true,
-                chartType: 'pie',
-                title: 'Sede/Filial donde estudió',
-            },
-            },
-            {
-            id: 'facultad',
-            numero: 6,
-            label: '¿Qué facultad estudió?',
-            type: 'select',
-            required: true,
-            options: [
-                { value: 'ciencias_salud', text: 'Ciencias de la Salud' },
-                { value: 'ingenierias', text: 'Ingenierías' },
-                { value: 'derecho_empresariales', text: 'Derecho y Ciencias Empresariales' },
-                { value: 'comunicacion_admin', text: 'Comunicación y Ciencias Administrativas' },
-            ],
-            },
-            {
-            id: 'carrera',
-            numero: 7,
-            label: '¿Qué carrera estudió?',
-            type: 'select',
-            required: true,
-            placeholder: 'Primero seleccione una facultad',
-            dependsOnQuestionId: 'facultad',
-            optionsByValue: {
-                ciencias_salud: [
-                    { value: 'medicina_humana', text: 'Medicina Humana' },
-                    { value: 'enfermeria', text: 'Enfermería' },
-                    { value: 'estomatologia', text: 'Estomatología' },
-                    { value: 'odontologia', text: 'Odontología' },
-                    { value: 'psicologia', text: 'Psicología' },
-                    { value: 'tecnologia_medica', text: 'Tecnología Médica' },
-                    { value: 'medicina_veterinaria', text: 'Medicina Veterinaria' },
-                ],
-                derecho_empresariales: [
-                    { value: 'derecho', text: 'Derecho' },
-                    { value: 'administracion_empresas', text: 'Administración de Empresas' },
-                    { value: 'contabilidad', text: 'Contabilidad' },
-                    { value: 'administracion_negocios', text: 'Administración de Negocios Internacionales' },
-                    { value: 'administracion_marketing', text: 'Administración y Marketing' },
-                ],
-                ingenierias: [
-                    { value: 'ingenieria_sistemas', text: 'Ingeniería de Sistemas' },
-                    { value: 'ingenieria_agroindustrial', text: 'Ingeniería Agroindustrial' },
-                    { value: 'ingenieria_civil', text: 'Ingeniería Civil' },
-                    { value: 'ingenieria_enologia', text: 'Ingeniería en Enología y Viticultura' },
-                ],
-                comunicacion_admin: [
-                    { value: 'ciencias_comunicacion', text: 'Ciencias de la Comunicación' },
-                    { value: 'turismo_hoteleria_gastronomia', text: 'Turismo, Hotelería y Gastronomía' },
-                ],
-            },
-            },
-            {
-            id: 'anio_egreso',
-            numero: 8,
-            label: 'Año de egreso',
-            type: 'text',
-            required: true,
-            disabled: true,
-            placeholder: 'Escriba su respuesta',
-            validators: {
-                pattern: '^[0-9]{4}$',
-            },
-            },
-            // {
-            // id: 'grupos',
-            // numero: 7,
-            // label:
-            //     'Durante sus estudios en la UPSJB SAC, ¿Usted perteneció a alguno de los siguientes grupos?',
-            // type: 'radio',
-            // required: true,
-            // options: [
-            //     { value: 'conadis', text: 'CONADIS' },
-            //     { value: 'becado', text: 'Becado' },
-            //     { value: 'ninguno', text: 'Ninguno' },
-            //     { value: 'otras', text: 'Otras' },
-            // ],
-            // dashboard: {
-            //     enabled: true,
-            //     chartType: 'pie',
-            //     title: 'Pertenencia a grupos durante sus estudios',
-            // },
-            // },
-            {
-            id: 'correo_personal',
-            numero: 9,
-            label:
-                'Por favor ingrese un correo electrónico para informarle de oportunidades profesionales y académicas',
-            type: 'text',
-            required: true,
-            placeholder: 'Escriba su respuesta',
-            validators: {
-                pattern: '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$',
-            },
-            },
-            {
-            id: 'celular_personal',
-            numero: 10,
-            label:
-                'Por favor un número de celular mediante el cual la UPSJB SAC pueda comunicarse con usted',
-            type: 'text',
-            required: true,
-            placeholder: 'Escriba su respuesta',
-            validators: {
-                pattern: '^[0-9]{9}$',
-            },
-            },
-            // {
-            // id: 'estudios_concluidos',
-            // numero: 10,
-            // label:
-            //     'Considerando únicamente estudios realizados en la UPSJB SAC, usted concluyó estudios de:',
-            // type: 'radio',
-            // required: true,
-            // options: [
-            //     { value: 'Pregrado', text: 'Solo Pregrado', targetSectionId: 'pregrado' },
-            //     { value: 'Maestría', text: 'Solo Maestría', targetSectionId: 'maestria' },
-            //     {
-            //     value: 'Segunda Especialidad / Residentado',
-            //     text: 'Segunda Especialidad / Residentado',
-            //     targetSectionId: 'segunda_especialidad',
-            //     },
-            //     {
-            //     value: 'Pregrado y Maestría',
-            //     text: 'Pregrado y Maestría',
-            //     targetSectionId: 'pregrado_maestria',
-            //     },
-            //     {
-            //     value: 'Pregrado y Segunda Especialidad / Residentado',
-            //     text: 'Pregrado y Segunda Especialidad / Residentado',
-            //     targetSectionId: 'pregrado_segunda_especialidad',
-            //     },
-            //     {
-            //     value: 'Maestría y Segunda Especialidad / Residentado',
-            //     text: 'Maestría y Segunda Especialidad / Residentado',
-            //     targetSectionId: 'maestria_segunda_especialidad',
-            //     },
-            //     {
-            //     value: 'Pregrado, Maestría y Segunda Especialidad / Residentado',
-            //     text: 'Pregrado, Maestría y Segunda Especialidad / Residentado',
-            //     targetSectionId: 'pregrado_maestria_segunda_especialidad',
-            //     },
-            //     {
-            //     value: 'Ninguna de las anteriores',
-            //     text: 'Ninguna de las anteriores',
-            //     finishForm: true,
-            //     },
-            // ],
-            // dashboard: {
-            //     enabled: true,
-            //     chartType: 'pie',
-            //     title: 'Estudios concluidos en la UPSJB SAC',
-            // },
-            // },
-            // {
-            // id: 'tiene_trabajo',
-            // numero: 11,
-            // label: '¿Actualmente se encuentra trabajando?',
-            // type: 'radio',
-            // required: true,
-            // options: [
-            //     { value: 'si', text: 'Sí' },
-            //     { value: 'no', text: 'No' },
-            // ],
-            // },
-            // {
-            // id: 'empresa_actual',
-            // numero: 9,
-            // label: 'Ingrese el nombre de la empresa donde trabaja',
-            // type: 'text',
-            // required: true,
-            // placeholder: 'Escriba su respuesta',
-            // visibleWhen: {
-            //     questionId: 'tiene_trabajo',
-            //     value: 'si',
-            // },
-            // },
-        ],
-        },
-        {
-        id: 'fase_1',
-        title: 'SECCIÓN 3: FASE 1 - INFORMACIÓN (0 - 3 AÑOS)',
-        description: 'Esta encuesta tiene como objetivo, actualizar sus datos y acompañarlos en su proceso de inserción laboral para ofrecerle oportunidades laborales en bolsa de trabajo, actualización de su Curriculum vitae y acompañamiento en procesos clave de su profesión (SERUMS, colegiatura, etc.).',
-        questions: [
-            {
-            id: 'fase_1_cursos_empleabilidad',
-            numero: 9,
-            label: 'Usted participa en cursos de y/o talleres de empleabilidad organizados por la UPSJB SAC:',
-            type: 'radio',
-            required: true,
-            options: [
-                { value: 'muy_frecuentemente', text: 'Muy frecuentemente' },
-                { value: 'frecuentemente', text: 'Frecuentemente' },
-                { value: 'algunas_veces', text: 'Algunas veces' },
-                { value: 'muy_rara_vez', text: 'Muy rara vez' },
-                { value: 'nunca', text: 'Nunca' },
-            ],
-            },
-            {
-            id: 'fase_1_situacion_actual',
-            numero: 10,
-            label: 'Su situación actual es:',
-            type: 'radio',
-            required: true,
-            options: [
-                { value: 'buscando_trabajo', text: 'Buscando trabajo' },
-                { value: 'estudiando_pregrado', text: 'Estudiando otra carrera de pregrado' },
-                { value: 'estudiando_posgrado', text: 'Estudiando un posgrado' },
-                { value: 'cuidado_familiar', text: 'Responsable del cuidado familiar' },
-                { value: 'desarrollando_tesis', text: 'Desarrollando la tesis' },
-                { value: 'trabajos_informales', text: 'Trabajos informales u ocasionales' },
-                { value: 'comercio_ventas', text: 'Comercio, ventas' },
-                { value: 'desarrollando_emprendimiento', text: 'Desarrollando mi emprendimiento' },
-                { value: 'otro', text: 'Otro' },
-            ],
-            },
-            {
-            id: 'fase_1_situacion_laboral_actual',
-            numero: 11,
-            label: 'Actualmente, usted se encuentra trabajando:',
-            type: 'radio',
-            required: true,
-            options: [
-                {
-                value: 'dentro_area_formacion',
-                text: 'Dentro del área de su formación profesional',
-                },
-                {
-                value: 'ambito_relacionado',
-                text: 'En ámbito relacionado al área de su formación profesional',
-                },
-                {
-                value: 'ambito_no_relacionado',
-                text: 'En ámbito no relacionado al área de su formación profesional',
-                },
-                { value: 'sin_trabajo', text: 'Se encuentra sin trabajo' },
-            ],
-            },
-            {
-            id: 'fase_1_primer_empleo_profesion',
-            numero: 12,
-            label: 'El primer empleo vinculado directamente a su profesión lo consiguió:',
-            type: 'radio',
-            required: true,
-            options: [
-                {
-                value: 'antes_culminar_estudios',
-                text: 'Antes de culminar sus estudios universitarios.',
-                },
-                {
-                value: 'primeros_6_meses',
-                text: 'Durante los primeros 6 meses luego de culminar los estudios',
-                },
-                {
-                value: 'primeros_7_12_meses',
-                text: 'Durante los primeros 7 - 12 meses luego de culminar los estudios',
-                },
-                { value: 'entre_1_2_anios', text: 'Entre 1 y 2 años' },
-                { value: 'mas_2_anios', text: 'Más de 2 años' },
-                {
-                value: 'aun_no_empleo_vinculado',
-                text: 'Aún no he tenido un empleo vinculado directamente a mi profesión',
-                },
-            ],
-            },
-            {
-            id: 'fase_1_medio_empleo_actual',
-            numero: 13,
-            label: '¿Cuál de esos medios le permitió conseguir su empleo actual?',
-            type: 'radio',
-            required: true,
-            options: [
-                {
-                value: 'bolsa_upsjb',
-                text: 'Bolsa de trabajo de la UPSJB SAC/ convocatorias a su correo institucional',
-                },
-                { value: 'linkedin', text: 'LinkedIn' },
-                { value: 'bolsa_gratuita_internet', text: 'Bolsa de trabajo gratuita en internet' },
-                { value: 'bolsa_pagada_internet', text: 'Bolsa de trabajo pagada en internet' },
-                {
-                value: 'referencia_practicas',
-                text: 'Referencia de contactos durante sus prácticas preprofesionales',
-                },
-                {
-                value: 'red_egresados_docentes',
-                text: 'Red de egresados, docentes o conocidos de UPSJB SAC',
-                },
-                { value: 'otros', text: 'Otros' },
-                { value: 'ninguno', text: 'Ninguno' },
-            ],
-            },
-        ],
-        },
-        {
-        id: 'fase_2',
-        title: 'SECCIÓN 3: FASE 2 - FORMACIÓN (3 - 5 AÑOS)',
-        description: 'Esta encuesta tiene como objetivo conocer su percepción y el de su empleador; analizar y detectar brechas para la mejora del Plan Curricular de la escuela profesional.',
-        questions: [
-            {
-            id: 'fase_2_satisfaccion_utilidad_conocimientos',
-            numero: 9,
-            label:
-                'Satisfacción con la utilidad de los conocimientos adquiridos durante su formación en la UPSJB SAC respecto al empleo',
-            type: 'radio',
-            required: true,
-            options: [
-                { value: 'muy_satisfecho', text: 'Muy satisfecho' },
-                { value: 'satisfecho', text: 'Satisfecho' },
-                { value: 'neutral', text: 'Ni satisfecho ni insatisfecho' },
-                { value: 'insatisfecho', text: 'Insatisfecho' },
-                { value: 'muy_insatisfecho', text: 'Muy insatisfecho' },
-            ],
-            },
-            {
-            id: 'fase_2_participacion_gestion_curricular',
-            numero: 10,
-            label: 'Usted forma parte o ha participado en los procesos de gestión curricular.',
-            type: 'radio',
-            required: true,
-            options: [
-                { value: 'si', text: 'Sí' },
-                { value: 'no', text: 'No' },
-            ],
-            },
-            {
-            id: 'fase_2_satisfaccion_servicio_educativo',
-            numero: 11,
-            label:
-                '¿Qué tan satisfecho se encuentra usted con el servicio educativo brindado por la UPSJB SAC, durante su formación?',
-            type: 'radio',
-            required: true,
-            options: [
-                { value: 'muy_satisfecho', text: 'Muy satisfecho' },
-                { value: 'satisfecho', text: 'Satisfecho' },
-                { value: 'neutral', text: 'Ni satisfecho ni insatisfecho' },
-                { value: 'insatisfecho', text: 'Insatisfecho' },
-                { value: 'muy_insatisfecho', text: 'Muy insatisfecho' },
-            ],
-            },
-            {
-            id: 'fase_2_participacion_planificacion_estrategica',
-            numero: 12,
-            label: 'Usted forma parte o ha participado en la planificación estratégica.',
-            type: 'radio',
-            required: true,
-            options: [
-                { value: 'si', text: 'Sí' },
-                { value: 'no', text: 'No' },
-            ],
-            },
-            {
-            id: 'fase_2_empresa_actual',
-            numero: 13,
-            label: 'Podría informarnos el nombre de la Empresa en la que actualmente labora:',
-            type: 'text',
-            required: true,
-            placeholder: 'Escriba su respuesta',
-            },
-            {
-            id: 'fase_2_jefe_inmediato_nombre_correo',
-            numero: 10,
-            label: 'Podría compartirnos el nombre y correo de su jefe inmediato',
-            type: 'text',
-            required: true,
-            placeholder: 'Ejemplo: Juan Pérez - juan.perez@empresa.com',
-            },
-        ],
-        },
-        {
-        id: 'fase_3',
-        title: 'SECCIÓN 3: FASE 3 - AUTOCAPACITACIÓN (5 - 7 AÑOS)',
-        description: 'Esta encuesta tiene como objetivo de ofrecerle Educación Continua y acompañarlos en su desarrollo profesional.',
-        questions: [
-            {
-            id: 'fase_3_nivel_especialidad_grados',
-            numero: 9,
-            label: 'Mencione actualmente el nivel de especialidad o grados que ha logrado:',
-            type: 'radio',
-            required: true,
-            options: [
-                {
-                value: 'segunda_especialidad_residentado',
-                text: 'Segunda Especialidad / Residentado Médico',
-                },
-                { value: 'maestrias', text: 'Maestrías' },
-                { value: 'doctorados', text: 'Doctorados' },
-                { value: 'diplomados', text: 'Diplomados' },
-                { value: 'otros', text: 'Otros' },
-            ],
-            },
-            {
-            id: 'fase_3_participacion_educacion_continua_upsjb',
-            numero: 10,
-            label:
-                'Usted participa en cursos de educación continua o de especialidad organizados por la UPSJB SAC:',
-            type: 'radio',
-            required: true,
-            options: [
-                { value: 'muy_frecuentemente', text: 'Muy frecuentemente' },
-                { value: 'frecuentemente', text: 'Frecuentemente' },
-                { value: 'algunas_veces', text: 'Algunas veces' },
-                { value: 'muy_rara_vez', text: 'Muy rara vez' },
-                { value: 'nunca', text: 'Nunca' },
-            ],
-            },
-            {
-            id: 'fase_3_necesidad_educacion_continua',
-            numero: 11,
-            label:
-                '¿Cuál sería actualmente la necesidad de educación continua que Usted como egresado de la UPSJB SAC, requiere:',
-            type: 'radio',
-            required: true,
-            options: [
-                {
-                value: 'actualizacion_carrera',
-                text: 'Cursos de actualización de la carrera',
-                },
-                {
-                value: 'cientificos_investigacion',
-                text: 'Cursos científicos o de investigación',
-                },
-                { value: 'gestion', text: 'Cursos de gestión' },
-                {
-                value: 'herramientas_tecnologicas',
-                text: 'Cursos de herramientas tecnológicas',
-                },
-                { value: 'diplomados', text: 'Diplomados' },
-                { value: 'maestrias_doctorados', text: 'Maestrías / Doctorados' },
-            ],
-            },
-        ],
-        },
-        {
-        id: 'fase_4',
-        title: 'SECCIÓN 3: FASE 4 - INNOVACIÓN (7 A MÁS AÑOS)',
-        description: 'Esta encuesta tiene como objetivo promover la investigación e innovación, capacitar en patentes y publicaciones científicas, compartir sus logros como egresado exitoso generando red y alianzas estratégicas.',
-        questions: [
-            {
-            id: 'fase_4_realiza_investigacion',
-            numero: 9,
-            label: '¿Usted realiza investigación?',
-            type: 'radio',
-            required: true,
-            options: [
-                { value: 'si', text: 'Sí' },
-                { value: 'no', text: 'No' },
-            ],
-            },
-            {
-            id: 'fase_4_participacion_capacitaciones_innovacion',
-            numero: 10,
-            label:
-                'Usted participa en capacitaciones para realizar investigaciones o proyectos de innovación organizados por la UPSJB SAC:',
-            type: 'radio',
-            required: true,
-            options: [
-                { value: 'muy_frecuentemente', text: 'Muy frecuentemente' },
-                { value: 'frecuentemente', text: 'Frecuentemente' },
-                { value: 'algunas_veces', text: 'Algunas veces' },
-                { value: 'muy_rara_vez', text: 'Muy rara vez' },
-                { value: 'nunca', text: 'Nunca' },
-            ],
-            },
-            {
-            id: 'fase_4_satisfaccion_capacitaciones_innovacion',
-            numero: 11,
-            label:
-                '¿Qué tan satisfecho se encuentra usted con las capacitaciones para realizar investigaciones o proyectos de innovación organizados por la UPSJB SAC?',
-            type: 'radio',
-            required: false,
-            options: [
-                { value: 'muy_satisfecho', text: 'Muy satisfecho' },
-                { value: 'satisfecho', text: 'Satisfecho' },
-                { value: 'neutro', text: 'Neutro' },
-                { value: 'poco_satisfecho', text: 'Poco satisfecho' },
-                { value: 'insatisfecho', text: 'Insatisfecho' },
-            ],
-            },
-        ],
-        },
-    ];
-    //#endregion
+    form: FormGroup;
 
-    //#region Estado del componente
-    // Lista de IDs que se deben mostrar en el dashboard final.
-    readonly dashboardQuestionIds: string[] = ['sede', 'grupos', 'estudios_concluidos'];
+
+    // Estado de navegación
+
 
     currentSectionIndex = 0;
+    selectedFaseSectionId: string | null = null;
     submitted = false;
     showDashboard = false;
-    correoPersona = 'christian.mori@upsjb.edu.pe';
-    selectedFaseSectionId: string | null = null;
-    isPopupVisible = false;
-    popupTitle = 'Informacion';
-    popupMessage = '';
-    form!: ReturnType<FormBuilder['group']>;
-    //#endregion
 
-    //#region Constructor
-    constructor(private readonly fb: FormBuilder,public _http: Http) {
-        this.form = this.buildForm();
-        // this.loadTestData();
-    }
-    //#endregion
+    private readonly autofillRequiredFieldIds = [
+        'nombresApellidos',
+        'dni',
+        'sexo',
+        'sede',
+        'anio_egreso',
+    ];
+
+
+    // Estado de integración
+
+
+    correoPersona = 'christian.mori@upsjb.edu.pe';
+
+
+    // Popup
+
+
+    isPopupVisible = false;
+    popupTitle = 'Información';
+    popupMessage = '';
+
+
+    // Ciclo de vida
+
+
+    private readonly destroy$ = new Subject<void>();
+
+    constructor( private readonly fb: FormBuilder, private readonly http: Http ) { this.form = this.buildForm(); }
 
 
     ngOnInit(): void {
-        // Se mantiene por contrato de OnInit; la carga de datos ahora es manual desde el botón.
-        this.form.get('facultad')?.valueChanges.subscribe(() => {
-            this.form.get('carrera')?.reset('');
-        });
+        this.listenFacultadChanges();
+        this.obtenerSedeLista();
     }
 
 
-
-    private loadTestData(): void {
-        this.form.patchValue(this.testData);
+    ngOnDestroy(): void {
+        this.destroy$.next();
+        this.destroy$.complete();
     }
 
-    //#region Getters de navegacion y dashboard
+
+    // Getters
+
+
     get questions(): FormQuestion[] {
-        return this.sections.flatMap((section) => section.questions);
+        return this.sections.flatMap(
+            (section) => section.questions,
+        );
     }
 
     get currentSection(): FormSection {
@@ -742,145 +108,194 @@ export class Formulario implements OnInit {
     }
 
     get isLastSection(): boolean {
-        if (this.selectedFaseSectionId && this.currentSection.id === this.selectedFaseSectionId) {
-        return true;
-        }
-
-        return this.currentSectionIndex === this.sections.length - 1;
+        return (
+            this.currentSection.id === this.selectedFaseSectionId ||
+            this.currentSectionIndex === this.sections.length - 1
+        );
     }
 
     get shouldFinishCurrentSection(): boolean {
-        for (const question of this.currentSection.questions) {
-        const selectedValue = this.form.get(question.id)?.value;
+        return this.currentSection.questions.some((question) => {
+            const selectedValue = this.form.get(question.id)?.value;
 
-        const selectedOption = question.options?.find((option) => option.value === selectedValue);
-
-        if (selectedOption?.finishForm) {
-            return true;
-        }
-        }
-
-        return false;
+            return question.options?.some(
+                (option) =>
+                    option.value === selectedValue &&
+                    option.finishForm,
+            );
+        });
     }
 
     get dashboardQuestions(): FormQuestion[] {
         return this.questions.filter((question) => {
-        const isEnabled = question.dashboard?.enabled;
-        const isConfigured = this.dashboardQuestionIds.includes(question.id);
-        const isAnswered = this.isQuestionAnswered(question.id);
-
-        return Boolean(isEnabled && isConfigured && isAnswered);
+            return (
+                question.dashboard?.enabled &&
+                this.dashboardQuestionIds.includes(question.id) &&
+                this.isQuestionAnswered(question.id)
+            );
         });
-    }
-
-    getOptionCount(questionId: string, optionValue: string): number {
-        const selectedValue = this.form.get(questionId)?.value;
-
-        return selectedValue === optionValue ? 1 : 0;
-    }
-
-    getOptionPercentage(questionId: string, optionValue: string): number {
-        const total = 1; // Por ahora solo existe una respuesta
-
-        const count = this.getOptionCount(questionId, optionValue);
-
-        return Math.round((count / total) * 100);
     }
 
     get hasDashboardData(): boolean {
         return this.dashboardQuestions.length > 0;
     }
-    //#endregion
 
-    //#region Flujo del cuestionario
+
+    // Navegación
+
 
     previousSection(): void {
         if (this.currentSection.id.startsWith('fase_')) {
-        const informacionPersonalIndex = this.sections.findIndex(
-            (section) => section.id === 'informacion_personal',
-        );
-
-        if (informacionPersonalIndex !== -1) {
-            this.currentSectionIndex = informacionPersonalIndex;
+            this.goToSection('informacion_personal');
             return;
-        }
         }
 
         if (!this.isFirstSection) {
-        this.currentSectionIndex--;
+            this.currentSectionIndex--;
         }
     }
 
     nextSection(): void {
-        if (this.currentSection.id === 'informacion_personal') {
-        const selectedFaseSectionId = this.resolveFaseSectionIdByAnioEgreso();
-
-        if (selectedFaseSectionId) {
-            const faseIndex = this.sections.findIndex((section) => section.id === selectedFaseSectionId);
-
-            if (faseIndex !== -1) {
-            this.currentSectionIndex = faseIndex;
+        if (!this.isCurrentSectionValid()) {
             return;
-            }
-        }
         }
 
-        const targetSectionId = this.getCurrentSectionTargetSectionId();
+        if (this.currentSection.id === 'informacion_personal') {
+            const faseId = this.resolveFaseSectionIdByAnioEgreso();
+
+            if (faseId) {
+                this.goToSection(faseId);
+            }
+
+            return;
+        }
+
+        const targetSectionId =
+            this.getCurrentSectionTargetSectionId();
 
         if (targetSectionId) {
-        const targetIndex = this.sections.findIndex((section) => section.id === targetSectionId);
-
-        if (targetIndex !== -1) {
-            this.currentSectionIndex = targetIndex;
+            this.goToSection(targetSectionId);
             return;
-        }
         }
 
         if (!this.isLastSection) {
-        this.currentSectionIndex++;
+            this.currentSectionIndex++;
         }
     }
 
     onSubmit(): void {
         this.submitted = true;
 
-        if (!this.shouldFinishCurrentSection && this.form.invalid) {
-        this.form.markAllAsTouched();
-        return;
+        if (
+            !this.shouldFinishCurrentSection &&
+            !this.isCurrentSectionValid()
+        ) {
+            return;
         }
 
-        console.log('Respuestas del formulario:', this.form.value);
+        console.log(
+            'Respuestas del formulario:',
+            this.form.getRawValue(),
+        );
 
         this.showDashboard = true;
     }
-    //#endregion
 
-    //#region Utilidades de plantilla
+    private goToSection(sectionId: string): void {
+        const index = this.sections.findIndex(
+            (section) => section.id === sectionId,
+        );
+
+        if (index !== -1) {
+            this.currentSectionIndex = index;
+        }
+    }
+
+    private isCurrentSectionValid(): boolean {
+        const controls = this.currentSection.questions
+            .filter((question) => question.type !== 'action')
+            .filter((question) => !question.disabled)
+            .filter((question) => this.isQuestionVisible(question))
+            .filter((question) => !this.isQuestionControlDisabled(question))
+            .map((question) => this.form.get(question.id))
+            .filter((control) => control !== null);
+
+        controls.forEach((control) => {
+            control?.markAsTouched();
+            control?.updateValueAndValidity();
+        });
+
+        if (this.currentSection.id === 'informacion_personal') {
+            const rawValue = this.form.getRawValue() as Record<string, unknown>;
+
+            const missingAutofillFields = this.autofillRequiredFieldIds.some((fieldId) => {
+                const value = rawValue[fieldId];
+
+                return value === null || value === undefined || String(value).trim().length === 0;
+            });
+
+            if (missingAutofillFields) {
+                return false;
+            }
+        }
+
+        return controls.every(
+            (control) => control?.valid,
+        );
+    }
+
+
+    // Utilidades para la plantilla
+
+
     isFieldInvalid(fieldId: string): boolean {
         const control = this.form.get(fieldId);
-        return Boolean(control && control.invalid && (control.touched || this.submitted));
+
+        if (
+            this.currentSection.id === 'informacion_personal' &&
+            this.autofillRequiredFieldIds.includes(fieldId)
+        ) {
+            const rawValue = this.form.getRawValue() as Record<string, unknown>;
+            const value = rawValue[fieldId];
+
+            return Boolean(
+                (value === null || value === undefined || String(value).trim().length === 0) &&
+                (control?.touched || control?.dirty || this.submitted),
+            );
+        }
+
+        return Boolean(
+            control &&
+            control.invalid &&
+            (control.touched || this.submitted),
+        );
     }
 
     isQuestionVisible(question: FormQuestion): boolean {
         if (!question.visibleWhen) {
-        return true;
+            return true;
         }
 
-        const currentValue = this.form.get(question.visibleWhen.questionId)?.value;
+        const currentValue = this.form.get(
+            question.visibleWhen.questionId,
+        )?.value;
 
         return currentValue === question.visibleWhen.value;
     }
 
-    trackByQuestionId(_: number, question: FormQuestion): string {
-        return question.id;
-    }
-
-    getQuestionOptions(question: FormQuestion): FormOption[] {
-        if (!question.dependsOnQuestionId || !question.optionsByValue) {
+    getQuestionOptions(
+        question: FormQuestion,
+    ): FormOption[] {
+        if (
+            !question.dependsOnQuestionId ||
+            !question.optionsByValue
+        ) {
             return question.options ?? [];
         }
 
-        const dependencyValue = this.form.get(question.dependsOnQuestionId)?.value;
+        const dependencyValue = this.form.get(
+            question.dependsOnQuestionId,
+        )?.value;
 
         if (typeof dependencyValue !== 'string') {
             return [];
@@ -889,27 +304,65 @@ export class Formulario implements OnInit {
         return question.optionsByValue[dependencyValue] ?? [];
     }
 
-    isQuestionControlDisabled(question: FormQuestion): boolean {
-        if (question.disabled ?? false) {
+    isQuestionControlDisabled(
+        question: FormQuestion,
+    ): boolean {
+        if (question.disabled) {
             return true;
         }
 
-        if (question.type !== 'select' || !question.dependsOnQuestionId) {
+        if (
+            question.type !== 'select' ||
+            !question.dependsOnQuestionId
+        ) {
             return false;
         }
 
         return this.getQuestionOptions(question).length === 0;
     }
 
-    isUrlLink(link: FormQuestion['link']): boolean {
-        if (!link) {
-            return false;
-        }
-
-        return this.resolveLinkAction(link) === 'url' && Boolean(link.url);
+    trackByQuestionId(
+        _: number,
+        question: FormQuestion,
+    ): string {
+        return question.id;
     }
 
-    onQuestionLinkClick(link: FormQuestion['link'], event: MouseEvent): void {
+    getOptionCount(
+        questionId: string,
+        optionValue: string,
+    ): number {
+        return this.form.get(questionId)?.value === optionValue
+            ? 1
+            : 0;
+    }
+
+    getOptionPercentage(
+        questionId: string,
+        optionValue: string,
+    ): number {
+        return this.getOptionCount(
+            questionId,
+            optionValue,
+        ) * 100;
+    }
+
+
+    // Popup y enlaces
+
+
+    isUrlLink(link?: QuestionLink): boolean {
+        return Boolean(
+            link &&
+            this.resolveLinkAction(link) === 'url' &&
+            link.url,
+        );
+    }
+
+    onQuestionLinkClick(
+        link: QuestionLink | undefined,
+        event: MouseEvent,
+    ): void {
         if (!link) {
             return;
         }
@@ -919,7 +372,11 @@ export class Formulario implements OnInit {
         const action = this.resolveLinkAction(link);
 
         if (action === 'popup') {
-            this.openPopup(link.popupMessage ?? '', link.popupTitle ?? 'Informacion');
+            this.openPopup(
+                link.popupMessage ?? '',
+                link.popupTitle ?? 'Información',
+            );
+
             return;
         }
 
@@ -928,107 +385,30 @@ export class Formulario implements OnInit {
         }
     }
 
+    openPopup(
+        message: string,
+        title = 'Información',
+    ): void {
+        this.popupTitle = title;
+        this.popupMessage = message;
+        this.isPopupVisible = true;
+    }
+
     closePopup(): void {
         this.isPopupVisible = false;
     }
 
-    onCorreoPersonaChange(event: Event): void {
-        this.correoPersona = (event.target as HTMLInputElement).value;
-    }
-    //#endregion
-
-    //#region Helpers privados
-    private getCurrentSectionTargetSectionId(): string | null {
-        for (const question of this.currentSection.questions) {
-        const selectedValue = this.form.get(question.id)?.value;
-
-        const selectedOption = question.options?.find((option) => option.value === selectedValue);
-
-        if (selectedOption?.targetSectionId) {
-            return selectedOption.targetSectionId;
-        }
-        }
-
-        return null;
+    popupInformativo(): void {
+        this.openPopup(
+            `Se ha enviado un correo electrónico a su correo institucional
+            con la información de su perfil. Revise su bandeja de entrada.`,
+            'Información',
+        );
     }
 
-    private resolveFaseSectionIdByAnioEgreso(): string | null {
-        const anioEgresoValue = this.form.get('anio_egreso')?.value;
-        const anioEgreso = Number.parseInt(String(anioEgresoValue), 10);
-        const anioActual = new Date().getFullYear();
-
-        if (!Number.isInteger(anioEgreso) || anioEgreso < 1900 || anioEgreso > anioActual) {
-        this.selectedFaseSectionId = null;
-        return null;
-        }
-
-        const aniosDesdeEgreso = anioActual - anioEgreso;
-
-        const fase = this.plantillasFases.find((plantillaFase) => {
-        const cumpleMinimo = aniosDesdeEgreso >= plantillaFase.aniosMinimosDesdeEgreso;
-        const cumpleMaximo =
-            plantillaFase.aniosMaximosDesdeEgreso === null ||
-            aniosDesdeEgreso <= plantillaFase.aniosMaximosDesdeEgreso;
-
-        return cumpleMinimo && cumpleMaximo;
-        });
-
-        this.selectedFaseSectionId = fase?.id ?? null;
-
-        return this.selectedFaseSectionId;
-    }
-
-    private isQuestionAnswered(questionId: string): boolean {
-        const value = this.form.get(questionId)?.value;
-
-        if (value === null || value === undefined) {
-        return false;
-        }
-
-        if (typeof value === 'string') {
-        return value.trim().length > 0;
-        }
-
-        return true;
-    }
-
-    private buildForm() {
-        const controlsConfig: Record<string, unknown> = {};
-
-        for (const question of this.questions) {
-        if (question.type === 'action') {
-            continue;
-        }
-        controlsConfig[question.id] = ['', this.getQuestionValidators(question)];
-        }
-
-        return this.fb.group(controlsConfig);
-    }
-
-    private getQuestionValidators(question: FormQuestion): ValidatorFn[] {
-
-        const validators: ValidatorFn[] = [];
-
-        if (question.required) {
-        validators.push(Validators.required);
-        }
-
-        if (question.validators?.pattern) {
-        validators.push(Validators.pattern(question.validators.pattern));
-        }
-
-        if (question.validators?.minLength) {
-        validators.push(Validators.minLength(question.validators.minLength));
-        }
-
-        if (question.validators?.maxLength) {
-        validators.push(Validators.maxLength(question.validators.maxLength));
-        }
-
-        return validators;
-    }
-
-    private resolveLinkAction(link: NonNullable<FormQuestion['link']>): 'url' | 'popup' | 'function' | null {
+    private resolveLinkAction(
+        link: QuestionLink,
+    ): 'url' | 'popup' | 'function' | null {
         if (link.action) {
             return link.action;
         }
@@ -1048,100 +428,404 @@ export class Formulario implements OnInit {
         return null;
     }
 
-    private openPopup(message: string, title = 'Informacion'): void {
-        this.popupTitle = title;
-        this.popupMessage = message;
-        this.isPopupVisible = true;
-    }
-
-    private executeLinkFunction(functionName: string): void {
+    private executeLinkFunction(
+        functionName: string,
+    ): void {
         const handlers: Record<string, () => void> = {
-            politicaPrivacidad: () => this.openPopup(this.politicaPrivacidadMessage, 'Política de Privacidad'),
-            popupInformativo: () => this.popupInformativo(),
+            politicaPrivacidad: () =>
+                this.openPopup(
+                    this.politicaPrivacidadMessage,
+                    'Política de Privacidad',
+                ),
+
+            popupInformativo: () =>
+                this.popupInformativo(),
         };
 
         const handler = handlers[functionName];
 
         if (!handler) {
-            console.warn(`No existe un manejador para la funcion: ${functionName}`);
+            console.warn(
+                `No existe un manejador para la función: ${functionName}`,
+            );
+
             return;
         }
 
         handler();
     }
-    //#endregion
 
 
-    obtenerInformacionPersona() {
+    // Formulario dinámico
+
+
+    private buildForm(): FormGroup {
+        const controlsConfig: Record<string, unknown> = {};
+
+        for (const question of this.questions) {
+            if (question.type === 'action') {
+                continue;
+            }
+
+            controlsConfig[question.id] = [
+                {
+                    value: '',
+                    disabled: Boolean(question.disabled),
+                },
+                this.getQuestionValidators(question),
+            ];
+        }
+
+        return this.fb.group(controlsConfig);
+    }
+
+    private getQuestionValidators(
+        question: FormQuestion,
+    ): ValidatorFn[] {
+        const validators: ValidatorFn[] = [];
+
+        if (question.required) {
+            validators.push(Validators.required);
+        }
+
+        if (question.validators?.pattern) {
+            validators.push(
+                Validators.pattern(
+                    question.validators.pattern,
+                ),
+            );
+        }
+
+        if (question.validators?.minLength) {
+            validators.push(
+                Validators.minLength(
+                    question.validators.minLength,
+                ),
+            );
+        }
+
+        if (question.validators?.maxLength) {
+            validators.push(
+                Validators.maxLength(
+                    question.validators.maxLength,
+                ),
+            );
+        }
+
+        return validators;
+    }
+
+    private listenFacultadChanges(): void {
+    this.form.get('facultad')?.valueChanges
+        .pipe(
+            distinctUntilChanged(),
+            takeUntil(this.destroy$),
+        )
+        .subscribe(() => {
+            this.form.get('carrera')?.reset('', {
+                emitEvent: false,
+            });
+        });
+}
+
+
+    // Cálculo de fase
+
+
+    private resolveFaseSectionIdByAnioEgreso():
+
+        string | null {
+
+        const value = this.form.get('anio_egreso')?.value;
+
+        const anioEgreso = Number.parseInt(
+            String(value),
+            10,
+        );
+
+        const anioActual = new Date().getFullYear();
+
+        if (
+            !Number.isInteger(anioEgreso) ||
+            anioEgreso < 1900 ||
+            anioEgreso > anioActual
+        ) {
+            this.selectedFaseSectionId = null;
+            return null;
+        }
+
+        const aniosDesdeEgreso =
+            anioActual - anioEgreso;
+
+        const fase = this.plantillasFases.find(
+            (item) => {
+                const cumpleMinimo =
+                    aniosDesdeEgreso >=
+                    item.aniosMinimosDesdeEgreso;
+
+                const cumpleMaximo =
+                    item.aniosMaximosDesdeEgreso === null ||
+                    aniosDesdeEgreso <=
+                    item.aniosMaximosDesdeEgreso;
+
+                return cumpleMinimo && cumpleMaximo;
+            },
+        );
+
+        this.selectedFaseSectionId =
+            fase?.id ?? null;
+
+        return this.selectedFaseSectionId;
+    }
+
+    private getCurrentSectionTargetSectionId():
+        string | null {
+
+        for (const question of this.currentSection.questions) {
+            const selectedValue =
+                this.form.get(question.id)?.value;
+
+            const selectedOption =
+                question.options?.find(
+                    (option) =>
+                        option.value === selectedValue,
+                );
+
+            if (selectedOption?.targetSectionId) {
+                return selectedOption.targetSectionId;
+            }
+        }
+
+        return null;
+    }
+
+    private isQuestionAnswered(
+        questionId: string,
+    ): boolean {
+        const value = this.form.get(questionId)?.value;
+
+        if (value === null || value === undefined) {
+            return false;
+        }
+
+        if (typeof value === 'string') {
+            return value.trim().length > 0;
+        }
+
+        return true;
+    }
+
+
+    // Integración académica
+
+
+    onCorreoPersonaChange(event: Event): void {
+
+        this.correoPersona = (event.target as HTMLInputElement).value;
+
+    }
+
+
+    obtenerInformacionPersona(): void {
 
         const correo = this.correoPersona.trim();
 
-        if (!correo) {
+        if (!correo) { this.openPopup( 'Ingrese un correo institucional.', 'Información' );
             return;
         }
 
-        let req = {
-            correo,
-        };
+        this.http.postUPSJBIntegracionesAcademico( { correo }, 'obtener-informacion-persona' ).subscribe({
 
-        this._http.postUPSJBIntegracionesAcademico(req, 'obtener-informacion-persona').subscribe(
+            next: (res) => {
 
-            (res) => {
-
-                const statusCodeRaw = res?.status_code ?? res?.statusCode;
-                const statusCode = typeof statusCodeRaw === 'string'
-                    ? Number.parseInt(statusCodeRaw, 10)
-                    : statusCodeRaw;
-
-                const persona = res?.result;
-                const detalleAcademico = persona?.detalleInformacionAcademica?.[0];
-                const tieneDatosPersona = Boolean(
-                    persona?.nombre &&
-                    persona?.apellidoPaterno &&
-                    persona?.apellidoMaterno &&
-                    persona?.nacionalidadId &&
-                    persona?.sexo &&
-                    detalleAcademico,
+                const statusCode = Number(
+                    res?.status_code ??
+                    res?.statusCode,
                 );
 
-                if ((statusCode !== undefined && statusCode !== null && statusCode !== 200) || !tieneDatosPersona) {
-                    this.openPopup('No se encontro al usuario ingresado.', 'Informacion');
+                const persona = res?.result;
+
+                const detalleAcademico = persona?.detalleInformacionAcademica?.[0];
+
+                if (
+                    statusCode !== 200 ||
+                    !persona ||
+                    !detalleAcademico
+                ) {
+                    this.openPopup('No se encontró al usuario ingresado.','Información',);
                     return;
                 }
 
-                console.log(res);
-
                 this.form.patchValue({
-                    nombresApellidos: persona.nombre + ' ' + persona.apellidoPaterno + ' ' + persona.apellidoMaterno,
-                    dni: persona.nacionalidadId,
-                    sexo: persona.sexo === 'M' ? 'masculino' : 'femenino',
-                    sede: detalleAcademico.campus === 'CP001' ? 'CP001' : detalleAcademico.campus === 'CP002' ? 'CP002' : detalleAcademico.campus === 'CP003' ? 'CP003' : detalleAcademico.campus === 'CP005' ? 'CP005' : 'Otro',
-                    anio_egreso: (detalleAcademico.desAcadTerm ?? '').substring(0, 4),
 
+                    nombresApellidos: [
+                        persona.nombre,
+                        persona.apellidoPaterno,
+                        persona.apellidoMaterno,
+                    ]
+                        .filter(Boolean)
+                        .join(' '),
+
+                    dni: persona.nacionalidadId,
+
+                    sexo:
+                        persona.sexo === 'M'
+                            ? 'masculino'
+                            : 'femenino',
+
+                    sede: this.resolveSedeOptionValue(
+                        detalleAcademico.campus,
+                    ),
+
+                    anio_egreso: String(
+                        detalleAcademico.desAcadTerm ?? '',
+                    ).substring(0, 4),
 
                 });
 
                 this.resolveFaseSectionIdByAnioEgreso();
 
-                console.log()
-
-            },
-            () => {
-                this.openPopup('No se encontro al usuario ingresado.', 'Informacion');
             },
 
-        );
+            error: () => {
+
+                this.openPopup(
+                    'No se encontró al usuario ingresado.',
+                    'Información',
+                );
+
+            },
+
+        });
 
     }
 
-    popupInformativo() {
 
-        this.openPopup(
-            'Se ha enviado un correo electronico a su correo institucional con la informacion de su perfil. Por favor, revise su bandeja de entrada.',
-            'Informacion',
-        );
+    obtenerSedeLista(): void {
+
+        this.http.get('consultar-sede').subscribe({
+
+            next: (res) => {
+                const listaSedes: SedeApiItem[] =
+                    Array.isArray(res?.lista)
+                        ? res.lista
+                        : [];
+
+                const options = listaSedes
+                    .filter(
+                        (item) =>
+                            item.activo !== false,
+                    )
+                    .map((item) => ({
+                        value: String(item.id),
+                        text: item.nombre,
+                    }));
+
+                const sedeQuestion =
+                    this.questions.find(
+                        (question) =>
+                            question.id === 'sede',
+                    );
+
+                if (sedeQuestion) {
+                    sedeQuestion.options = options;
+                }
+            },
+
+            error: () => {
+                this.openPopup(
+                    'No se pudo obtener la lista de sedes.',
+                    'Información',
+                );
+            },
+
+        });
+
     }
 
+
+    obtenerDatoEgresado(tipo: string, documento: string): void {
+
+        const tipoConsulta = tipo.trim();
+        const numeroDocumento = documento.trim();
+
+        if (!tipoConsulta || !numeroDocumento) {
+            this.openPopup('Debe indicar el tipo de documento y el número de documento.', 'Información');
+            return;
+        }
+
+        this.http.getUPSJBIntegracionesEgresado( { tipo: tipoConsulta, documento: numeroDocumento }, 'obtenerDato',).subscribe({
+
+            next: (res) => {
+
+                console.log('Respuesta obtenerDato:', res);
+
+                if (res.length === 0) {
+                    this.openPopup('No se encontró información del egresado.', 'Información');
+                    return;
+                }
+
+                const statusCode = Number(
+                    res?.status_code ??
+                    res?.statusCode,
+                );
+
+                const persona = res[0];
+
+                this.form.patchValue({
+
+                    nombresApellidos: persona?.nombre_completo ?? '',
+
+                    anio_egreso: String(
+                        persona?.descr_egreso ?? '',
+                    ).substring(0, 4),
+
+                });
+
+            },
+
+            error: () => {
+                this.openPopup('No se pudo consultar el dato del egresado.', 'Información');
+            },
+
+        });
+
+    }
+
+
+    validarDatoEgresado(): void {
+
+        const tipo = String(this.form.get('tipoDocumentos')?.value ?? '').trim();
+        const documento = String(this.form.get('numeroDocumento')?.value ?? '').trim();
+
+        if (!tipo || !documento) {
+            this.openPopup('Debe completar el tipo y número de documento.', 'Información');
+            return;
+        }
+
+        this.obtenerDatoEgresado(tipo, documento);
+
+    }
+
+
+    private resolveSedeOptionValue( campus?: string | null ): string {
+
+        const normalizedCampus = String(
+            campus ?? '',
+        )
+            .trim()
+            .toUpperCase();
+
+        const mapping: Record<string, string> = {
+            CP001: '1',
+            CP002: '2',
+            CP003: '3',
+            CP005: '4',
+        };
+
+        return mapping[normalizedCampus] ?? '5';
+
+    }
 
 }
 
