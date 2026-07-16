@@ -167,6 +167,8 @@ export class Encuesta implements OnInit {
             return;
         }
 
+        //  Validar Formulario
+
     }
 
     previousSection(): void {
@@ -313,10 +315,9 @@ export class Encuesta implements OnInit {
     }
 
     private validarInformacionPersonal(): boolean {
+
         if (!this.datosEgresadoValidados) {
-            alert(
-                'Debe validar los datos del egresado antes de continuar.',
-            );
+            alert('Debe validar los datos del egresado antes de continuar.',);
             return false;
         }
 
