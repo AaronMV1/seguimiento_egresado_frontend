@@ -1,0 +1,963 @@
+
+
+<div class="container">
+
+
+    <div class="form-wrapper">
+
+        <h2 class="form-title"> Encuesta para Egresado </h2>
+
+        <p class="form-description">
+            Solicitamos su valiosa colaboración mediante las respuestas que
+            brinde al siguiente cuestionario. Nuestro propósito es ofrecer un
+            mejor servicio educativo.
+        </p>
+
+        <!-- <div class="form-progress">
+            Sección {{ seccionActual }} de {{ totalSecciones }}
+        </div> -->
+
+        <div class="section" *ngIf="seccionActual === 1">
+
+            <h2 class="section-title"> {{ seccionTitulo }} </h2>
+
+            <div class="question">
+
+                <label class="question-label" for="consentimiento">
+
+                    <span class="question-number">1</span>
+                    <span>Autorizo a la UPSJB S.A.C. al tratamiento de mis datos personales de conformidad con la Política de Privacidad.</span>
+                    <span class="question-required">*</span>
+
+                </label>
+
+                <div class="question-content">
+
+                    <div class="question-radio">
+
+                        <label class="question-radio-option">
+                            <input type="radio" name="consentimiento" value="si" [(ngModel)]="consentimiento">
+                            <span>Acepto</span>
+                        </label>
+
+                        <label class="question-radio-option">
+                            <input type="radio" name="consentimiento" value="no" [(ngModel)]="consentimiento">
+                            <span>No acepto</span>
+                        </label>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="section" *ngIf="seccionActual === 2">
+
+            <h2 class="section-title"> {{ seccionTitulo }} </h2>
+
+            <!-- <p>La navegación funcionó correctamente.</p> -->
+
+            <div class="question">
+
+                <label class="question-label" for="consentimiento">
+
+                    <span class="question-number">2</span>
+                    <span>Seleccione el tipo y escriba su número de documento</span>
+                    <span class="question-required">*</span>
+
+                </label>
+
+                <div class="question-content">
+
+                    <div class="question-input">
+
+                        <select id="tipoDocumentos" [(ngModel)]="tipoDocumento" class="text-input documento-select">
+                            <option value="" disabled>Seleccione una opción</option>
+                            <option *ngFor="let option of tipoDocumentoOptions" [value]="option.value"> {{ option.text }}</option>
+                        </select>
+
+                        <input id="numeroDocumento" [(ngModel)]="numeroDocumento" type="text" class="text-input documento-input" placeholder="Escriba su respuesta" />
+
+                        <button type="button" class="btn-submit documento-button" (click)="validarDatoEgresado()">Validar datos</button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="question">
+
+                <label class="question-label" for="consentimiento">
+                    <span class="question-number">3</span>
+                    <span>Ingrese sus nombres y apellidos</span>
+                    <span class="question-required">*</span>
+                </label>
+
+                <div class="question-content">
+                    <div class="question-input">
+                        <input id="nombresApellidos" [(ngModel)]="nombresApellidos" type="text" class="text-input documento-input" placeholder="Escriba su respuesta" disabled="true" />
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="question">
+
+                <label class="question-label" for="consentimiento">
+                    <span class="question-number">4</span>
+                    <span>Ingrese su año de Egreso</span>
+                    <span class="question-required">*</span>
+                </label>
+
+                <div class="question-content">
+                    <div class="question-input">
+                        <input id="anioEgreso" [(ngModel)]="anioEgreso" type="text" class="text-input documento-input" placeholder="Escriba su respuesta" disabled="true" />
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="question">
+
+                <label class="question-label" for="consentimiento">
+                    <span class="question-number">5</span>
+                    <span>Seleccione su Sede</span>
+                    <span class="question-required">*</span>
+                </label>
+
+                <div class="question-content">
+                    <div class="question-select">
+                        <select id="sedes" [(ngModel)]="sede" class="text-input documento-select">
+                            <option value="" disabled>Seleccione una opción</option>
+                            @for (option of listaSedes; track option.value) {
+                                <option [value]="option.nombre">{{ option.nombre }}</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="question">
+
+                <label class="question-label" for="consentimiento">
+                    <span class="question-number">6</span>
+                    <span>Seleccione su Facultad</span>
+                    <span class="question-required">*</span>
+                </label>
+
+                <div class="question-content">
+                    <div class="question-select">
+                        <select id="facultades" [(ngModel)]="facultad" class="text-input documento-select">
+                            <option value="" disabled>Seleccione una opción</option>
+                            <option *ngFor="let option of facultadOptions" [value]="option.value"> {{ option.text }}</option>
+                        </select>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="question">
+
+                <label class="question-label" for="consentimiento">
+                    <span class="question-number">7</span>
+                    <span>Seleccione su Carrera</span>
+                    <span class="question-required">*</span>
+                </label>
+
+                <div class="question-content">
+                    <div class="question-select">
+                        <select id="carreras" [(ngModel)]="carrera" class="text-input documento-select">
+                            <option value="" disabled>Seleccione una opción</option>
+                            <option *ngFor="let option of carreraOptions" [value]="option.value"> {{ option.text }}</option>
+                        </select>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="question">
+
+                <label class="question-label" for="consentimiento">
+                    <span class="question-number">8</span>
+                    <span>Ingrese su Correo Electrónico Personal</span>
+                    <span class="question-required">*</span>
+                </label>
+
+                <div class="question-content">
+                    <div class="question-input">
+                        <input id="correoElectronico" [(ngModel)]="correoElectronico" type="email" class="text-input documento-input" placeholder="Escriba su respuesta" />
+                    </div>
+                </div>
+
+                <span class="question-alert">Este campo es obligatorio o contiene un formato inválido</span>
+
+            </div>
+
+            <div class="question">
+
+                <label class="question-label" for="consentimiento">
+                    <span class="question-number">9</span>
+                    <span>Ingrese su Número de Celular</span>
+                    <span class="question-required">*</span>
+                </label>
+
+                <div class="question-content">
+                    <div class="question-input">
+                        <input id="celular" [(ngModel)]="celular" type="text" class="text-input documento-input" placeholder="Escriba su respuesta" />
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="section" *ngIf="seccionActual === 3">
+
+            <h2 class="section-title"> {{ seccionTitulo }} </h2>
+
+            <div class="question">
+
+                <label class="question-label" for="fase1participacion">
+
+                    <span class="question-number">10</span>
+                    <span>Usted participa en cursos y/o talleres de empleabilidad organizados por la UPSJB SAC: </span>
+                    <span class="question-required">*</span>
+
+                </label>
+
+                <div class="question-content">
+
+                    <div class="question-radio">
+
+                        <label class="question-radio-option">
+                            <input type="radio" name="fase1participacion" value="Muy Frecuentemente" [(ngModel)]="fase1participacion">
+                            <span>Muy Frecuentemente</span>
+                        </label>
+
+                        <label class="question-radio-option">
+                            <input type="radio" name="fase1participacion" value="Frecuentemente" [(ngModel)]="fase1participacion">
+                            <span>Frecuentemente</span>
+                        </label>
+
+                        <label class="question-radio-option">
+                            <input type="radio" name="fase1participacion" value="Algunas Veces" [(ngModel)]="fase1participacion">
+                            <span>Algunas Veces</span>
+                        </label>
+
+                        <label class="question-radio-option">
+                            <input type="radio" name="fase1participacion" value="Muy rara vez" [(ngModel)]="fase1participacion">
+                            <span>Muy rara vez</span>
+                        </label>
+
+                        <label class="question-radio-option">
+                            <input type="radio" name="fase1participacion" value="Nunca" [(ngModel)]="fase1participacion">
+                            <span>Nunca</span>
+                        </label>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="question">
+
+                <label class="question-label" for="fase1situacion">
+
+                    <span class="question-number">11</span>
+                    <span>Su situación actual es:</span>
+                    <span class="question-required">*</span>
+
+                </label>
+
+                <div class="question-content">
+
+                    <div class="question-radio">
+
+                        <label class="question-radio-option">
+                            <input type="radio" name="fase1situacion" value="Buscando trabajo" [(ngModel)]="fase1situacion">
+                            <span>Buscando trabajo</span>
+                        </label>
+
+                        <label class="question-radio-option">
+                            <input type="radio" name="fase1situacion" value="Estudiando otra carrera de pregrado" [(ngModel)]="fase1situacion">
+                            <span>Estudiando otra carrera de pregrado</span>
+                        </label>
+
+                        <label class="question-radio-option">
+                            <input type="radio" name="fase1situacion" value="Estudiando un posgrado" [(ngModel)]="fase1situacion">
+                            <span>Estudiando un posgrado</span>
+                        </label>
+
+                        <label class="question-radio-option">
+                            <input type="radio" name="fase1situacion" value="Responsable del cuidado familiar" [(ngModel)]="fase1situacion">
+                            <span>Responsable del cuidado familiar</span>
+                        </label>
+
+                        <label class="question-radio-option">
+                            <input type="radio" name="fase1situacion" value="Desarrollando la tesis" [(ngModel)]="fase1situacion">
+                            <span>Desarrollando la tesis</span>
+                        </label>
+
+                        <label class="question-radio-option">
+                            <input type="radio" name="fase1situacion" value="Trabajos informales u ocasionales" [(ngModel)]="fase1situacion">
+                            <span>Trabajos informales u ocasionales</span>
+                        </label>
+
+                        <label class="question-radio-option">
+                            <input type="radio" name="fase1situacion" value="Comercio, ventas" [(ngModel)]="fase1situacion">
+                            <span>Comercio, ventas</span>
+                        </label>
+
+                        <label class="question-radio-option">
+                            <input type="radio" name="fase1situacion" value="Desarrollando mi emprendimiento" [(ngModel)]="fase1situacion">
+                            <span>Desarrollando mi emprendimiento</span>
+                        </label>
+
+                        <label class="question-radio-option">
+                            <input type="radio" name="fase1situacion" value="Otro" [(ngModel)]="fase1situacion">
+                            <span>Otro</span>
+                        </label>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="question">
+
+                <label class="question-label" for="fase1trabajando">
+
+                    <span class="question-number">12</span>
+                    <span>Actualmente, usted se encuentra trabajando:</span>
+                    <span class="question-required">*</span>
+
+                </label>
+
+                <div class="question-content">
+
+                    <div class="question-radio">
+
+                        <label class="question-radio-option">
+                            <input type="radio" name="fase1trabajando" value="Dentro del área de su formación profesional" [(ngModel)]="fase1trabajando">
+                            <span>Dentro del área de su formación profesional</span>
+                        </label>
+
+                        <label class="question-radio-option">
+                            <input type="radio" name="fase1trabajando" value="En ámbito relacionado al área de su formación profesional" [(ngModel)]="fase1trabajando">
+                            <span>En ámbito relacionado al área de su formación profesional</span>
+                        </label>
+
+                        <label class="question-radio-option">
+                            <input type="radio" name="fase1trabajando" value="En ámbito no relacionado al área de su formación profesional" [(ngModel)]="fase1trabajando">
+                            <span>En ámbito no relacionado al área de su formación profesional</span>
+                        </label>
+
+                        <label class="question-radio-option">
+                            <input type="radio" name="fase1trabajando" value="Se encuentra sin trabajo" [(ngModel)]="fase1trabajando">
+                            <span>Se encuentra sin trabajo</span>
+                        </label>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="question">
+
+                <label class="question-label" for="fase1primerempleo">
+
+                    <span class="question-number">13</span>
+                    <span>El primer empleo vinculado directamente a su profesión lo consiguió:</span>
+                    <span class="question-required">*</span>
+
+                </label>
+
+                <div class="question-content">
+
+                    <div class="question-radio">
+
+                        <label class="question-radio-option">
+                            <input type="radio" name="fase1primerempleo" value="Antes de culminar sus estudios universitarios" [(ngModel)]="fase1primerempleo">
+                            <span>Antes de culminar sus estudios universitarios.</span>
+                        </label>
+
+                        <label class="question-radio-option">
+                            <input type="radio" name="fase1primerempleo" value="Durante los primeros 6 meses luego de culminar los estudios" [(ngModel)]="fase1primerempleo">
+                            <span>Durante los primeros 6 meses luego de culminar los estudios</span>
+                        </label>
+
+                        <label class="question-radio-option">
+                            <input type="radio" name="fase1primerempleo" value="Durante los primeros 7 - 12 meses luego de culminar los estudios" [(ngModel)]="fase1primerempleo">
+                            <span>Durante los primeros 7 - 12 meses luego de culminar los estudios</span>
+                        </label>
+
+                        <label class="question-radio-option">
+                            <input type="radio" name="fase1primerempleo" value="Entre 1 y 2 años" [(ngModel)]="fase1primerempleo">
+                            <span>Entre 1 y 2 años</span>
+                        </label>
+
+                        <label class="question-radio-option">
+                            <input type="radio" name="fase1primerempleo" value="Más de 2 años" [(ngModel)]="fase1primerempleo">
+                            <span>Más de 2 años</span>
+                        </label>
+
+                        <label class="question-radio-option">
+                            <input type="radio" name="fase1primerempleo" value="Aún no he tenido un empleo vinculado directamente a mi profesión" [(ngModel)]="fase1primerempleo">
+                            <span>Aún no he tenido un empleo vinculado directamente a mi profesión</span>
+                        </label>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="question">
+
+                <label class="question-label" for="fase1medios">
+
+                    <span class="question-number">14</span>
+                    <span>¿Cuál de esos medios le permitió conseguir su empleo actual?</span>
+                    <span class="question-required">*</span>
+
+                </label>
+
+                <div class="question-content">
+
+                    <div class="question-radio">
+
+                        <label class="question-radio-option">
+                            <input type="radio" name="fase1medios" value="Bolsa de trabajo UPSJB" [(ngModel)]="fase1medios">
+                            <span>Bolsa de trabajo de la UPSJB SAC / convocatorias a su correo institucional</span>
+                        </label>
+
+                        <label class="question-radio-option">
+                            <input type="radio" name="fase1medios" value="LinkedIn" [(ngModel)]="fase1medios">
+                            <span>LinkedIn</span>
+                        </label>
+
+                        <label class="question-radio-option">
+                            <input type="radio" name="fase1medios" value="Bolsa gratuita en internet" [(ngModel)]="fase1medios">
+                            <span>Bolsa de trabajo gratuita en internet</span>
+                        </label>
+
+                        <label class="question-radio-option">
+                            <input type="radio" name="fase1medios" value="Bolsa pagada en internet" [(ngModel)]="fase1medios">
+                            <span>Bolsa de trabajo pagada en internet</span>
+                        </label>
+
+                        <label class="question-radio-option">
+                            <input type="radio" name="fase1medios" value="Prácticas preprofesionales" [(ngModel)]="fase1medios">
+                            <span>Referencia de contactos durante sus prácticas preprofesionales</span>
+                        </label>
+
+                        <label class="question-radio-option">
+                            <input type="radio" name="fase1medios" value="Red UPSJB" [(ngModel)]="fase1medios">
+                            <span>Red de egresados, docentes o conocidos de UPSJB SAC</span>
+                        </label>
+
+                        <label class="question-radio-option">
+                            <input type="radio" name="fase1medios" value="Otros" [(ngModel)]="fase1medios">
+                            <span>Otros</span>
+                        </label>
+
+                        <label class="question-radio-option">
+                            <input type="radio" name="fase1medios" value="Ninguno" [(ngModel)]="fase1medios">
+                            <span>Ninguno</span>
+                        </label>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="section" *ngIf="seccionActual === 4">
+
+            <h2 class="section-title"> {{ seccionTitulo }} </h2>
+
+            <div class="question">
+
+                <label class="question-label" for="fase2satisfaccionestudios">
+
+                    <span class="question-number">10</span>
+                    <span>Satisfacción con la utilidad de los conocimientos adquiridos durante su formación en la UPSJB SAC respecto al empleo:</span>
+                    <span class="question-required">*</span>
+
+                </label>
+
+                <div class="question-content">
+
+                    <div class="question-radio">
+
+                        <label class="question-radio-option">
+                            <input type="radio" name="fase2satisfaccionestudios" value="Muy satisfecho" [(ngModel)]="fase2satisfaccionestudios">
+                            <span>Muy satisfecho</span>
+                        </label>
+
+                        <label class="question-radio-option">
+                            <input type="radio" name="fase2satisfaccionestudios" value="Satisfecho" [(ngModel)]="fase2satisfaccionestudios">
+                            <span>Satisfecho</span>
+                        </label>
+
+                        <label class="question-radio-option">
+                            <input type="radio" name="fase2satisfaccionestudios" value="Ni satisfecho ni insatisfecho" [(ngModel)]="fase2satisfaccionestudios">
+                            <span>Ni satisfecho ni insatisfecho</span>
+                        </label>
+
+                        <label class="question-radio-option">
+                            <input type="radio" name="fase2satisfaccionestudios" value="Insatisfecho" [(ngModel)]="fase2satisfaccionestudios">
+                            <span>Insatisfecho</span>
+                        </label>
+
+                        <label class="question-radio-option">
+                            <input type="radio" name="fase2satisfaccionestudios" value="Muy insatisfecho" [(ngModel)]="fase2satisfaccionestudios">
+                            <span>Muy insatisfecho</span>
+                        </label>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="question">
+
+                <label class="question-label" for="fase2participacion">
+
+                    <span class="question-number">11</span>
+                    <span>Usted forma parte o ha participado en los procesos de gestión curricular.</span>
+                    <span class="question-required">*</span>
+
+                </label>
+
+                <div class="question-content">
+
+                    <div class="question-radio">
+
+                        <label class="question-radio-option">
+                            <input type="radio" name="fase2participacion" value="Sí" [(ngModel)]="fase2participacion">
+                            <span>Sí</span>
+                        </label>
+
+                        <label class="question-radio-option">
+                            <input type="radio" name="fase2participacion" value="No" [(ngModel)]="fase2participacion">
+                            <span>No</span>
+                        </label>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="question">
+
+                <label class="question-label" for="fase2satisfaccionservicio">
+
+                    <span class="question-number">12</span>
+                    <span>¿Qué tan satisfecho se encuentra usted con el servicio educativo brindado por la UPSJB SAC durante su formación?</span>
+                    <span class="question-required">*</span>
+
+                </label>
+
+                <div class="question-content">
+
+                    <div class="question-radio">
+
+                        <label class="question-radio-option">
+                            <input type="radio" name="fase2satisfaccionservicio" value="Muy satisfecho" [(ngModel)]="fase2satisfaccionservicio">
+                            <span>Muy satisfecho</span>
+                        </label>
+
+                        <label class="question-radio-option">
+                            <input type="radio" name="fase2satisfaccionservicio" value="Satisfecho" [(ngModel)]="fase2satisfaccionservicio">
+                            <span>Satisfecho</span>
+                        </label>
+
+                        <label class="question-radio-option">
+                            <input type="radio" name="fase2satisfaccionservicio" value="Ni satisfecho ni insatisfecho" [(ngModel)]="fase2satisfaccionservicio">
+                            <span>Ni satisfecho ni insatisfecho</span>
+                        </label>
+
+                        <label class="question-radio-option">
+                            <input type="radio" name="fase2satisfaccionservicio" value="Insatisfecho" [(ngModel)]="fase2satisfaccionservicio">
+                            <span>Insatisfecho</span>
+                        </label>
+
+                        <label class="question-radio-option">
+                            <input type="radio" name="fase2satisfaccionservicio" value="Muy insatisfecho" [(ngModel)]="fase2satisfaccionservicio">
+                            <span>Muy insatisfecho</span>
+                        </label>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="question">
+
+                <label class="question-label" for="fase2planificacion">
+
+                    <span class="question-number">13</span>
+                    <span>Usted forma parte o ha participado en la planificación estratégica.</span>
+                    <span class="question-required">*</span>
+
+                </label>
+
+                <div class="question-content">
+
+                    <div class="question-radio">
+
+                        <label class="question-radio-option">
+                            <input type="radio" name="fase2planificacion" value="Sí" [(ngModel)]="fase2planificacion">
+                            <span>Sí</span>
+                        </label>
+
+                        <label class="question-radio-option">
+                            <input type="radio" name="fase2planificacion" value="No" [(ngModel)]="fase2planificacion">
+                            <span>No</span>
+                        </label>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="question">
+
+                <label class="question-label" for="fase2empresanombre">
+
+                    <span class="question-number">14</span>
+                    <span>Podría informarnos el nombre de la empresa en la que actualmente labora:</span>
+                    <span class="question-required">*</span>
+
+                </label>
+
+                <div class="question-content">
+
+                    <div class="question-input">
+                        <input id="fase2empresanombre" name="fase2empresanombre" type="text" class="text-input" placeholder="Escriba el nombre de la empresa" [(ngModel)]="fase2empresanombre">
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="question">
+
+                <label class="question-label" for="fase2empresaempleadorcorreo">
+
+                    <span class="question-number">15</span>
+                    <span>Podría compartirnos los nombres, apellidos, correo y número de su jefe inmediato:</span>
+                    <span class="question-required">*</span>
+
+                </label>
+
+                <div class="question-content">
+
+                    <div class="question-input">
+                        <input id="fase2empresaempleadornombre" name="fase2empresaempleadornombre" type="text" class="text-input" placeholder="Ejemplo: Juan Pérez" [(ngModel)]="fase2empresaempleadornombre">
+                        <input id="fase2empresaempleadorcorreo" name="fase2empresaempleadorcorreo" type="text" class="text-input" placeholder="Ejemplo: juan.perez@empresa.com" [(ngModel)]="fase2empresaempleadorcorreo">
+                        <input id="fase2empresaempleadornumero" name="fase2empresaempleadornumero" type="text" class="text-input" placeholder="Ejemplo: +51 987654321" [(ngModel)]="fase2empresaempleadornumero">
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="section" *ngIf="seccionActual === 5">
+
+            <h2 class="section-title"> {{ seccionTitulo }} </h2>
+
+            <div class="question">
+
+                <label class="question-label" for="fase3especialidad">
+
+                    <span class="question-number">10</span>
+                    <span>Mencione actualmente el nivel de especialidad o grado que ha logrado:</span>
+                    <span class="question-required">*</span>
+
+                </label>
+
+                <div class="question-content">
+
+                    <div class="question-radio">
+
+                        <label class="question-radio-option">
+                            <input type="radio" name="fase3especialidad" value="Segunda Especialidad / Residentado Médico" [(ngModel)]="fase3especialidad">
+                            <span>Segunda Especialidad / Residentado Médico</span>
+                        </label>
+
+                        <label class="question-radio-option">
+                            <input type="radio" name="fase3especialidad" value="Maestrías" [(ngModel)]="fase3especialidad">
+                            <span>Maestrías</span>
+                        </label>
+
+                        <label class="question-radio-option">
+                            <input type="radio" name="fase3especialidad" value="Doctorados" [(ngModel)]="fase3especialidad">
+                            <span>Doctorados</span>
+                        </label>
+
+                        <label class="question-radio-option">
+                            <input type="radio" name="fase3especialidad" value="Diplomados" [(ngModel)]="fase3especialidad">
+                            <span>Diplomados</span>
+                        </label>
+
+                        <label class="question-radio-option">
+                            <input type="radio" name="fase3especialidad" value="Otros" [(ngModel)]="fase3especialidad">
+                            <span>Otros</span>
+                        </label>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="question">
+
+                <label class="question-label" for="fase3participacion">
+
+                    <span class="question-number">11</span>
+                    <span>Usted participa en cursos de educación continua o de especialidad organizados por la UPSJB SAC:</span>
+                    <span class="question-required">*</span>
+
+                </label>
+
+                <div class="question-content">
+
+                    <div class="question-radio">
+
+                        <label class="question-radio-option">
+                            <input type="radio" name="fase3participacion" value="Muy frecuentemente" [(ngModel)]="fase3participacion">
+                            <span>Muy frecuentemente</span>
+                        </label>
+
+                        <label class="question-radio-option">
+                            <input type="radio" name="fase3participacion" value="Frecuentemente" [(ngModel)]="fase3participacion">
+                            <span>Frecuentemente</span>
+                        </label>
+
+                        <label class="question-radio-option">
+                            <input type="radio" name="fase3participacion" value="Algunas veces" [(ngModel)]="fase3participacion">
+                            <span>Algunas veces</span>
+                        </label>
+
+                        <label class="question-radio-option">
+                            <input type="radio" name="fase3participacion" value="Muy rara vez" [(ngModel)]="fase3participacion">
+                            <span>Muy rara vez</span>
+                        </label>
+
+                        <label class="question-radio-option">
+                            <input type="radio" name="fase3participacion" value="Nunca" [(ngModel)]="fase3participacion">
+                            <span>Nunca</span>
+                        </label>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="question">
+
+                <label class="question-label" for="fase3educacioncontinua">
+
+                    <span class="question-number">12</span>
+                    <span>¿Cuál sería actualmente la necesidad de educación continua que usted, como egresado de la UPSJB SAC, requiere?</span>
+                    <span class="question-required">*</span>
+
+                </label>
+
+                <div class="question-content">
+
+                    <div class="question-radio">
+
+                        <label class="question-radio-option">
+                            <input type="radio" name="fase3educacioncontinua" value="Cursos de actualización de la carrera" [(ngModel)]="fase3educacioncontinua">
+                            <span>Cursos de actualización de la carrera</span>
+                        </label>
+
+                        <label class="question-radio-option">
+                            <input type="radio" name="fase3educacioncontinua" value="Cursos científicos o de investigación" [(ngModel)]="fase3educacioncontinua">
+                            <span>Cursos científicos o de investigación</span>
+                        </label>
+
+                        <label class="question-radio-option">
+                            <input type="radio" name="fase3educacioncontinua" value="Cursos de gestión" [(ngModel)]="fase3educacioncontinua">
+                            <span>Cursos de gestión</span>
+                        </label>
+
+                        <label class="question-radio-option">
+                            <input type="radio" name="fase3educacioncontinua" value="Cursos de herramientas tecnológicas" [(ngModel)]="fase3educacioncontinua">
+                            <span>Cursos de herramientas tecnológicas</span>
+                        </label>
+
+                        <label class="question-radio-option">
+                            <input type="radio" name="fase3educacioncontinua" value="Diplomados" [(ngModel)]="fase3educacioncontinua">
+                            <span>Diplomados</span>
+                        </label>
+
+                        <label class="question-radio-option">
+                            <input type="radio" name="fase3educacioncontinua" value="Maestrías / Doctorados" [(ngModel)]="fase3educacioncontinua">
+                            <span>Maestrías / Doctorados</span>
+                        </label>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="section" *ngIf="seccionActual === 6">
+
+            <h2 class="section-title"> {{ seccionTitulo }} </h2>
+
+            <div class="question">
+
+                <label class="question-label" for="fase4investigacion">
+
+                    <span class="question-number">10</span>
+                    <span>¿Usted realiza investigación?</span>
+                    <span class="question-required">*</span>
+
+                </label>
+
+                <div class="question-content">
+
+                    <div class="question-radio">
+
+                        <label class="question-radio-option">
+                            <input type="radio" name="fase4investigacion" value="Sí" [(ngModel)]="fase4investigacion">
+                            <span>Sí</span>
+                        </label>
+
+                        <label class="question-radio-option">
+                            <input type="radio" name="fase4investigacion" value="No" [(ngModel)]="fase4investigacion">
+                            <span>No</span>
+                        </label>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="question">
+
+                <label class="question-label" for="fase4innovacion">
+
+                    <span class="question-number">11</span>
+                    <span>Usted participa en capacitaciones para realizar investigaciones o proyectos de innovación organizados por la UPSJB SAC:</span>
+                    <span class="question-required">*</span>
+
+                </label>
+
+                <div class="question-content">
+
+                    <div class="question-radio">
+
+                        <label class="question-radio-option">
+                            <input type="radio" name="fase4innovacion" value="Muy frecuentemente" [(ngModel)]="fase4innovacion">
+                            <span>Muy frecuentemente</span>
+                        </label>
+
+                        <label class="question-radio-option">
+                            <input type="radio" name="fase4innovacion" value="Frecuentemente" [(ngModel)]="fase4innovacion">
+                            <span>Frecuentemente</span>
+                        </label>
+
+                        <label class="question-radio-option">
+                            <input type="radio" name="fase4innovacion" value="Algunas veces" [(ngModel)]="fase4innovacion">
+                            <span>Algunas veces</span>
+                        </label>
+
+                        <label class="question-radio-option">
+                            <input type="radio" name="fase4innovacion" value="Muy rara vez" [(ngModel)]="fase4innovacion">
+                            <span>Muy rara vez</span>
+                        </label>
+
+                        <label class="question-radio-option">
+                            <input type="radio" name="fase4innovacion" value="Nunca" [(ngModel)]="fase4innovacion">
+                            <span>Nunca</span>
+                        </label>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="question">
+
+                <label class="question-label" for="fase4satisfaccion">
+
+                    <span class="question-number">12</span>
+                    <span>¿Qué tan satisfecho se encuentra usted con las capacitaciones para realizar investigaciones o proyectos de innovación organizados por la UPSJB SAC?</span>
+                    <span class="question-required">*</span>
+
+                </label>
+
+                <div class="question-content">
+
+                    <div class="question-radio">
+
+                        <label class="question-radio-option">
+                            <input type="radio" name="fase4satisfaccion" value="Muy satisfecho" [(ngModel)]="fase4satisfaccion">
+                            <span>Muy satisfecho</span>
+                        </label>
+
+                        <label class="question-radio-option">
+                            <input type="radio" name="fase4satisfaccion" value="Satisfecho" [(ngModel)]="fase4satisfaccion">
+                            <span>Satisfecho</span>
+                        </label>
+
+                        <label class="question-radio-option">
+                            <input type="radio" name="fase4satisfaccion" value="Neutro" [(ngModel)]="fase4satisfaccion">
+                            <span>Neutro</span>
+                        </label>
+
+                        <label class="question-radio-option">
+                            <input type="radio" name="fase4satisfaccion" value="Poco satisfecho" [(ngModel)]="fase4satisfaccion">
+                            <span>Poco satisfecho</span>
+                        </label>
+
+                        <label class="question-radio-option">
+                            <input type="radio" name="fase4satisfaccion" value="Insatisfecho" [(ngModel)]="fase4satisfaccion">
+                            <span>Insatisfecho</span>
+                        </label>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="button-group">
+            <button type="button" class="section-button secondary" *ngIf="seccionActual > 1" (click)="previousSection()">Anterior</button>
+            <button type="button" class="section-button" *ngIf="seccionActual === 1 || seccionActual === 2" (click)="nextSection()">Siguiente</button>
+            <button type="button" class="section-button" *ngIf="seccionActual >= 3" (click)="enviarEncuesta()">Finalizar</button>
+        </div>
+
+    </div>
+
+</div>
+
