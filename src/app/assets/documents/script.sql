@@ -44,21 +44,96 @@ CREATE TABLE IF NOT EXISTS seguimiento_egresado.carrera (
 
 
 CREATE TABLE IF NOT EXISTS seguimiento_egresado.egresado (
-    egresadoId PRIMARY KEY,
-    dni INTEGER,
-    nombres VARCHAR(100),
-    apellido_paterno VARCHAR(100),
-    apellido_materno VARCHAR(100),
+    egresado_id BIGSERIAL PRIMARY KEY,
+    tipo_documento VARCHAR(20),
+    numero_documento VARCHAR(20),
+    nombres_apellidos VARCHAR(100),
     genero VARCHAR(10),
-    correo_institucional VARCHAR(100),
-    correo_personal VARCHAR(100),
-    celular_personal VARCHAR(15),
-    sede_id BIGINT REFERENCES sede(id),
-    facultad_id BIGINT REFERENCES facultad(id),
-    carrera_id BIGINT REFERENCES carrera(id),
+    sede_id BIGINT REFERENCES seguimiento_egresado.sede(id),
+    facultad_id BIGINT REFERENCES seguimiento_egresado.facultad(id),
+    carrera_id BIGINT REFERENCES seguimiento_egresado.carrera(id),
     anio_egreso INTEGER,
+    correo_institucional VARCHAR(100),
+    correo_electronico VARCHAR(100),
+    numero_celular VARCHAR(15),
     fecha_creacion TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     fecha_modificacion TIMESTAMPTZ
+);
+
+
+CREATE TABLE IF NOT EXISTS seguimiento_egresado.seguimiento (
+    seguimiento_id BIGSERIAL PRIMARY KEY,                                                                                           -- Identificador único del registro de seguimiento.
+    egresado_id BIGINT NOT NULL REFERENCES seguimiento_egresado.egresado(egresado_id),                                              -- Egresado al que pertenece este seguimiento.
+    fase SMALLINT NOT NULL CHECK (fase BETWEEN 1 AND 4),                                                                            -- Fase respondida (1=Información, 2=Formación, 3=Autocapacitación, 4=Innovación).
+    anio_seguimiento INTEGER NOT NULL DEFAULT EXTRACT(YEAR FROM CURRENT_DATE)::INTEGER,                                             -- Año en que el egresado respondió esta fase.
+    fecha_inicio TIMESTAMPTZ NOT NULL DEFAULT NOW(),                                                                                -- Fecha y hora en que inició la encuesta.
+    fecha_fin TIMESTAMPTZ,                                                                                                          -- Fecha y hora en que finalizó la encuesta.
+    completado BOOLEAN NOT NULL DEFAULT FALSE,                                                                                      -- Indica si el egresado terminó completamente la encuesta.
+    fecha_creacion TIMESTAMPTZ NOT NULL DEFAULT NOW(),                                                                              -- Fecha de creación del registro.
+    fecha_modificacion TIMESTAMPTZ,                                                                                                 -- Última modificación del registro.
+    activo BOOLEAN NOT NULL DEFAULT TRUE,                                                                                           -- Permite realizar eliminaciones lógicas.
+    CONSTRAINT uq_seguimiento_egresado_fase_anio UNIQUE (egresado_id, fase, anio_seguimiento)                                       -- Evita que un egresado responda dos veces la misma fase en el mismo año.
+);
+
+
+CREATE TABLE IF NOT EXISTS seguimiento_egresado.seguimiento_fase_1 (
+
+    seguimiento_fase_1_id BIGSERIAL PRIMARY KEY,                                                                                    -- Identificador único de las respuestas de la fase 1.
+    seguimiento_id BIGINT NOT NULL UNIQUE REFERENCES seguimiento_egresado.seguimiento(seguimiento_id) ON DELETE CASCADE,            -- Seguimiento al que pertenecen estas respuestas.
+
+    fase1_participacion VARCHAR(50) NOT NULL,                                                                                       -- Frecuencia con la que participa en cursos o talleres de empleabilidad organizados por la universidad.
+    fase1_situacion VARCHAR(150) NOT NULL,                                                                                          -- Situación actual del egresado (trabajando, estudiando, emprendiendo, etc.).
+    fase1_trabajando VARCHAR(150) NOT NULL,                                                                                         -- Relación del trabajo actual con la carrera profesional.
+    fase1_primerempleo VARCHAR(150) NOT NULL,                                                                                       -- Tiempo que tardó en conseguir el primer empleo relacionado con su profesión.
+    fase1_medios VARCHAR(200) NOT NULL,                                                                                             -- Medio por el cual consiguió el empleo actual.
+
+    fecha_creacion TIMESTAMPTZ NOT NULL DEFAULT NOW(),                                                                              -- Fecha de creación.
+    fecha_modificacion TIMESTAMPTZ                                                                                                  -- Última modificación.
+);
+
+
+CREATE TABLE IF NOT EXISTS seguimiento_egresado.seguimiento_fase_2 (
+    seguimiento_fase_2_id BIGSERIAL PRIMARY KEY,                                                                                    -- Identificador único de las respuestas de la fase 2.
+    seguimiento_id BIGINT NOT NULL UNIQUE REFERENCES seguimiento_egresado.seguimiento(seguimiento_id) ON DELETE CASCADE,            -- Seguimiento al que pertenece.
+
+    fase2_satisfaccionestudios VARCHAR(50) NOT NULL,                                                                                 -- Nivel de satisfacción con los conocimientos adquiridos durante la formación profesional.
+    fase2_participacion BOOLEAN NOT NULL,                                                                                            -- Indica si participó en procesos de gestión curricular.
+    fase2_satisfaccionservicio VARCHAR(50) NOT NULL,                                                                                 -- Nivel de satisfacción con el servicio educativo brindado por la universidad.
+    fase2_planificacion BOOLEAN NOT NULL,                                                                                            -- Indica si participó en procesos de planificación estratégica.
+    fase2_empresanombre VARCHAR(200),                                                                                                -- Empresa donde actualmente labora.
+    fase2_empresaempleadornombre VARCHAR(150),                                                                                       -- Nombre del jefe inmediato.
+    fase2_empresaempleadorcorreo VARCHAR(150),                                                                                       -- Correo electrónico del jefe inmediato.
+    fase2_empresaempleadornumero VARCHAR(150),                                                                                       -- Número de contacto del jefe inmediato.
+
+    fecha_creacion TIMESTAMPTZ NOT NULL DEFAULT NOW(),                                                                              -- Fecha de creación.
+    fecha_modificacion TIMESTAMPTZ                                                                                                  -- Última modificación.
+);
+
+
+
+CREATE TABLE IF NOT EXISTS seguimiento_egresado.seguimiento_fase_3 (
+    seguimiento_fase_3_id BIGSERIAL PRIMARY KEY,                                                                                    -- Identificador único de las respuestas de la fase 3.
+    seguimiento_id BIGINT NOT NULL UNIQUE REFERENCES seguimiento_egresado.seguimiento(seguimiento_id) ON DELETE CASCADE,            -- Seguimiento al que pertenece.
+
+    fase3_especialidad VARCHAR(100) NOT NULL,                                                                                       -- Mayor nivel de especialización alcanzado (diplomado, maestría, doctorado, etc.).
+    fase3_participacion VARCHAR(50) NOT NULL,                                                                                       -- Frecuencia de participación en cursos de educación continua.
+    fase3_educacioncontinua VARCHAR(150) NOT NULL,                                                                                  -- Principal necesidad de capacitación o educación continua.
+
+    fecha_creacion TIMESTAMPTZ NOT NULL DEFAULT NOW(),                                                                              -- Fecha de creación.
+    fecha_modificacion TIMESTAMPTZ                                                                                                  -- Última modificación.
+);
+
+
+CREATE TABLE IF NOT EXISTS seguimiento_egresado.seguimiento_fase_4 (
+    seguimiento_fase_4_id BIGSERIAL PRIMARY KEY,                                                                                    -- Identificador único de las respuestas de la fase 4.
+    seguimiento_id BIGINT NOT NULL UNIQUE REFERENCES seguimiento_egresado.seguimiento(seguimiento_id) ON DELETE CASCADE,            -- Seguimiento al que pertenece.
+
+    fase4_investigacion BOOLEAN NOT NULL,                                                                                           -- Indica si actualmente realiza actividades de investigación.
+    fase4_innovacion VARCHAR(50) NOT NULL,                                                                                          -- Frecuencia con la que participa en capacitaciones relacionadas con investigación o innovación.
+    fase4_satisfaccion VARCHAR(50) NOT NULL,                                                                                        -- Nivel de satisfacción con las capacitaciones recibidas sobre investigación e innovación.
+
+    fecha_creacion TIMESTAMPTZ NOT NULL DEFAULT NOW(),                                                                              -- Fecha de creación.
+    fecha_modificacion TIMESTAMPTZ                                                                                                  -- Última modificación.
 );
 
 
@@ -135,4 +210,180 @@ DROP TABLE IF EXISTS seguimiento_egresado.egresado;
 
 
 --#endregion
+
+
+
+
+
+
+
+
+
+
+public MensajeResponse enviarEncuesta(EncuestaRequest request) {
+
+
+    MensajeResponse response = new MensajeResponse();
+    Connection con = null;
+
+
+    try {
+
+
+        con = getConnection();
+        con.setAutoCommit(false);
+        int egresadoId;
+
+
+        /* 1. Buscar al egresado. */
+        PreparedStatement psBuscarEgresado = con.prepareStatement(
+                "SELECT egresado_id " +
+                "FROM seguimiento_egresado.egresado " +
+                "WHERE tipo_documento = ? " +
+                "AND numero_documento = ?"
+        );
+
+        psBuscarEgresado.setString(1, request.getTipoDocumento());
+        psBuscarEgresado.setString(2, request.getNumeroDocumento());
+
+        ResultSet rs = psBuscarEgresado.executeQuery();
+
+
+        if (rs.next()) {
+
+            /* El egresado existe: actualizar sus datos. */
+            egresadoId = rs.getInt("egresado_id");
+
+            PreparedStatement psUpdate = con.prepareStatement(
+                    "UPDATE seguimiento_egresado.egresado SET " +
+                            "nombres_apellidos = ?, " +
+                            "genero = ?, " +
+                            "sede_id = ?, " +
+                            "facultad_id = ?, " +
+                            "carrera_id = ?, " +
+                            "anio_egreso = ?, " +
+                            "correo_electronico = ?, " +
+                            "numero_celular = ?, " +
+                            "fecha_modificacion = NOW() " +
+                            "WHERE egresado_id = ?"
+            );
+
+            psUpdate.setString(1, request.getNombresApellidos());
+            psUpdate.setString(2, request.getGenero());
+            psUpdate.setInt(3, Integer.parseInt(request.getSede()));
+            psUpdate.setInt(4, Integer.parseInt(request.getFacultad()));
+            psUpdate.setInt(5, Integer.parseInt(request.getCarrera()));
+            psUpdate.setInt(6, Integer.parseInt(request.getAnioEgreso()));
+            psUpdate.setString(7, request.getCorreoElectronico());
+            psUpdate.setString(8, request.getNumeroCelular());
+            psUpdate.setInt(9, egresadoId);
+
+            int filasActualizadas = psUpdate.executeUpdate();
+
+            if (filasActualizadas == 0) {
+                throw new SQLException("No se pudo actualizar al egresado.");
+            }
+
+            psUpdate.close();
+
+        } else {
+
+            /* El egresado no existe: registrar sus datos. */
+            PreparedStatement psInsertEgresado = con.prepareStatement(
+                    "INSERT INTO seguimiento_egresado.egresado (" +
+                            "tipo_documento, " +
+                            "numero_documento, " +
+                            "nombres_apellidos, " +
+                            "genero, " +
+                            "sede_id, " +
+                            "facultad_id, " +
+                            "carrera_id, " +
+                            "anio_egreso, " +
+                            "correo_electronico, " +
+                            "numero_celular" +
+                            ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                    Statement.RETURN_GENERATED_KEYS
+            );
+
+            psInsertEgresado.setString( 1, request.getTipoDocumento());
+            psInsertEgresado.setString( 2, request.getNumeroDocumento());
+            psInsertEgresado.setString( 3, request.getNombresApellidos());
+            psInsertEgresado.setString( 4, request.getGenero());
+            psInsertEgresado.setInt( 5, Integer.parseInt(request.getSede()) );
+            psInsertEgresado.setInt( 6, Integer.parseInt(request.getFacultad()) );
+            psInsertEgresado.setInt( 7, Integer.parseInt(request.getCarrera()) );
+            psInsertEgresado.setInt( 8, Integer.parseInt(request.getAnioEgreso()));
+            psInsertEgresado.setString( 9,request.getCorreoElectronico());
+            psInsertEgresado.setString( 10, request.getNumeroCelular());
+
+            int filasInsertadas = psInsertEgresado.executeUpdate();
+
+            if (filasInsertadas == 0) {
+                throw new SQLException("No se pudo registrar al egresado.");
+            }
+
+            ResultSet rsGenerado = psInsertEgresado.getGeneratedKeys();
+
+            if (rsGenerado.next()) {
+                egresadoId = rsGenerado.getInt(1);
+            } else {
+                throw new SQLException( "No se pudo obtener el ID del egresado." );
+            }
+
+            rsGenerado.close();
+            psInsertEgresado.close();
+        }
+
+        rs.close();
+        psBuscarEgresado.close();
+
+
+        /* Aquí podrás insertar seguimiento y seguimiento_fase_X, usando la variable egresadoId. */
+
+
+        System.out.println("Egresado ID: " + egresadoId);
+
+        con.commit();
+
+        response.setEstado("200");
+        response.setMensaje("Datos del egresado guardados correctamente.");
+
+
+    } catch (Exception e) {
+
+
+        if (con != null) {
+            try {
+                con.rollback();
+            } catch (SQLException rollbackError) {
+                rollbackError.printStackTrace();
+            }
+        }
+
+
+        response.setEstado("500");
+        response.setMensaje( "Error al registrar la encuesta: " + e.getMessage());
+
+
+    } finally {
+
+        if (con != null) {
+
+            try {
+
+                con.close();
+
+            } catch (SQLException closeError) {
+
+                closeError.printStackTrace();
+
+            }
+
+        }
+
+    }
+
+    return response;
+
+}
 

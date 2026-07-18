@@ -34,12 +34,13 @@ export class Encuesta implements OnInit {
     tipoDocumento: string = '';
     numeroDocumento: string = '';
     nombresApellidos: string = '';
+    genero: string = '';
     sede: string = '';
     facultad: string = '';
     carrera: string = '';
     anioEgreso: string = '';
     correoElectronico: string = '';
-    celular: string = '';
+    numeroCelular: string = '';
 
     fase1participacion: string = '';
     fase1situacion: string = '';
@@ -70,6 +71,12 @@ export class Encuesta implements OnInit {
         { value: '01', text: 'DNI' },
         { value: '02', text: 'Pasaporte' },
         { value: '03', text: 'Otro' },
+    ];
+
+    generoOptions = [
+        { value: 'M', text: 'Masculino' },
+        { value: 'F', text: 'Femenino' },
+        { value: 'O', text: 'Otro' },
     ];
 
     sedeOptions = [
@@ -346,7 +353,7 @@ export class Encuesta implements OnInit {
             return false;
         }
 
-        if (!this.celular.trim()) {
+        if (!this.numeroCelular.trim()) {
             alert('Ingrese su número de celular.');
             return false;
         }
@@ -365,12 +372,13 @@ export class Encuesta implements OnInit {
             tipoDocumento: this.tipoDocumento,
             numeroDocumento: this.numeroDocumento,
             nombresApellidos: this.nombresApellidos,
+            genero: this.genero,
             sede: this.sede,
             facultad: this.facultad,
             carrera: this.carrera,
             anioEgreso: this.anioEgreso,
             correoElectronico: this.correoElectronico,
-            celular: this.celular,
+            numeroCelular: this.numeroCelular,
             fase: this.seccionFase,
             aniosDesdeEgreso: this.aniosDesdeEgreso,
 
@@ -425,7 +433,7 @@ export class Encuesta implements OnInit {
         this.carrera = '';
         this.anioEgreso = '';
         this.correoElectronico = '';
-        this.celular = '';
+        this.numeroCelular = '';
 
         this.fase1participacion = '';
         this.fase1situacion = '';

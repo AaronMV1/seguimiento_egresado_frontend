@@ -61,7 +61,7 @@
 
             <div class="question">
 
-                <label class="question-label" for="consentimiento">
+                <label class="question-label" for="tipoDocumentos">
 
                     <span class="question-number">2</span>
                     <span>Seleccione el tipo y escriba su número de documento</span>
@@ -90,7 +90,7 @@
 
             <div class="question">
 
-                <label class="question-label" for="consentimiento">
+                <label class="question-label" for="nombresApellidos">
                     <span class="question-number">3</span>
                     <span>Ingrese sus nombres y apellidos</span>
                     <span class="question-required">*</span>
@@ -106,7 +106,26 @@
 
             <div class="question">
 
-                <label class="question-label" for="consentimiento">
+                <label class="question-label" for="genero">
+                    <span class="question-number">3</span>
+                    <span>Seleccione su género</span>
+                    <span class="question-required">*</span>
+                </label>
+
+                <div class="question-content">
+                    <div class="question-select">
+                        <select id="genero" [(ngModel)]="genero" class="text-input documento-select">
+                            <option value="" disabled>Seleccione una opción</option>
+                            <option *ngFor="let option of generoOptions" [value]="option.value"> {{ option.text }}</option>
+                        </select>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="question">
+
+                <label class="question-label" for="anioEgreso">
                     <span class="question-number">4</span>
                     <span>Ingrese su año de Egreso</span>
                     <span class="question-required">*</span>
@@ -122,7 +141,7 @@
 
             <div class="question">
 
-                <label class="question-label" for="consentimiento">
+                <label class="question-label" for="sedes">
                     <span class="question-number">5</span>
                     <span>Seleccione su Sede</span>
                     <span class="question-required">*</span>
@@ -143,7 +162,7 @@
 
             <div class="question">
 
-                <label class="question-label" for="consentimiento">
+                <label class="question-label" for="facultades">
                     <span class="question-number">6</span>
                     <span>Seleccione su Facultad</span>
                     <span class="question-required">*</span>
@@ -162,7 +181,7 @@
 
             <div class="question">
 
-                <label class="question-label" for="consentimiento">
+                <label class="question-label" for="carreras">
                     <span class="question-number">7</span>
                     <span>Seleccione su Carrera</span>
                     <span class="question-required">*</span>
@@ -181,7 +200,7 @@
 
             <div class="question">
 
-                <label class="question-label" for="consentimiento">
+                <label class="question-label" for="correoElectronico">
                     <span class="question-number">8</span>
                     <span>Ingrese su Correo Electrónico Personal</span>
                     <span class="question-required">*</span>
@@ -199,7 +218,7 @@
 
             <div class="question">
 
-                <label class="question-label" for="consentimiento">
+                <label class="question-label" for="numeroCelular">
                     <span class="question-number">9</span>
                     <span>Ingrese su Número de Celular</span>
                     <span class="question-required">*</span>
@@ -207,7 +226,7 @@
 
                 <div class="question-content">
                     <div class="question-input">
-                        <input id="celular" [(ngModel)]="celular" type="text" class="text-input documento-input" placeholder="Escriba su respuesta" />
+                        <input id="numeroCelular" [(ngModel)]="numeroCelular" type="text" class="text-input documento-input" placeholder="Escriba su respuesta" />
                     </div>
                 </div>
 
@@ -958,6 +977,7 @@
         </div>
 
     </div>
+
 
 </div>
 
