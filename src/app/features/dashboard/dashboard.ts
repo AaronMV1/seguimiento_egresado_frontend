@@ -1,6 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { Http } from '../../core/services/http';
+
 
 
 // Función: Define la estructura de datos de cada egresado.
@@ -13,6 +15,21 @@ interface Egresado {
 	correoIInstitucional: string;
     facultad: string;
     sedeFilial: string;
+}
+
+
+// Función: Define la estructura de datos de cada egresado.
+interface EgresadoBK {
+	tipoDocumento: string;
+    numeroDocumento: string;
+    nombresApellidos: string;
+    genero: string;
+    sede: string;
+    facultad: string;
+    carrera: string;
+	anioEgreso: number;
+	correoElectronico: string;
+    numeroCelular: string;
 }
 
 
@@ -34,7 +51,7 @@ interface FaseDashboard {
 	titulo: string;
 	etiquetaCohorte: string;
 	anios: number[];
-	egresados: Egresado[];
+	egresados: EgresadoBK[];
 	descripcion: string;
 	imagen: string;
 }
@@ -48,7 +65,17 @@ interface FaseDashboard {
 })
 
 
-export class Dashboard {
+export class Dashboard implements OnInit {
+
+	egresadoBK: EgresadoBK[] = [];
+
+
+    ngOnInit(): void {
+        this.obtenerEncuestados();
+    }
+
+
+    constructor( private _http: Http, private readonly cdr: ChangeDetectorRef ) { }
 
 
 	// Función: Define el año actual usado para calcular dinámicamente las cohortes.
@@ -65,7 +92,7 @@ export class Dashboard {
 	];
 
 
-	// Función: Lista de egresados usada como fuente de datos del dashboard.
+	// Función: Lista histórica local de egresados (ya no usada en la lógica principal).
 
     // readonly egresados: Egresado[] = [
     //     { nombre: 'Diego Alejandro', apellidoPaterno: 'Ramos', apellidoMaterno: 'Paredes', anioEgreso: '2014', correoIInstitucional: 'diego.ramos@upsjb.edu.pe', sedeFilial: 'Sede Chorrillos', facultad: 'Ingenierías', carrera: 'Ingeniería de Sistemas' },
@@ -109,26 +136,26 @@ export class Dashboard {
     //     { nombre: 'Fabricio Alonso', apellidoPaterno: 'Chávez', apellidoMaterno: 'Murillo', anioEgreso: '2023', correoIInstitucional: 'fabricio.chavez@upsjb.edu.pe', sedeFilial: 'Filial Ica', facultad: 'Ciencias de la Salud', carrera: 'Terapia Física y Rehabilitación' },
     //     { nombre: 'Daniela Lucero', apellidoPaterno: 'Gallegos', apellidoMaterno: 'Zevallos', anioEgreso: '2011', correoIInstitucional: 'daniela.gallegos@upsjb.edu.pe', sedeFilial: 'Sede San Borja', facultad: 'Derecho y Ciencias Empresariales', carrera: 'Administración y Negocios Internacionales' },
     //     { nombre: 'Hugo Sebastián', apellidoPaterno: 'Romero', apellidoMaterno: 'Vallejos', anioEgreso: '2020', correoIInstitucional: 'hugo.romero@upsjb.edu.pe', sedeFilial: 'Filial Chincha', facultad: 'Ciencias de la Salud', carrera: 'Medicina Humana' },
-	// 	{ nombre: 'Isabella María', apellidoPaterno: 'Cabrera', apellidoMaterno: 'Salazar', anioEgreso: '2025', correoIInstitucional: 'isabella.cabrera@upsjb.edu.pe', sedeFilial: 'Sede Chorrillos', facultad: 'Ciencias de la Salud', carrera: 'Psicología' },
-	// 	{ nombre: 'Jean Pierre', apellidoPaterno: 'Medrano', apellidoMaterno: 'Arias', anioEgreso: '2025', correoIInstitucional: 'jean.medrano@upsjb.edu.pe', sedeFilial: 'Sede San Borja', facultad: 'Ingenierías', carrera: 'Ingeniería Civil' },
-	// 	{ nombre: 'Melissa Fernanda', apellidoPaterno: 'Rengifo', apellidoMaterno: 'Paredes', anioEgreso: '2023', correoIInstitucional: 'melissa.rengifo@upsjb.edu.pe', sedeFilial: 'Filial Ica', facultad: 'Derecho y Ciencias Empresariales', carrera: 'Administración de Empresas' },
-	// 	{ nombre: 'Cristian Eduardo', apellidoPaterno: 'Salas', apellidoMaterno: 'Gamarra', anioEgreso: '2024', correoIInstitucional: 'cristian.salas@upsjb.edu.pe', sedeFilial: 'Filial Chincha', facultad: 'Ingenierías', carrera: 'Ingeniería de Sistemas' },
-	// 	{ nombre: 'María José', apellidoPaterno: 'Del Castillo', apellidoMaterno: 'Zúñiga', anioEgreso: '2022', correoIInstitucional: 'maria.delcastillo@upsjb.edu.pe', sedeFilial: 'Sede Chorrillos', facultad: 'Derecho y Ciencias Empresariales', carrera: 'Derecho' },
-	// 	{ nombre: 'Piero Alessandro', apellidoPaterno: 'Vargas', apellidoMaterno: 'Poma', anioEgreso: '2021', correoIInstitucional: 'piero.vargas@upsjb.edu.pe', sedeFilial: 'Sede San Borja', facultad: 'Ciencias de la Salud', carrera: 'Medicina Humana' },
-	// 	{ nombre: 'Nicole Alexandra', apellidoPaterno: 'Reátegui', apellidoMaterno: 'Córdova', anioEgreso: '2022', correoIInstitucional: 'nicole.reategui@upsjb.edu.pe', sedeFilial: 'Filial Ica', facultad: 'Derecho y Ciencias Empresariales', carrera: 'Contabilidad' },
-	// 	{ nombre: 'Luis Fernando', apellidoPaterno: 'Salcedo', apellidoMaterno: 'Pinto', anioEgreso: '2021', correoIInstitucional: 'luis.salcedo@upsjb.edu.pe', sedeFilial: 'Filial Chincha', facultad: 'Ingenierías', carrera: 'Ingeniería Agroindustrial' },
-	// 	{ nombre: 'Karen Alejandra', apellidoPaterno: 'Olivares', apellidoMaterno: 'Lévano', anioEgreso: '2020', correoIInstitucional: 'karen.olivares@upsjb.edu.pe', sedeFilial: 'Sede Chorrillos', facultad: 'Ciencias de la Salud', carrera: 'Enfermería' },
-	// 	{ nombre: 'Diego Armando', apellidoPaterno: 'Bautista', apellidoMaterno: 'Sarmiento', anioEgreso: '2019', correoIInstitucional: 'diego.bautista@upsjb.edu.pe', sedeFilial: 'Filial Ica', facultad: 'Ingenierías', carrera: 'Ingeniería de Sistemas' },
-	// 	{ nombre: 'Fiorella Andrea', apellidoPaterno: 'Arroyo', apellidoMaterno: 'Vilchez', anioEgreso: '2015', correoIInstitucional: 'fiorella.arroyo@upsjb.edu.pe', sedeFilial: 'Sede San Borja', facultad: 'Ciencias de la Salud', carrera: 'Psicología' },
-	// 	{ nombre: 'Juan Esteban', apellidoPaterno: 'Mendoza', apellidoMaterno: 'Caballero', anioEgreso: '2017', correoIInstitucional: 'juan.mendoza@upsjb.edu.pe', sedeFilial: 'Filial Chincha', facultad: 'Derecho y Ciencias Empresariales', carrera: 'Administración y Marketing' },
-	// 	{ nombre: 'Rosa Milagros', apellidoPaterno: 'Huertas', apellidoMaterno: 'Quintana', anioEgreso: '2022', correoIInstitucional: 'rosa.huertas@upsjb.edu.pe', sedeFilial: 'Sede Chorrillos', facultad: 'Ciencias de la Salud', carrera: 'Laboratorio Clínico y Anatomía Patológica' },
-	// 	{ nombre: 'Fernando Alonso', apellidoPaterno: 'Sifuentes', apellidoMaterno: 'Loayza', anioEgreso: '2015', correoIInstitucional: 'fernando.sifuentes@upsjb.edu.pe', sedeFilial: 'Filial Ica', facultad: 'Ingenierías', carrera: 'Ingeniería en Enología y Viticultura' },
-	// 	{ nombre: 'Patricia Elena', apellidoPaterno: 'Correa', apellidoMaterno: 'Zambrano', anioEgreso: '2015', correoIInstitucional: 'patricia.correa@upsjb.edu.pe', sedeFilial: 'Sede San Borja', facultad: 'Ciencias de la Salud', carrera: 'Estomatología' },
-	// 	{ nombre: 'Ricardo Javier', apellidoPaterno: 'Tapia', apellidoMaterno: 'Garcés', anioEgreso: '2013', correoIInstitucional: 'ricardo.tapia@upsjb.edu.pe', sedeFilial: 'Filial Chincha', facultad: 'Ciencias de la Salud', carrera: 'Medicina Veterinaria y Zootecnia' },
-	// 	{ nombre: 'Cynthia Beatriz', apellidoPaterno: 'Navarrete', apellidoMaterno: 'Cueva', anioEgreso: '2012', correoIInstitucional: 'cynthia.navarrete@upsjb.edu.pe', sedeFilial: 'Sede Chorrillos', facultad: 'Ciencias de la Salud', carrera: 'Terapia Física y Rehabilitación' },
-	// 	{ nombre: 'Óscar Iván', apellidoPaterno: 'Valdivieso', apellidoMaterno: 'Pizarro', anioEgreso: '2011', correoIInstitucional: 'oscar.valdivieso@upsjb.edu.pe', sedeFilial: 'Filial Ica', facultad: 'Derecho y Ciencias Empresariales', carrera: 'Administración y Negocios Internacionales' },
-	// 	{ nombre: 'Ruth Karina', apellidoPaterno: 'Alfaro', apellidoMaterno: 'Gavidia', anioEgreso: '2010', correoIInstitucional: 'ruth.alfaro@upsjb.edu.pe', sedeFilial: 'Sede San Borja', facultad: 'Ingenierías', carrera: 'Ingeniería Civil' },
-	// 	{ nombre: 'Kevin Mauricio', apellidoPaterno: 'Cisneros', apellidoMaterno: 'Peralta', anioEgreso: '2025', correoIInstitucional: 'kevin.cisneros@upsjb.edu.pe', sedeFilial: 'Filial Chincha', facultad: 'Derecho y Ciencias Empresariales', carrera: 'Derecho' },
+	// 	   { nombre: 'Isabella María', apellidoPaterno: 'Cabrera', apellidoMaterno: 'Salazar', anioEgreso: '2025', correoIInstitucional: 'isabella.cabrera@upsjb.edu.pe', sedeFilial: 'Sede Chorrillos', facultad: 'Ciencias de la Salud', carrera: 'Psicología' },
+	// 	   { nombre: 'Jean Pierre', apellidoPaterno: 'Medrano', apellidoMaterno: 'Arias', anioEgreso: '2025', correoIInstitucional: 'jean.medrano@upsjb.edu.pe', sedeFilial: 'Sede San Borja', facultad: 'Ingenierías', carrera: 'Ingeniería Civil' },
+	// 	   { nombre: 'Melissa Fernanda', apellidoPaterno: 'Rengifo', apellidoMaterno: 'Paredes', anioEgreso: '2023', correoIInstitucional: 'melissa.rengifo@upsjb.edu.pe', sedeFilial: 'Filial Ica', facultad: 'Derecho y Ciencias Empresariales', carrera: 'Administración de Empresas' },
+	// 	   { nombre: 'Cristian Eduardo', apellidoPaterno: 'Salas', apellidoMaterno: 'Gamarra', anioEgreso: '2024', correoIInstitucional: 'cristian.salas@upsjb.edu.pe', sedeFilial: 'Filial Chincha', facultad: 'Ingenierías', carrera: 'Ingeniería de Sistemas' },
+	// 	   { nombre: 'María José', apellidoPaterno: 'Del Castillo', apellidoMaterno: 'Zúñiga', anioEgreso: '2022', correoIInstitucional: 'maria.delcastillo@upsjb.edu.pe', sedeFilial: 'Sede Chorrillos', facultad: 'Derecho y Ciencias Empresariales', carrera: 'Derecho' },
+	// 	   { nombre: 'Piero Alessandro', apellidoPaterno: 'Vargas', apellidoMaterno: 'Poma', anioEgreso: '2021', correoIInstitucional: 'piero.vargas@upsjb.edu.pe', sedeFilial: 'Sede San Borja', facultad: 'Ciencias de la Salud', carrera: 'Medicina Humana' },
+	// 	   { nombre: 'Nicole Alexandra', apellidoPaterno: 'Reátegui', apellidoMaterno: 'Córdova', anioEgreso: '2022', correoIInstitucional: 'nicole.reategui@upsjb.edu.pe', sedeFilial: 'Filial Ica', facultad: 'Derecho y Ciencias Empresariales', carrera: 'Contabilidad' },
+	// 	   { nombre: 'Luis Fernando', apellidoPaterno: 'Salcedo', apellidoMaterno: 'Pinto', anioEgreso: '2021', correoIInstitucional: 'luis.salcedo@upsjb.edu.pe', sedeFilial: 'Filial Chincha', facultad: 'Ingenierías', carrera: 'Ingeniería Agroindustrial' },
+	// 	   { nombre: 'Karen Alejandra', apellidoPaterno: 'Olivares', apellidoMaterno: 'Lévano', anioEgreso: '2020', correoIInstitucional: 'karen.olivares@upsjb.edu.pe', sedeFilial: 'Sede Chorrillos', facultad: 'Ciencias de la Salud', carrera: 'Enfermería' },
+	// 	   { nombre: 'Diego Armando', apellidoPaterno: 'Bautista', apellidoMaterno: 'Sarmiento', anioEgreso: '2019', correoIInstitucional: 'diego.bautista@upsjb.edu.pe', sedeFilial: 'Filial Ica', facultad: 'Ingenierías', carrera: 'Ingeniería de Sistemas' },
+	// 	   { nombre: 'Fiorella Andrea', apellidoPaterno: 'Arroyo', apellidoMaterno: 'Vilchez', anioEgreso: '2015', correoIInstitucional: 'fiorella.arroyo@upsjb.edu.pe', sedeFilial: 'Sede San Borja', facultad: 'Ciencias de la Salud', carrera: 'Psicología' },
+	// 	   { nombre: 'Juan Esteban', apellidoPaterno: 'Mendoza', apellidoMaterno: 'Caballero', anioEgreso: '2017', correoIInstitucional: 'juan.mendoza@upsjb.edu.pe', sedeFilial: 'Filial Chincha', facultad: 'Derecho y Ciencias Empresariales', carrera: 'Administración y Marketing' },
+	// 	   { nombre: 'Rosa Milagros', apellidoPaterno: 'Huertas', apellidoMaterno: 'Quintana', anioEgreso: '2022', correoIInstitucional: 'rosa.huertas@upsjb.edu.pe', sedeFilial: 'Sede Chorrillos', facultad: 'Ciencias de la Salud', carrera: 'Laboratorio Clínico y Anatomía Patológica' },
+	// 	   { nombre: 'Fernando Alonso', apellidoPaterno: 'Sifuentes', apellidoMaterno: 'Loayza', anioEgreso: '2015', correoIInstitucional: 'fernando.sifuentes@upsjb.edu.pe', sedeFilial: 'Filial Ica', facultad: 'Ingenierías', carrera: 'Ingeniería en Enología y Viticultura' },
+	// 	   { nombre: 'Patricia Elena', apellidoPaterno: 'Correa', apellidoMaterno: 'Zambrano', anioEgreso: '2015', correoIInstitucional: 'patricia.correa@upsjb.edu.pe', sedeFilial: 'Sede San Borja', facultad: 'Ciencias de la Salud', carrera: 'Estomatología' },
+	// 	   { nombre: 'Ricardo Javier', apellidoPaterno: 'Tapia', apellidoMaterno: 'Garcés', anioEgreso: '2013', correoIInstitucional: 'ricardo.tapia@upsjb.edu.pe', sedeFilial: 'Filial Chincha', facultad: 'Ciencias de la Salud', carrera: 'Medicina Veterinaria y Zootecnia' },
+	// 	   { nombre: 'Cynthia Beatriz', apellidoPaterno: 'Navarrete', apellidoMaterno: 'Cueva', anioEgreso: '2012', correoIInstitucional: 'cynthia.navarrete@upsjb.edu.pe', sedeFilial: 'Sede Chorrillos', facultad: 'Ciencias de la Salud', carrera: 'Terapia Física y Rehabilitación' },
+	// 	   { nombre: 'Óscar Iván', apellidoPaterno: 'Valdivieso', apellidoMaterno: 'Pizarro', anioEgreso: '2011', correoIInstitucional: 'oscar.valdivieso@upsjb.edu.pe', sedeFilial: 'Filial Ica', facultad: 'Derecho y Ciencias Empresariales', carrera: 'Administración y Negocios Internacionales' },
+	// 	   { nombre: 'Ruth Karina', apellidoPaterno: 'Alfaro', apellidoMaterno: 'Gavidia', anioEgreso: '2010', correoIInstitucional: 'ruth.alfaro@upsjb.edu.pe', sedeFilial: 'Sede San Borja', facultad: 'Ingenierías', carrera: 'Ingeniería Civil' },
+	// 	   { nombre: 'Kevin Mauricio', apellidoPaterno: 'Cisneros', apellidoMaterno: 'Peralta', anioEgreso: '2025', correoIInstitucional: 'kevin.cisneros@upsjb.edu.pe', sedeFilial: 'Filial Chincha', facultad: 'Derecho y Ciencias Empresariales', carrera: 'Derecho' },
     // ]
 
     readonly egresados: Egresado[] = [
@@ -181,11 +208,11 @@ export class Dashboard {
 
 
 	// Función: Construye las fases finales con sus años y egresados correspondientes.
-	readonly fases: FaseDashboard[] = this.construirFases();
+	fases: FaseDashboard[] = [];
 
 
 	// Función: Guarda el ID de la fase seleccionada actualmente.
-	idFaseSeleccionada = this.obtenerIdFaseInicial();
+	idFaseSeleccionada = '';
 
 
 	// Función: Guarda el valor actual de los controles de filtro antes de aplicarlos.
@@ -206,7 +233,7 @@ export class Dashboard {
 
 	// Función: Devuelve la cantidad total de egresados registrados.
 	get cantidadEgresados(): number {
-		return this.egresados.length;
+		return this.egresadoBK.length;
 	}
 
 
@@ -217,24 +244,24 @@ export class Dashboard {
 
 
 	// Función: Devuelve los egresados pertenecientes a la fase seleccionada.
-	get egresadosFaseSeleccionada(): Egresado[] {
+	get egresadosFaseSeleccionada(): EgresadoBK[] {
 		return this.faseSeleccionada?.egresados ?? [];
 	}
 
 
 	// Función: Devuelve los egresados que se mostrarán en la tabla.
-	get egresadosVisibles(): Egresado[] {
+	get egresadosVisibles(): EgresadoBK[] {
 		return this.aplicarCriterios(this.egresadosBaseVisibles);
 	}
 
 
 	// Función: Devuelve los egresados base según la fase seleccionada.
-	get egresadosBaseVisibles(): Egresado[] {
+	get egresadosBaseVisibles(): EgresadoBK[] {
 
 		if (this.egresadosFaseSeleccionada.length > 0) {
 			return this.egresadosFaseSeleccionada;
 		}
-		return [...this.egresados].sort((a, b) => Number(b.anioEgreso) - Number(a.anioEgreso));
+		return [...this.egresadoBK].sort((a, b) => Number(b.anioEgreso) - Number(a.anioEgreso));
 	}
 
 
@@ -252,20 +279,20 @@ export class Dashboard {
 
 	// Función: Devuelve las opciones dinámicas de sede según los registros visibles.
 	get opcionesSede(): string[] {
-		return this.obtenerOpcionesUnicas(this.egresadosBaseVisibles.map((egresado) => egresado.sedeFilial));
+		return this.obtenerOpcionesUnicas(this.egresadosBaseVisibles.map((egresado) => egresado.sede));
 	}
 
 
 	// Función: Devuelve las opciones dinámicas de año según los registros visibles.
 	get opcionesAnio(): string[] {
-		return this.obtenerOpcionesUnicas(this.egresadosBaseVisibles.map((egresado) => egresado.anioEgreso))
+		return this.obtenerOpcionesUnicas(this.egresadosBaseVisibles.map((egresado) => String(egresado.anioEgreso)))
 			.sort((a, b) => Number(b) - Number(a));
 	}
 
 
 	// Función: Indica si se están mostrando todos los egresados porque la fase seleccionada no tiene registros.
 	get mostrarTodosEgresadosComoRespaldo(): boolean {
-		return this.egresadosFaseSeleccionada.length === 0 && this.egresados.length > 0;
+		return this.egresadosFaseSeleccionada.length === 0 && this.egresadoBK.length > 0;
 	}
 
 
@@ -347,8 +374,8 @@ export class Dashboard {
 
 
 	// Función: Une los nombres y apellidos del egresado.
-	obtenerNombreCompleto(egresado: Egresado): string {
-		return `${egresado.nombre} ${egresado.apellidoPaterno} ${egresado.apellidoMaterno}`;
+	obtenerNombreCompleto(egresado: EgresadoBK): string {
+		return egresado.nombresApellidos;
 	}
 
 
@@ -359,8 +386,8 @@ export class Dashboard {
 
 
 	// Función: Optimiza el renderizado de egresados dentro del *ngFor.
-	identificarEgresado(_: number, egresado: Egresado): string {
-		return `${egresado.nombre}-${egresado.apellidoPaterno}-${egresado.apellidoMaterno}-${egresado.anioEgreso}-${egresado.carrera}-${egresado.correoIInstitucional}`;
+	identificarEgresado(_: number, egresado: EgresadoBK): string {
+		return `${egresado.numeroDocumento}-${egresado.anioEgreso}-${egresado.carrera}-${egresado.correoElectronico}`;
 	}
 
 
@@ -370,7 +397,7 @@ export class Dashboard {
 		return this.plantillasFases.map((plantilla) => {
 			const anios = this.obtenerAniosPorFase(plantilla);
 
-			const egresados = this.egresados
+			const egresados = this.egresadoBK
 				.filter((egresado) => anios.includes(Number(egresado.anioEgreso)))
 				.sort((a, b) => Number(b.anioEgreso) - Number(a.anioEgreso));
 
@@ -390,8 +417,9 @@ export class Dashboard {
 	// Función: Calcula los años que pertenecen a una fase según el año actual.
 	private obtenerAniosPorFase(plantilla: PlantillaFase): number[] {
 
-		const anioMaximoDatos = Math.max(...this.egresados.map((egresado) => Number(egresado.anioEgreso)), this.anioActual);
-		const anioMinimoDatos = Math.min(...this.egresados.map((egresado) => Number(egresado.anioEgreso)), this.anioActual - 8);
+		const aniosEgreso = this.egresadoBK.map((egresado) => Number(egresado.anioEgreso));
+		const anioMaximoDatos = Math.max(...aniosEgreso, this.anioActual);
+		const anioMinimoDatos = Math.min(...aniosEgreso, this.anioActual - 8);
 
 		const anioInicio = Math.min(this.anioActual - plantilla.aniosMinimosDesdeEgreso, anioMaximoDatos);
 
@@ -418,7 +446,7 @@ export class Dashboard {
 
 
 	// Función: Devuelve true si el egresado cumple el texto buscado en cualquiera de los seis campos de la tabla.
-	private cumpleFiltroTexto(egresado: Egresado): boolean {
+	private cumpleFiltroTexto(egresado: EgresadoBK): boolean {
 		const texto = this.normalizarTexto(this.filtroTexto);
 
 		if (!texto) {
@@ -427,11 +455,12 @@ export class Dashboard {
 
 		const camposBuscables = [
 			this.obtenerNombreCompleto(egresado),
-			egresado.anioEgreso,
-			egresado.correoIInstitucional,
+			String(egresado.anioEgreso),
+			egresado.correoElectronico,
 			egresado.carrera,
-			egresado.sedeFilial,
+			egresado.sede,
 			egresado.facultad,
+			egresado.numeroDocumento,
 		];
 
 		return camposBuscables.some((campo) => this.normalizarTexto(campo).includes(texto));
@@ -439,13 +468,13 @@ export class Dashboard {
 
 
 	// Función: Aplica todos los criterios activos de filtro sobre un listado de egresados.
-	private aplicarCriterios(egresados: Egresado[]): Egresado[] {
+	private aplicarCriterios(egresados: EgresadoBK[]): EgresadoBK[] {
 		return egresados.filter((egresado) => {
 			const coincideTexto = this.cumpleFiltroTexto(egresado);
 			const coincideCarrera = !this.filtroCarrera || egresado.carrera === this.filtroCarrera;
 			const coincideFacultad = !this.filtroFacultad || egresado.facultad === this.filtroFacultad;
-			const coincideSede = !this.filtroSede || egresado.sedeFilial === this.filtroSede;
-			const coincideAnio = !this.filtroAnio || egresado.anioEgreso === this.filtroAnio;
+			const coincideSede = !this.filtroSede || egresado.sede === this.filtroSede;
+			const coincideAnio = !this.filtroAnio || String(egresado.anioEgreso) === this.filtroAnio;
 
 			return coincideTexto && coincideCarrera && coincideFacultad && coincideSede && coincideAnio;
 		});
@@ -466,5 +495,35 @@ export class Dashboard {
 			.replace(/[\u0300-\u036f]/g, '');
 	}
 
+    obtenerEncuestados() {
+
+        this._http.get('consultar-encuestados').subscribe({
+
+            next: (res) => {
+
+                console.log(res.lista);
+                this.egresadoBK = res.lista;
+				this.fases = this.construirFases();
+				this.idFaseSeleccionada = this.obtenerIdFaseInicial();
+
+                this.cdr.detectChanges();
+
+            },
+
+            error: (err) => {
+
+                console.error('Error al obtener los encuestados:', err);
+
+            }
+
+        });
+
+    }
+
 }
+
+
+
+/**/
+
 

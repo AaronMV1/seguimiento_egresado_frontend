@@ -200,11 +200,20 @@
 				<span>Carrera Profesional</span>
 			</div>
 
-			<div class="fila-tabla" *ngFor="let egresado of egresadosVisibles; trackBy: identificarEgresado">
+			<!-- <div class="fila-tabla" *ngFor="let egresado of egresadosVisibles; trackBy: identificarEgresado">
 				<span>{{ obtenerNombreCompleto(egresado) }}</span>
 				<span>{{ egresado.anioEgreso }}</span>
 				<span>{{ egresado.correoIInstitucional }}</span>
 				<span>{{ egresado.sedeFilial }}</span>
+				<span>{{ egresado.facultad }}</span>
+				<span>{{ egresado.carrera }}</span>
+			</div> -->
+
+            <div class="fila-tabla" *ngFor="let egresado of egresadosVisibles; trackBy: identificarEgresado">
+				<span>{{ egresado.nombresApellidos }}</span>
+				<span>{{ egresado.anioEgreso }}</span>
+				<span>{{ egresado.correoElectronico }}</span>
+				<span>{{ egresado.sede }}</span>
 				<span>{{ egresado.facultad }}</span>
 				<span>{{ egresado.carrera }}</span>
 			</div>
@@ -218,3 +227,9 @@
 	</section>
 
 </section>
+
+
+
+<!-- -->
+
+

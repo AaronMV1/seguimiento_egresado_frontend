@@ -73,12 +73,12 @@
 
                     <div class="question-input">
 
-                        <select id="tipoDocumentos" [(ngModel)]="tipoDocumento" class="text-input documento-select">
+                        <select id="tipoDocumentos" [(ngModel)]="tipoDocumento" class="text-input documento-select" (change)="cambioDNI()">
                             <option value="" disabled>Seleccione una opción</option>
                             <option *ngFor="let option of tipoDocumentoOptions" [value]="option.value"> {{ option.text }}</option>
                         </select>
 
-                        <input id="numeroDocumento" [(ngModel)]="numeroDocumento" type="text" class="text-input documento-input" placeholder="Escriba su respuesta" />
+                        <input id="numeroDocumento" [(ngModel)]="numeroDocumento" type="text" class="text-input documento-input" placeholder="Escriba su respuesta"  (input)="cambioDNI()" />
 
                         <button type="button" class="btn-submit documento-button" (click)="validarDatoEgresado()">Validar datos</button>
 
@@ -102,6 +102,8 @@
                     </div>
                 </div>
 
+                <span class="question-alert" *ngIf="nombresApellidosLabel">Este campo es obligatorio o contiene un formato inválido</span>
+
             </div>
 
             <div class="question">
@@ -115,11 +117,13 @@
                 <div class="question-content">
                     <div class="question-select">
                         <select id="genero" [(ngModel)]="genero" class="text-input documento-select">
-                            <option value="" disabled>Seleccione una opción</option>
+                            <option value="0" disabled selected>Seleccione una opción</option>
                             <option *ngFor="let option of generoOptions" [value]="option.value"> {{ option.text }}</option>
                         </select>
                     </div>
                 </div>
+
+                <span class="question-alert" *ngIf="generoLabel">Este campo es obligatorio o contiene un formato inválido</span>
 
             </div>
 
@@ -137,6 +141,8 @@
                     </div>
                 </div>
 
+                <span class="question-alert" *ngIf="anioEgresoLabel">Este campo es obligatorio o contiene un formato inválido</span>
+
             </div>
 
             <div class="question">
@@ -150,13 +156,15 @@
                 <div class="question-content">
                     <div class="question-select">
                         <select id="sedes" [(ngModel)]="sede" class="text-input documento-select">
-                            <option value="" disabled>Seleccione una opción</option>
+                            <option value="0" disabled selected>Seleccione una opción</option>
                             @for (option of listaSedes; track option.value) {
-                                <option [value]="option.nombre">{{ option.nombre }}</option>
+                                <option [value]="option.id">{{ option.nombre }}</option>
                             }
                         </select>
                     </div>
                 </div>
+
+                <span class="question-alert" *ngIf="sedeLabel">Este campo es obligatorio o contiene un formato inválido</span>
 
             </div>
 
@@ -171,11 +179,13 @@
                 <div class="question-content">
                     <div class="question-select">
                         <select id="facultades" [(ngModel)]="facultad" class="text-input documento-select">
-                            <option value="" disabled>Seleccione una opción</option>
+                            <option value="0" disabled selected>Seleccione una opción</option>
                             <option *ngFor="let option of facultadOptions" [value]="option.value"> {{ option.text }}</option>
                         </select>
                     </div>
                 </div>
+
+                <span class="question-alert" *ngIf="facultadLabel">Este campo es obligatorio o contiene un formato inválido</span>
 
             </div>
 
@@ -190,11 +200,13 @@
                 <div class="question-content">
                     <div class="question-select">
                         <select id="carreras" [(ngModel)]="carrera" class="text-input documento-select">
-                            <option value="" disabled>Seleccione una opción</option>
+                            <option value="0" disabled selected>Seleccione una opción</option>
                             <option *ngFor="let option of carreraOptions" [value]="option.value"> {{ option.text }}</option>
                         </select>
                     </div>
                 </div>
+
+                <span class="question-alert" *ngIf="carreraLabel">Este campo es obligatorio o contiene un formato inválido</span>
 
             </div>
 
@@ -212,7 +224,7 @@
                     </div>
                 </div>
 
-                <span class="question-alert">Este campo es obligatorio o contiene un formato inválido</span>
+                <span class="question-alert" *ngIf="correoElectronicoLabel">Este campo es obligatorio o contiene un formato inválido</span>
 
             </div>
 
@@ -229,6 +241,8 @@
                         <input id="numeroCelular" [(ngModel)]="numeroCelular" type="text" class="text-input documento-input" placeholder="Escriba su respuesta" />
                     </div>
                 </div>
+
+                <span class="question-alert" *ngIf="numeroCelularLabel">Este campo es obligatorio o contiene un formato inválido</span>
 
             </div>
 
@@ -980,4 +994,6 @@
 
 
 </div>
+
+
 
