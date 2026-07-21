@@ -5,11 +5,43 @@ import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Http } from '../../core/services/http';
 import Swal from 'sweetalert2';
+import { CapitalizePipe } from '../../shared/pipes/capitalize.pipe';
+import { Strings } from '../../shared/utils/strings';
+
+
+const CARRERAS_POR_FACULTAD: Record<number, { value: number; text: string }[]> = {
+    1: [
+        { value: 1, text: 'Medicina Humana' },
+        { value: 2, text: 'Enfermería' },
+        { value: 3, text: 'Estomatología' },
+        { value: 4, text: 'Psicología' },
+        { value: 5, text: 'Tecnología Médica en Laboratorio Clínico y Anatomía Patológica' },
+        { value: 6, text: 'Tecnología Médica en Terapia Física y Rehabilitación' },
+        { value: 7, text: 'Medicina Veterinaria y Zootecnia' },
+    ],
+    2: [
+        { value: 8, text: 'Ingeniería de Sistemas' },
+        { value: 9, text: 'Ingeniería Civil' },
+        { value: 10, text: 'Ingeniería Agroindustrial' },
+        { value: 11, text: 'Ingeniería en Enología y Viticultura' },
+    ],
+    3: [
+        { value: 12, text: 'Derecho' },
+        { value: 13, text: 'Contabilidad' },
+        { value: 14, text: 'Administración de Empresas' },
+        { value: 15, text: 'Administración y Negocios Internacionales' },
+        { value: 16, text: 'Administración y Marketing' },
+        { value: 17, text: 'Turismo, Hotelería y Gastronomía' },
+    ],
+    4: [
+        { value: 18, text: 'Ciencias de la Comunicación' },
+    ],
+};
 
 
 @Component({
     selector: 'app-encuesta',
-    imports: [ CommonModule, FormsModule ],
+    imports: [ CapitalizePipe, CommonModule, FormsModule ],
     templateUrl: './encuesta.html',
     styleUrl: './encuesta.css',
 })
@@ -18,7 +50,7 @@ import Swal from 'sweetalert2';
 export class Encuesta implements OnInit {
 
 
-    seccionActual = 4;
+    seccionActual = 1;
 
 
     readonly totalSecciones = 6;
@@ -36,8 +68,8 @@ export class Encuesta implements OnInit {
     nombresApellidos: string = '';
     genero: string = '';
     sede: number | null = null;
-    facultad: number | null = null;
-    carrera: number | null = null;
+    facultad: number = 0;
+    carrera: number = 0;
     anioEgreso: string = '';
     correoElectronico: string = '';
     numeroCelular: string = '';
@@ -72,16 +104,16 @@ export class Encuesta implements OnInit {
     numeroCelularLabel: boolean = false;
 
 
-    tipoDocumentoOptions = [
-        { value: '01', text: 'DNI' },
-        { value: '02', text: 'Pasaporte' },
-        { value: '03', text: 'Otro' }
-    ];
+    tipoDocumentoOptions: any[] = [];
+    // tipoDocumentoOptions = [
+    //     { value: '01', text: 'DNI' },
+    //     { value: '02', text: 'Pasaporte' },
+    //     { value: '03', text: 'Otro' }
+    // ];
 
     generoOptions = [
         { value: 'M', text: 'Masculino' },
         { value: 'F', text: 'Femenino' },
-        { value: 'O', text: 'Otro' },
     ];
 
     sedeOptions = [
@@ -99,17 +131,10 @@ export class Encuesta implements OnInit {
         { value: 4, text: 'Comunicación y Ciencias Administrativas' },
     ];
 
-    carreraOptions = [
-        { value: 1, text: 'Medicina Humana' },
-        { value: 2, text: 'Enfermería' },
-        { value: 3, text: 'Ingeniería de Sistemas' },
-        { value: 4, text: 'Ingeniería Industrial' },
-        { value: 5, text: 'Derecho' },
-        { value: 6, text: 'Administración de Empresas' },
-        { value: 7, text: 'Contabilidad' },
-        { value: 8, text: 'Comunicación Social' },
-    ];
 
+    get carreraOptions(): { value: number; text: string }[] {
+        return CARRERAS_POR_FACULTAD[this.facultad] ?? [];
+    }
 
 
     get seccionTitulo(): string {
@@ -130,7 +155,8 @@ export class Encuesta implements OnInit {
 
     ngOnInit(): void {
         this.obtenerSedeLista();
-        this.camposTest()
+        this.camposTest();
+        this.obtenerTipoDocumentoLista();
     }
 
 
@@ -240,7 +266,25 @@ export class Encuesta implements OnInit {
             next: (res) => {
 
                 this.listaSedes = res.lista;
+                this.cdr.detectChanges();
 
+            },
+
+            error: () => {
+
+            },
+
+        });
+
+    }
+
+    obtenerTipoDocumentoLista(): void {
+
+        this._http.getUPSJBIntegracionesAdmision('parametro/tipoDocumento').subscribe({
+
+            next: (res) => {
+
+                this.tipoDocumentoOptions = res.listaParametro;
                 this.cdr.detectChanges();
 
             },
@@ -265,10 +309,10 @@ export class Encuesta implements OnInit {
         this.correoElectronico = this.correoElectronico.trim();
         this.numeroCelular = this.numeroCelular.replace(/\s+/g, '');
         this.nombresApellidosLabel = this.esTextoVacio(this.nombresApellidos);
-        this.generoLabel = this.esTextoVacio(this.genero);
+        this.generoLabel = this.esTextoVacio(this.genero) || this.genero == '0';
         this.sedeLabel = this.sede === null || this.sede <= 0;
-        this.facultadLabel = this.facultad === null || this.facultad <= 0;
-        this.carreraLabel = this.carrera === null || this.carrera <= 0;
+        this.facultadLabel = this.esTextoVacio(this.facultad) || this.facultad == 0;
+        this.carreraLabel = this.esTextoVacio(this.carrera) || this.carrera == 0;
         this.anioEgresoLabel = !this.esAnioEgresoValido(this.anioEgreso);
         this.correoElectronicoLabel = !this.esCorreoValido(this.correoElectronico);
         this.numeroCelularLabel = !this.esCelularValido(this.numeroCelular);
@@ -335,19 +379,26 @@ export class Encuesta implements OnInit {
 
                 // res.reverse();
 
-                const egresado = res?.[0];
+                const egresado = [...(res ?? [])].sort((a, b) => {
+                    const [anioA, cicloA] = a.descr_egreso.split('-').map(Number);
+                    const [anioB, cicloB] = b.descr_egreso.split('-').map(Number);
+                    return anioA - anioB || cicloA - cicloB;
+                })[0];
 
                 if (!egresado?.nombre_completo && !egresado?.descr_egreso) {
+
                     Swal.fire({
                         title: 'Datos no encontrados',
                         text: 'No se encontraron datos del egresado.\nPor favor, verifique la información e inténtelo nuevamente.',
                         icon: 'error',
                         confirmButtonText: 'Aceptar',
                     });
+
                     return;
+
                 }
 
-                this.nombresApellidos = String(egresado.nombre_completo).trim();
+                this.nombresApellidos = Strings.capitalize(egresado.nombre_completo).trim();
                 this.anioEgreso = this.obtenerAnioEgreso(egresado.descr_egreso);
                 this.seccionFase =this.calcularSeccionSegunAnioEgreso();
 
@@ -366,7 +417,6 @@ export class Encuesta implements OnInit {
 
                 this.datosEgresadoValidados = true;
 
-                // Fuerza la actualización inmediata del HTML.
                 this.cdr.detectChanges();
 
             },
@@ -512,14 +562,14 @@ export class Encuesta implements OnInit {
 
 
     camposTest(): void {
-        this.tipoDocumento = '01';
-        this.numeroDocumento = '75116260';
-        this.genero = 'M';
-        this.sede = 1;
-        this.facultad = 1;
-        this.carrera = 1;
-        this.correoElectronico = 'aaron-mv@outlook.com';
-        this.numeroCelular = '933216749';
+        // this.tipoDocumento = '01';
+        // this.numeroDocumento = '75116260';
+        this.genero = '0';
+        this.sede = 0;
+        // this.facultad = 0;
+        // this.carrera = 0;
+        // this.correoElectronico = 'aaron-mv@outlook.com';
+        // this.numeroCelular = '933216749';
     }
 
     limpiarFormulario(): void {
@@ -566,6 +616,10 @@ export class Encuesta implements OnInit {
 
     }
 
+    onFacultadChange(): void {
+        this.carrera = 0;
+    }
+
     cambioDNI(): void {
         this.nombresApellidos = '';
         this.anioEgreso = '';
@@ -586,21 +640,11 @@ export class Encuesta implements OnInit {
     if (this.seccionFase === 3) {
 
         const valido =
-            !this.esTextoVacio(
-                this.fase1participacion
-            ) &&
-            !this.esTextoVacio(
-                this.fase1situacion
-            ) &&
-            !this.esTextoVacio(
-                this.fase1trabajando
-            ) &&
-            !this.esTextoVacio(
-                this.fase1primerempleo
-            ) &&
-            !this.esTextoVacio(
-                this.fase1medios
-            );
+            !this.esTextoVacio(this.fase1participacion) &&
+            !this.esTextoVacio(this.fase1situacion) &&
+            !this.esTextoVacio( this.fase1trabajando) &&
+            !this.esTextoVacio(this.fase1primerempleo) &&
+            !this.esTextoVacio(this.fase1medios);
 
         return valido;
     }
@@ -608,34 +652,18 @@ export class Encuesta implements OnInit {
     if (this.seccionFase === 4) {
 
         const preguntasPrincipalesValidas =
-            !this.esTextoVacio(
-                this.fase2satisfaccionestudios
-            ) &&
-            !this.esTextoVacio(
-                this.fase2participacion
-            ) &&
-            !this.esTextoVacio(
-                this.fase2satisfaccionservicio
-            ) &&
-            !this.esTextoVacio(
-                this.fase2planificacion
-            );
+            !this.esTextoVacio(this.fase2satisfaccionestudios) &&
+            !this.esTextoVacio(this.fase2participacion) &&
+            !this.esTextoVacio(this.fase2satisfaccionservicio) &&
+            !this.esTextoVacio(this.fase2planificacion);
 
         const correoJefeValido =
-            this.esTextoVacio(
-                this.fase2empresaempleadorcorreo
-            ) ||
-            this.esCorreoValido(
-                this.fase2empresaempleadorcorreo
-            );
+            this.esTextoVacio(this.fase2empresaempleadorcorreo) ||
+            this.esCorreoValido(this.fase2empresaempleadorcorreo);
 
         const telefonoJefeValido =
-            this.esTextoVacio(
-                this.fase2empresaempleadornumero
-            ) ||
-            this.esCelularValido(
-                this.fase2empresaempleadornumero
-            );
+            this.esTextoVacio(this.fase2empresaempleadornumero) ||
+            this.esCelularValido(this.fase2empresaempleadornumero);
 
         return (
             preguntasPrincipalesValidas &&
@@ -647,30 +675,18 @@ export class Encuesta implements OnInit {
     if (this.seccionFase === 5) {
 
         return (
-            !this.esTextoVacio(
-                this.fase3especialidad
-            ) &&
-            !this.esTextoVacio(
-                this.fase3participacion
-            ) &&
-            !this.esTextoVacio(
-                this.fase3educacioncontinua
-            )
+            !this.esTextoVacio(this.fase3especialidad) &&
+            !this.esTextoVacio(this.fase3participacion) &&
+            !this.esTextoVacio(this.fase3educacioncontinua)
         );
     }
 
     if (this.seccionFase === 6) {
 
         return (
-            !this.esTextoVacio(
-                this.fase4investigacion
-            ) &&
-            !this.esTextoVacio(
-                this.fase4innovacion
-            ) &&
-            !this.esTextoVacio(
-                this.fase4satisfaccion
-            )
+            !this.esTextoVacio(this.fase4investigacion) &&
+            !this.esTextoVacio(this.fase4innovacion) &&
+            !this.esTextoVacio(this.fase4satisfaccion)
         );
     }
 

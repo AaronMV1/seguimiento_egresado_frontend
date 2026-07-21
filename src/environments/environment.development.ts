@@ -5,7 +5,7 @@ export const environment = {
     production: false,
 
     apiBackend: {
-        backend: "http://localhost:8080/"
+        backend: "http://172.20.14.250:8080/"
     },
 
     apiUniversidad: {
@@ -16,8 +16,14 @@ export const environment = {
             },
             egresado: {
                 apiURL: "https://backdev-campus.upsjb.edu.pe/api-intranet-ps/api/egresado/",
+            },
+            admision: {
+                apiURL: "https://app.upsjb.edu.pe/api-admision/"
             }
+
         }
+
     }
 
 };
+

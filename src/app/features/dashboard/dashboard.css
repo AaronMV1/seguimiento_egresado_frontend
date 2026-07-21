@@ -39,7 +39,7 @@
 	border: 1px solid #dbe7f4;
 	border-radius: 1.2rem;
 	background: #ffffff;
-	padding: 1.8rem;
+	padding: 4rem;
 
 	h3 {
 		margin: 0 0 1.6rem;
@@ -164,7 +164,7 @@
 	/* grid-template-columns: minmax(24rem, 1.2fr) repeat(4, minmax(14rem, 1fr)) auto; */
     grid-template-columns: repeat(4, 1fr);
     grid-template-rows: repeat(2, 1fr);
-	gap: 1rem;
+	gap: 1rem 2rem;
 	align-items: end;
 	margin-bottom: 1.4rem;
 	padding: 1rem;
@@ -271,6 +271,8 @@
 .estado-vacio {
 	font-size: 1.4rem;
 	color: #7d93a7;
+    text-align: center;
+    margin: 10rem 0 8rem 0;
 }
 
 @media (max-width: 1024px) {
@@ -348,7 +350,7 @@
 	line-height: 5rem !important;
 
 	.imagen-fase {
-		width: 50%;
+		width: 60%;
 		height: auto;
 		background: #ffffff;
 		border: none !important;

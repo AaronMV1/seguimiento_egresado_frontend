@@ -5,7 +5,7 @@
 
     <div class="form-wrapper">
 
-        <h2 class="form-title"> Encuesta para Egresado </h2>
+        <h2 class="form-title"> Encuesta del Egresado </h2>
 
         <p class="form-description">
             Solicitamos su valiosa colaboración mediante las respuestas que
@@ -75,7 +75,7 @@
 
                         <select id="tipoDocumentos" [(ngModel)]="tipoDocumento" class="text-input documento-select" (change)="cambioDNI()">
                             <option value="" disabled>Seleccione una opción</option>
-                            <option *ngFor="let option of tipoDocumentoOptions" [value]="option.value"> {{ option.text }}</option>
+                            <option *ngFor="let option of tipoDocumentoOptions" [value]="option.valor"> {{ option.texto }}</option>
                         </select>
 
                         <input id="numeroDocumento" [(ngModel)]="numeroDocumento" type="text" class="text-input documento-input" placeholder="Escriba su respuesta"  (input)="cambioDNI()" />
@@ -109,7 +109,7 @@
             <div class="question">
 
                 <label class="question-label" for="genero">
-                    <span class="question-number">3</span>
+                    <span class="question-number">4</span>
                     <span>Seleccione su género</span>
                     <span class="question-required">*</span>
                 </label>
@@ -130,7 +130,7 @@
             <div class="question">
 
                 <label class="question-label" for="anioEgreso">
-                    <span class="question-number">4</span>
+                    <span class="question-number">5</span>
                     <span>Ingrese su año de Egreso</span>
                     <span class="question-required">*</span>
                 </label>
@@ -148,7 +148,7 @@
             <div class="question">
 
                 <label class="question-label" for="sedes">
-                    <span class="question-number">5</span>
+                    <span class="question-number">6</span>
                     <span>Seleccione su Sede</span>
                     <span class="question-required">*</span>
                 </label>
@@ -171,14 +171,14 @@
             <div class="question">
 
                 <label class="question-label" for="facultades">
-                    <span class="question-number">6</span>
+                    <span class="question-number">7</span>
                     <span>Seleccione su Facultad</span>
                     <span class="question-required">*</span>
                 </label>
 
                 <div class="question-content">
                     <div class="question-select">
-                        <select id="facultades" [(ngModel)]="facultad" class="text-input documento-select">
+                        <select id="facultades" [(ngModel)]="facultad" (ngModelChange)="onFacultadChange()" class="text-input documento-select">
                             <option value="0" disabled selected>Seleccione una opción</option>
                             <option *ngFor="let option of facultadOptions" [value]="option.value"> {{ option.text }}</option>
                         </select>
@@ -192,14 +192,14 @@
             <div class="question">
 
                 <label class="question-label" for="carreras">
-                    <span class="question-number">7</span>
+                    <span class="question-number">8</span>
                     <span>Seleccione su Carrera</span>
                     <span class="question-required">*</span>
                 </label>
 
                 <div class="question-content">
                     <div class="question-select">
-                        <select id="carreras" [(ngModel)]="carrera" class="text-input documento-select">
+                        <select id="carreras" [(ngModel)]="carrera" class="text-input documento-select" [disabled]="!facultad">
                             <option value="0" disabled selected>Seleccione una opción</option>
                             <option *ngFor="let option of carreraOptions" [value]="option.value"> {{ option.text }}</option>
                         </select>
@@ -213,7 +213,7 @@
             <div class="question">
 
                 <label class="question-label" for="correoElectronico">
-                    <span class="question-number">8</span>
+                    <span class="question-number">9</span>
                     <span>Ingrese su Correo Electrónico Personal</span>
                     <span class="question-required">*</span>
                 </label>
@@ -231,7 +231,7 @@
             <div class="question">
 
                 <label class="question-label" for="numeroCelular">
-                    <span class="question-number">9</span>
+                    <span class="question-number">10</span>
                     <span>Ingrese su Número de Celular</span>
                     <span class="question-required">*</span>
                 </label>
@@ -256,7 +256,7 @@
 
                 <label class="question-label" for="fase1participacion">
 
-                    <span class="question-number">10</span>
+                    <span class="question-number">11</span>
                     <span>Usted participa en cursos y/o talleres de empleabilidad organizados por la UPSJB SAC: </span>
                     <span class="question-required">*</span>
 
@@ -301,7 +301,7 @@
 
                 <label class="question-label" for="fase1situacion">
 
-                    <span class="question-number">11</span>
+                    <span class="question-number">12</span>
                     <span>Su situación actual es:</span>
                     <span class="question-required">*</span>
 
@@ -366,7 +366,7 @@
 
                 <label class="question-label" for="fase1trabajando">
 
-                    <span class="question-number">12</span>
+                    <span class="question-number">13</span>
                     <span>Actualmente, usted se encuentra trabajando:</span>
                     <span class="question-required">*</span>
 
@@ -406,7 +406,7 @@
 
                 <label class="question-label" for="fase1primerempleo">
 
-                    <span class="question-number">13</span>
+                    <span class="question-number">14</span>
                     <span>El primer empleo vinculado directamente a su profesión lo consiguió:</span>
                     <span class="question-required">*</span>
 
@@ -456,7 +456,7 @@
 
                 <label class="question-label" for="fase1medios">
 
-                    <span class="question-number">14</span>
+                    <span class="question-number">15</span>
                     <span>¿Cuál de esos medios le permitió conseguir su empleo actual?</span>
                     <span class="question-required">*</span>
 
@@ -522,7 +522,7 @@
 
                 <label class="question-label" for="fase2satisfaccionestudios">
 
-                    <span class="question-number">10</span>
+                    <span class="question-number">11</span>
                     <span>Satisfacción con la utilidad de los conocimientos adquiridos durante su formación en la UPSJB SAC respecto al empleo:</span>
                     <span class="question-required">*</span>
 
@@ -567,7 +567,7 @@
 
                 <label class="question-label" for="fase2participacion">
 
-                    <span class="question-number">11</span>
+                    <span class="question-number">12</span>
                     <span>Usted forma parte o ha participado en los procesos de gestión curricular.</span>
                     <span class="question-required">*</span>
 
@@ -597,7 +597,7 @@
 
                 <label class="question-label" for="fase2satisfaccionservicio">
 
-                    <span class="question-number">12</span>
+                    <span class="question-number">13</span>
                     <span>¿Qué tan satisfecho se encuentra usted con el servicio educativo brindado por la UPSJB SAC durante su formación?</span>
                     <span class="question-required">*</span>
 
@@ -642,7 +642,7 @@
 
                 <label class="question-label" for="fase2planificacion">
 
-                    <span class="question-number">13</span>
+                    <span class="question-number">14</span>
                     <span>Usted forma parte o ha participado en la planificación estratégica.</span>
                     <span class="question-required">*</span>
 
@@ -672,7 +672,7 @@
 
                 <label class="question-label" for="fase2empresanombre">
 
-                    <span class="question-number">14</span>
+                    <span class="question-number">15</span>
                     <span>Podría informarnos el nombre de la empresa en la que actualmente labora:</span>
                     <span class="question-required">*</span>
 
@@ -692,7 +692,7 @@
 
                 <label class="question-label" for="fase2empresaempleadorcorreo">
 
-                    <span class="question-number">15</span>
+                    <span class="question-number">16</span>
                     <span>Podría compartirnos los nombres, apellidos, correo y número de su jefe inmediato:</span>
                     <span class="question-required">*</span>
 
@@ -720,7 +720,7 @@
 
                 <label class="question-label" for="fase3especialidad">
 
-                    <span class="question-number">10</span>
+                    <span class="question-number">11</span>
                     <span>Mencione actualmente el nivel de especialidad o grado que ha logrado:</span>
                     <span class="question-required">*</span>
 
@@ -765,7 +765,7 @@
 
                 <label class="question-label" for="fase3participacion">
 
-                    <span class="question-number">11</span>
+                    <span class="question-number">12</span>
                     <span>Usted participa en cursos de educación continua o de especialidad organizados por la UPSJB SAC:</span>
                     <span class="question-required">*</span>
 
@@ -810,7 +810,7 @@
 
                 <label class="question-label" for="fase3educacioncontinua">
 
-                    <span class="question-number">12</span>
+                    <span class="question-number">13</span>
                     <span>¿Cuál sería actualmente la necesidad de educación continua que usted, como egresado de la UPSJB SAC, requiere?</span>
                     <span class="question-required">*</span>
 
@@ -866,7 +866,7 @@
 
                 <label class="question-label" for="fase4investigacion">
 
-                    <span class="question-number">10</span>
+                    <span class="question-number">11</span>
                     <span>¿Usted realiza investigación?</span>
                     <span class="question-required">*</span>
 
@@ -896,7 +896,7 @@
 
                 <label class="question-label" for="fase4innovacion">
 
-                    <span class="question-number">11</span>
+                    <span class="question-number">12</span>
                     <span>Usted participa en capacitaciones para realizar investigaciones o proyectos de innovación organizados por la UPSJB SAC:</span>
                     <span class="question-required">*</span>
 
@@ -941,7 +941,7 @@
 
                 <label class="question-label" for="fase4satisfaccion">
 
-                    <span class="question-number">12</span>
+                    <span class="question-number">13</span>
                     <span>¿Qué tan satisfecho se encuentra usted con las capacitaciones para realizar investigaciones o proyectos de innovación organizados por la UPSJB SAC?</span>
                     <span class="question-required">*</span>
 

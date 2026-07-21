@@ -57,6 +57,32 @@ export class Http {
     }
 
 
+    public postUPSJBIntegracionesAcademico(req: any, collection: string): Observable<any> {
+
+        const jsonrequest = JSON.stringify(req);
+        const url = environment.apiUniversidad.integraciones.academico.apiURL + collection;
+
+        const httpOptions = {
+            headers: new HttpHeaders({
+                'Content-Type': 'application/json',
+                'country': 'PE',
+                'provider': 'integracion',
+                'apiKey': environment.apiUniversidad.integraciones.academico.apiKEY,
+            }),
+        };
+
+        return this.http.post<any>(url, jsonrequest, httpOptions).pipe(
+            tap((data: any) => {
+
+            }),
+            catchError(err => {
+                throw 'Error in source. Details: ' + err;
+            }),
+        );
+
+    }
+
+
     public getUPSJBIntegracionesEgresado(
         req: { tipo: string; documento: string },
         collection: string,
@@ -81,21 +107,13 @@ export class Http {
     }
 
 
-    public postUPSJBIntegracionesAcademico(req: any, collection: string): Observable<any> {
+    public getUPSJBIntegracionesAdmision(
+        collection: string,
+    ): Observable<any> {
 
-        const jsonrequest = JSON.stringify(req);
-        const url = environment.apiUniversidad.integraciones.academico.apiURL + collection;
+        const url = environment.apiUniversidad.integraciones.admision.apiURL + collection;
 
-        const httpOptions = {
-            headers: new HttpHeaders({
-                'Content-Type': 'application/json',
-                'country': 'PE',
-                'provider': 'integracion',
-                'apiKey': environment.apiUniversidad.integraciones.academico.apiKEY,
-            }),
-        };
-
-        return this.http.post<any>(url, jsonrequest, httpOptions).pipe(
+        return this.http.get<any>(url).pipe(
             tap((data: any) => {
 
             }),

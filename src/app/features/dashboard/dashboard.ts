@@ -80,7 +80,7 @@ export class Dashboard implements OnInit {
 
 	// Función: Define el año actual usado para calcular dinámicamente las cohortes.
 	readonly anioActual = new Date().getFullYear();
-	// readonly anioActual = 2030;
+	// readonly anioActual = 2036;
 
 
 	// Función: Contiene la configuración base de las fases del dashboard.
@@ -262,6 +262,7 @@ export class Dashboard implements OnInit {
 			return this.egresadosFaseSeleccionada;
 		}
 		return [...this.egresadoBK].sort((a, b) => Number(b.anioEgreso) - Number(a.anioEgreso));
+
 	}
 
 
