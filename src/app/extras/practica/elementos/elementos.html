@@ -1,0 +1,205 @@
+
+
+<div class="container">
+
+
+    <div class="ejemplo">
+
+        <h2>Ejemplo 1: Select to Select</h2>
+
+        <div class="fila">
+
+            <div class="campo-contenedor">
+
+                <h4>Facultad</h4>
+
+                <select class="form-control" [(ngModel)]="facultad" (ngModelChange)="cambiarFacultad()">
+                    <option value="0" selected disabled>Seleccione una Facultad</option>
+                    <option *ngFor="let option of facultades" [value]="option.value">{{ option.text }}</option>
+                </select>
+
+                <span>Selected Option: {{ facultad }}</span>
+
+            </div>
+
+            <div class="campo-contenedor">
+
+                <h4>Carrera</h4>
+
+                <select class="form-control" [(ngModel)]="carrera">
+                    <option value="0" selected disabled>Seleccione una Carrera</option>
+                    <option *ngFor="let option of carreraOptionsLista" [value]="option.value">{{ option.text }}</option>
+                </select>
+
+                <span>Selected Option: {{ carrera }}</span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="ejemplo">
+
+        <h2>Ejemplo 2: Validación de inputs</h2>
+
+        <div class="fila">
+
+            <div class="campo-contenedor">
+
+                <h4>Correo electrónico</h4>
+                <input
+                    type="text"
+                    class="form-control"
+                    placeholder="ejemplo@correo.com"
+                    [(ngModel)]="correoElectronico"
+                    (input)="validarCorreo()"
+                    (blur)="correoTocado = true"
+                >
+
+                <span>Valor: {{ correoElectronico }}</span>
+                <label class="mensaje-error"><p *ngIf="correoTocado && !correoValido">Ingrese un correo electrónico válido.</p></label>
+
+            </div>
+
+            <div class="campo-contenedor">
+
+                <h4>Número celular</h4>
+                <input
+                    type="text"
+                    class="form-control"
+                    placeholder="987654321"
+                    maxlength="9"
+                    inputmode="numeric"
+                    [(ngModel)]="numeroCelular"
+                    (input)="validarNumero()"
+                    (blur)="numeroTocado = true"
+                >
+
+                <span>Valor: {{ numeroCelular }}</span>
+                <label class="mensaje-error"><p *ngIf="numeroTocado && !numeroValido">El celular debe comenzar con 9 y tener 9 dígitos.</p></label>
+
+            </div>
+
+            <div class="campo-contenedor">
+
+                <h4>Nombre completo</h4>
+                <input
+                    type="text"
+                    class="form-control"
+                    placeholder="Ingrese su nombre"
+                    [(ngModel)]="nombreCompleto"
+                    (input)="validarTexto()"
+                    (blur)="textoTocado = true"
+                >
+
+                <span>Valor: {{ nombreCompleto }}</span>
+                <label class="mensaje-error"><p *ngIf="textoTocado && !textoValido">Ingrese únicamente letras y espacios.</p></label>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="ejemplo">
+
+        <h2>Ejemplo 3: Blur</h2>
+
+        <div class="fila">
+
+            <div class="campo-contenedor">
+
+                <h4>Nombre completo</h4>
+
+                <input
+                    type="text"
+                    class="form-control"
+                    placeholder="Ingrese su nombre completo"
+                    [(ngModel)]="nombresCompletos"
+                    (blur)="blurNombreCompleto()"
+                />
+
+                <label class="mensaje-error">
+
+                    <p *ngIf="nombresCompletosTocado && !nombresCompletosValido">
+                        Se requiere nombre de minimo 5 caracteres
+                    </p>
+
+                </label>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="ejemplo">
+
+        <h2>Ejemplo 4: Tablas y Filtros</h2>
+
+        <div class="fila">
+
+            <input type="text" class="form-control" placeholder="Buscar por nombre o edad" [(ngModel)]="buscar">
+
+            <select class="form-control" [(ngModel)]="ciudadSeleccionada">
+                <option value="">Todas las ciudades</option>
+                <option *ngFor="let ciudad of ciudadesFiltro" [value]="ciudad">{{ ciudad }}</option>
+            </select>
+
+            <select class="form-control" [(ngModel)]="carreraSeleccionada">
+                <option value="">Todas las carreras</option>
+                <option *ngFor="let carrera of carrerasFiltro" [value]="carrera">{{ carrera }}</option>
+            </select>
+
+        </div>
+
+        <div class="fila">
+
+            <div class="campo-contenedor">
+
+                <h4 style="margin: 4rem 0 3rem 0">Tabla de datos</h4>
+
+                <p>Resultados encontrados: {{ personasFiltradas.length }}</p>
+
+                <table class="table table-striped">
+
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Edad</th>
+                            <th>Ciudad</th>
+                            <th>Carrera</th>
+                        </tr>3c4
+                    </thead>
+
+                    <tbody>
+
+                        <tr *ngFor="let persona of personasFiltradas">
+                            <td>{{ persona.nombre }}</td>
+                            <td>{{ persona.edad }}</td>
+                            <td>{{ persona.ciudad }}</td>
+                            <td>{{ persona.carrera }}</td>
+                        </tr>
+
+                        <tr *ngIf="personasFiltradas.length === 0">
+                            <td colspan="4">
+                                No se encontraron resultados.
+                            </td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+

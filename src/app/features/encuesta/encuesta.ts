@@ -9,36 +9,6 @@ import { CapitalizePipe } from '../../shared/pipes/capitalize.pipe';
 import { Strings } from '../../shared/utils/strings';
 
 
-const CARRERAS_POR_FACULTAD: Record<number, { value: number; text: string }[]> = {
-    1: [
-        { value: 1, text: 'Medicina Humana' },
-        { value: 2, text: 'Enfermería' },
-        { value: 3, text: 'Estomatología' },
-        { value: 4, text: 'Psicología' },
-        { value: 5, text: 'Tecnología Médica en Laboratorio Clínico y Anatomía Patológica' },
-        { value: 6, text: 'Tecnología Médica en Terapia Física y Rehabilitación' },
-        { value: 7, text: 'Medicina Veterinaria y Zootecnia' },
-    ],
-    2: [
-        { value: 8, text: 'Ingeniería de Sistemas' },
-        { value: 9, text: 'Ingeniería Civil' },
-        { value: 10, text: 'Ingeniería Agroindustrial' },
-        { value: 11, text: 'Ingeniería en Enología y Viticultura' },
-    ],
-    3: [
-        { value: 12, text: 'Derecho' },
-        { value: 13, text: 'Contabilidad' },
-        { value: 14, text: 'Administración de Empresas' },
-        { value: 15, text: 'Administración y Negocios Internacionales' },
-        { value: 16, text: 'Administración y Marketing' },
-        { value: 17, text: 'Turismo, Hotelería y Gastronomía' },
-    ],
-    4: [
-        { value: 18, text: 'Ciencias de la Comunicación' },
-    ],
-};
-
-
 @Component({
     selector: 'app-encuesta',
     imports: [ CapitalizePipe, CommonModule, FormsModule ],
@@ -58,8 +28,6 @@ export class Encuesta implements OnInit {
     aniosDesdeEgreso: number | null = null;
     datosEgresadoValidados = false;
 
-
-    listaSedes: any[] = [];
 
 
     consentimiento: string = '';
@@ -104,25 +72,17 @@ export class Encuesta implements OnInit {
     numeroCelularLabel: boolean = false;
 
 
+    //  LISTAS
+
     tipoDocumentoOptions: any[] = [];
-    // tipoDocumentoOptions = [
-    //     { value: '01', text: 'DNI' },
-    //     { value: '02', text: 'Pasaporte' },
-    //     { value: '03', text: 'Otro' }
-    // ];
+    sedeOptions: any[] = [];
+
 
     generoOptions = [
         { value: 'M', text: 'Masculino' },
         { value: 'F', text: 'Femenino' },
     ];
 
-    sedeOptions = [
-        { value: 1, text: 'Sede Chorrillos' },
-        { value: 2, text: 'Sede San Borja' },
-        { value: 3, text: 'Filial Ica' },
-        { value: 4, text: 'Filial Chincha' },
-        { value: 5, text: 'Otros (Lima Norte, etc.)' },
-    ];
 
     facultadOptions = [
         { value: 1, text: 'Ciencias de la Salud' },
@@ -132,8 +92,38 @@ export class Encuesta implements OnInit {
     ];
 
 
-    get carreraOptions(): { value: number; text: string }[] {
-        return CARRERAS_POR_FACULTAD[this.facultad] ?? [];
+    carrerasOptions: Record<number, { value: number; text: string }[]> = {
+        1: [
+            { value: 1, text: 'Medicina Humana' },
+            { value: 2, text: 'Enfermería' },
+            { value: 3, text: 'Estomatología' },
+            { value: 4, text: 'Psicología' },
+            { value: 5, text: 'Tecnología Médica en Laboratorio Clínico y Anatomía Patológica' },
+            { value: 6, text: 'Tecnología Médica en Terapia Física y Rehabilitación' },
+            { value: 7, text: 'Medicina Veterinaria y Zootecnia' },
+        ],
+        2: [
+            { value: 8, text: 'Ingeniería de Sistemas' },
+            { value: 9, text: 'Ingeniería Civil' },
+            { value: 10, text: 'Ingeniería Agroindustrial' },
+            { value: 11, text: 'Ingeniería en Enología y Viticultura' },
+        ],
+        3: [
+            { value: 12, text: 'Derecho' },
+            { value: 13, text: 'Contabilidad' },
+            { value: 14, text: 'Administración de Empresas' },
+            { value: 15, text: 'Administración y Negocios Internacionales' },
+            { value: 16, text: 'Administración y Marketing' },
+            { value: 17, text: 'Turismo, Hotelería y Gastronomía' },
+        ],
+        4: [
+            { value: 18, text: 'Ciencias de la Comunicación' },
+        ],
+    };
+
+
+    get carreraOptionsLista(): { value: number; text: string }[] {
+        return this.carrerasOptions[this.facultad] ?? [];
     }
 
 
@@ -265,7 +255,7 @@ export class Encuesta implements OnInit {
 
             next: (res) => {
 
-                this.listaSedes = res.lista;
+                this.sedeOptions = res.lista;
                 this.cdr.detectChanges();
 
             },

@@ -157,7 +157,7 @@
                     <div class="question-select">
                         <select id="sedes" [(ngModel)]="sede" class="text-input documento-select">
                             <option value="0" disabled selected>Seleccione una opción</option>
-                            @for (option of listaSedes; track option.value) {
+                            @for (option of sedeOptions; track option.value) {
                                 <option [value]="option.id">{{ option.nombre }}</option>
                             }
                         </select>
@@ -201,7 +201,7 @@
                     <div class="question-select">
                         <select id="carreras" [(ngModel)]="carrera" class="text-input documento-select" [disabled]="!facultad">
                             <option value="0" disabled selected>Seleccione una opción</option>
-                            <option *ngFor="let option of carreraOptions" [value]="option.value"> {{ option.text }}</option>
+                            <option *ngFor="let option of carreraOptionsLista" [value]="option.value"> {{ option.text }}</option>
                         </select>
                     </div>
                 </div>

@@ -146,11 +146,9 @@ CREATE TABLE IF NOT EXISTS seguimiento_egresado.seguimiento_fase_4 (
 INSERT INTO seguimiento_egresado.sede
     (nombre)
 VALUES
-    ('Sede Chorrillos'),
-    ('Sede San Borja'),
+    ('Sede Lima'),
     ('Filial Ica'),
-    ('Filial Chincha'),
-    ('Otro (Lima Norte, etc.)');
+    ('Filial Chincha');
 
 
 INSERT INTO seguimiento_egresado.facultad
@@ -204,12 +202,22 @@ SELECT * FROM seguimiento_egresado.egresado;
 
 
 DROP TABLE IF EXISTS seguimiento_egresado.sede;
-DROP TABLE IF EXISTS seguimiento_egresado.carrera;
 DROP TABLE IF EXISTS seguimiento_egresado.facultad;
+DROP TABLE IF EXISTS seguimiento_egresado.carrera;
 DROP TABLE IF EXISTS seguimiento_egresado.egresado;
 
 
 --#endregion
 
 
+--#region       TRUNCATE TABLES
+
+
+TRUNCATE TABLE IF EXISTS seguimiento_egresado.sede;
+TRUNCATE TABLE IF EXISTS seguimiento_egresado.facultad;
+TRUNCATE TABLE IF EXISTS seguimiento_egresado.carrera;
+TRUNCATE TABLE IF EXISTS seguimiento_egresado.egresado;
+
+
+--#endregion
 

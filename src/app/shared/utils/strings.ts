@@ -2,6 +2,7 @@
 
 export class Strings {
 
+
     static capitalize(texto: string | null | undefined): string {
 
         if (!texto) {
@@ -38,6 +39,7 @@ export class Strings {
         return texto.trim().toUpperCase();
 
     }
+
 
 }
 
