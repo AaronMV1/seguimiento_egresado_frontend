@@ -11,6 +11,7 @@ import { ModeloGestion } from './features/modelo-gestion/modelo-gestion';
 import { Formulario } from './features/formulario/formulario';
 import { Elementos } from './extras/practica/elementos/elementos';
 import { Login } from './features/login/login';
+import { loginGuard } from './core/guards/login.guard';
 
 
 export const routes: Routes = [
@@ -32,7 +33,7 @@ export const routes: Routes = [
         component: PrivateContentFull,
         children: [
             { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
-            { path: 'dashboard', component: Dashboard },
+            { path: 'dashboard', component: Dashboard, canActivate: [loginGuard] },
         ]
     },
 

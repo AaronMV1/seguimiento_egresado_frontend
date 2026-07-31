@@ -1,17 +1,91 @@
+
+
 <div class="contenedor">
 
-    <div class="campo">
-        <label>Usuario</label>
-        <input type="text" class="text-input documento-input">
+
+    <div class="logo" (click)="activarRegistro()">
+        <img src="https://app.upsjb.edu.pe/static/requerimiento/UPSJB-Logo-1.png" alt="" />
     </div>
 
-    <div class="campo">
-        <label>Contraseña</label>
-        <input type="password" class="text-input documento-input">
+
+    <div class="titulo">
+        <h2>SEGUIMIENTO AL EGRESADO {{ registroActivo > 5 && registroActivo < 10 ? registroActivo : '' }}</h2>
     </div>
 
-    <div class="campo">
-        <button>Iniciar Sesión</button>
+
+    <div class="campos" *ngIf="loginForm">
+
+        <div class="campo">
+            <input id="correo" type="text" class="text-input" placeholder="Correo">
+        </div>
+
+        <div class="campo">
+            <input id="contrasena" type="password" class="text-inputt" placeholder="Contraseña">
+        </div>
+
+        <div class="campo">
+            <select id="rol" class="text-input">
+                <option value="0" disabled selected>Seleccione un perfil</option>
+                <option value="1">Administrador</option>
+                <option value="2">Director</option>
+                <option value="3">Coordinador</option>
+            </select>
+        </div>
+
+        <div class="campo" (click)="login()">
+            <button>Iniciar Sesión</button>
+        </div>
+
     </div>
+
+
+    <div class="campos" *ngIf="registroForm">
+
+        <div class="campo">
+            <input id="registro_documento" type="text" class="text-input" placeholder="Documento de Identidad">
+        </div>
+
+        <div class="campo">
+            <input id="registro_usuario" type="text" class="text-input" placeholder="Nombres y Apellidos">
+        </div>
+
+        <div class="campo">
+            <input id="registro_correo" type="text" class="text-input" placeholder="Correo Electrónico">
+        </div>
+
+        <div class="campo">
+            <input id="registro_contrasena" type="password" class="text-inputt" placeholder="Contraseña">
+        </div>
+
+        <div class="campo">
+            <select id="registro_rol" class="text-input">
+                <option value="0" disabled selected>Seleccione su perfil</option>
+                <option value="1">Administrador</option>
+                <option value="2">Director</option>
+                <option value="3">Coordinador</option>
+            </select>
+        </div>
+
+        <div class="campo" (click)="login()">
+            <button>Registrar</button>
+        </div>
+
+    </div>
+
+
+    <div class="footer">
+
+        <!-- <a href="https://app.upsjb.edu.pe/static/requerimiento/SIS-PR-22-procedimiento-para-el-desarrollo-de-aplicaciones-v-3.0.pdf" class="vinculo">
+            <p>Desarrollado por la Dirección de Sistemas de Información</p>
+        </a> -->
+
+        <p>Desarrollado por la Dirección General de Gestiones Académicas</p>
+
+        <p>© UPSJB {{ anio }} :  SAE - Versión 1.0</p>
+
+    </div>
+
+    <div class="fondo-color"></div>
 
 </div>
+

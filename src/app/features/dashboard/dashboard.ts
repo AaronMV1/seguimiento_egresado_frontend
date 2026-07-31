@@ -1,6 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+
+import { AuthSessionService } from '../../core/services/auth-session.service';
 import { Http } from '../../core/services/http';
 
 
@@ -66,6 +68,7 @@ interface FaseDashboard {
 
 
 export class Dashboard implements OnInit {
+
 
 	egresadoBK: EgresadoBK[] = [];
 
@@ -230,6 +233,11 @@ export class Dashboard implements OnInit {
 	filtroSede = '';
 	filtroAnio = '';
 
+	// Función: Configura la paginación para la tabla de egresados.
+	paginaActual = 1;
+	registrosPorPagina = 10;
+	readonly opcionesRegistrosPorPagina: number[] = [10, 20, 50, 100, 200];
+
 
 	// Función: Devuelve la cantidad total de egresados registrados.
 	get cantidadEgresados(): number {
@@ -252,6 +260,86 @@ export class Dashboard implements OnInit {
 	// Función: Devuelve los egresados que se mostrarán en la tabla.
 	get egresadosVisibles(): EgresadoBK[] {
 		return this.aplicarCriterios(this.egresadosBaseVisibles);
+	}
+
+
+	// Función: Devuelve los egresados visibles de la página actual.
+	get egresadosPaginados(): EgresadoBK[] {
+
+        this.ajustarPaginaActual();
+
+        const cantidadPorPagina = Number(this.registrosPorPagina);
+
+        const indiceInicio =
+            (this.paginaActual - 1) * cantidadPorPagina;
+
+        const indiceFin =
+            indiceInicio + cantidadPorPagina;
+
+        return this.egresadosVisibles.slice(
+            indiceInicio,
+            indiceFin,
+        );
+
+    }
+
+
+	// Función: Calcula la cantidad total de páginas disponibles.
+	get totalPaginas(): number {
+
+		return Math.max(1, Math.ceil(this.egresadosVisibles.length / this.registrosPorPagina));
+
+	}
+
+
+	// Función: Devuelve un arreglo con los números de páginas para el paginador.
+	get paginasDisponibles(): number[] {
+
+		const total = this.totalPaginas;
+		const radio = 3;
+		const maximoBotones = radio * 2 + 1;
+
+		let paginaInicio = Math.max(1, this.paginaActual - radio);
+		let paginaFin = Math.min(total, this.paginaActual + radio);
+
+		const botonesActuales = paginaFin - paginaInicio + 1;
+		const botonesFaltantes = maximoBotones - botonesActuales;
+
+		if (botonesFaltantes > 0) {
+
+			if (paginaInicio === 1) {
+				paginaFin = Math.min(total, paginaFin + botonesFaltantes);
+			} else if (paginaFin === total) {
+				paginaInicio = Math.max(1, paginaInicio - botonesFaltantes);
+			}
+
+		}
+
+		return Array.from(
+			{ length: paginaFin - paginaInicio + 1 },
+			(_, i) => paginaInicio + i,
+		);
+
+	}
+
+
+	// Función: Devuelve la posición inicial del rango mostrado en la tabla.
+	get indiceInicioPaginacion(): number {
+
+		if (this.egresadosVisibles.length === 0) {
+			return 0;
+		}
+
+		return (this.paginaActual - 1) * this.registrosPorPagina + 1;
+
+	}
+
+
+	// Función: Devuelve la posición final del rango mostrado en la tabla.
+	get indiceFinPaginacion(): number {
+
+		return Math.min(this.paginaActual * this.registrosPorPagina, this.egresadosVisibles.length);
+
 	}
 
 
@@ -327,12 +415,14 @@ export class Dashboard implements OnInit {
 	// Función: Cambia la fase seleccionada al hacer clic en la línea de tiempo.
 	seleccionarFase(idFase: string): void {
 		this.idFaseSeleccionada = idFase;
+		this.paginaActual = 1;
 	}
 
 
 	// Función: Aplica el filtro de texto en tiempo real sobre los seis campos de la tabla.
 	aplicarFiltroTexto(): void {
 		this.filtroTexto = this.textoBusqueda.trim();
+		this.paginaActual = 1;
 	}
 
 
@@ -343,6 +433,7 @@ export class Dashboard implements OnInit {
 		this.filtroFacultad = this.seleccionFacultad;
 		this.filtroSede = this.seleccionSede;
 		this.filtroAnio = this.seleccionAnio;
+		this.paginaActual = 1;
 	}
 
 
@@ -359,7 +450,183 @@ export class Dashboard implements OnInit {
 		this.filtroFacultad = '';
 		this.filtroSede = '';
 		this.filtroAnio = '';
+
+		this.paginaActual = 1;
 	}
+
+
+	// Función: Cambia el tamaño de página y reinicia a la primera página.
+	cambiarRegistrosPorPagina(): void {
+
+        this.registrosPorPagina = Number(
+            this.registrosPorPagina,
+        );
+
+        this.paginaActual = 1;
+
+    }
+
+
+	// Función: Navega a una página específica del paginador.
+	irAPagina(pagina: number): void {
+
+		if (pagina < 1 || pagina > this.totalPaginas) {
+			return;
+		}
+
+		this.paginaActual = pagina;
+
+	}
+
+
+	// Función: Navega a la página anterior si existe.
+	irAPaginaAnterior(): void {
+
+		this.irAPagina(this.paginaActual - 1);
+
+	}
+
+
+	// Función: Navega a la página siguiente si existe.
+	irAPaginaSiguiente(): void {
+
+		this.irAPagina(this.paginaActual + 1);
+
+	}
+
+
+	// Función: Descarga en Excel los registros visibles de la tabla con sus columnas.
+	async exportarRegistrosExcel(): Promise<void> {
+
+		const XLSX = await import('xlsx-js-style');
+
+        if (this.egresadosVisibles.length === 0) {
+            console.warn('No hay registros visibles para exportar.');
+            return;
+        }
+
+        const encabezados = [
+            'Nombre completo',
+            'Año de egreso',
+            'Correo institucional',
+            'Sede',
+            'Facultad',
+            'Carrera profesional',
+        ];
+
+        const filas = this.egresadosVisibles.map((egresado) => [
+            egresado.nombresApellidos,
+            egresado.anioEgreso,
+            egresado.correoElectronico,
+            egresado.sede,
+            egresado.facultad,
+            egresado.carrera,
+        ]);
+
+        const worksheet = XLSX.utils.aoa_to_sheet([
+            encabezados,
+            ...filas,
+        ]);
+
+        const ultimaFila = filas.length + 1;
+        const ultimaColumna = encabezados.length - 1;
+
+        // Filtro en la cabecera.
+        worksheet['!autofilter'] = {
+            ref: `A1:F${ultimaFila}`,
+        };
+
+        // Estilo de la cabecera.
+        for (let columna = 0; columna <= ultimaColumna; columna++) {
+
+            const direccionCelda = XLSX.utils.encode_cell({
+                r: 0,
+                c: columna,
+            });
+
+            const celda = worksheet[direccionCelda];
+
+            if (!celda) {
+                continue;
+            }
+
+            celda.s = {
+                fill: {
+                    patternType: 'solid',
+                    fgColor: {
+                        rgb: 'FF0A41',
+                    },
+                },
+                font: {
+                    bold: true,
+                    color: {
+                        rgb: 'FFFFFF',
+                    },
+                },
+                alignment: {
+                    horizontal: 'center',
+                    vertical: 'center',
+                    wrapText: true,
+                },
+                border: {
+                    top: {
+                        style: 'thin',
+                        color: { rgb: 'D9E2F3' },
+                    },
+                    bottom: {
+                        style: 'thin',
+                        color: { rgb: 'D9E2F3' },
+                    },
+                    left: {
+                        style: 'thin',
+                        color: { rgb: 'D9E2F3' },
+                    },
+                    right: {
+                        style: 'thin',
+                        color: { rgb: 'D9E2F3' },
+                    },
+                },
+            };
+
+        }
+
+        // Altura de la cabecera.
+        worksheet['!rows'] = [
+            { hpt: 28 },
+        ];
+
+        // Anchos de columnas.
+        worksheet['!cols'] = [
+            { wch: 40 },
+            { wch: 15 },
+            { wch: 40 },
+            { wch: 20 },
+            { wch: 40 },
+            { wch: 40 },
+        ];
+
+        const workbook = XLSX.utils.book_new();
+
+        XLSX.utils.book_append_sheet(
+            workbook,
+            worksheet,
+            'Registros',
+        );
+
+        const fecha = new Date()
+            .toISOString()
+            .slice(0, 10);
+
+        const fase = (this.faseSeleccionada?.titulo ?? 'sin-fase')
+            .toLowerCase()
+            .replace(/\s+/g, '-');
+
+        XLSX.writeFile(
+            workbook,
+            `egresados-${fase}-${fecha}.xlsx`,
+        );
+
+    }
 
 
 	// Función: Calcula el ancho porcentual de la barra de una fase.
@@ -496,6 +763,20 @@ export class Dashboard implements OnInit {
 			.replace(/[\u0300-\u036f]/g, '');
 	}
 
+
+	// Función: Evita que la página actual quede fuera de rango tras filtros o cambios de datos.
+	private ajustarPaginaActual(): void {
+
+		if (this.paginaActual > this.totalPaginas) {
+			this.paginaActual = this.totalPaginas;
+		}
+
+		if (this.paginaActual < 1) {
+			this.paginaActual = 1;
+		}
+
+	}
+
     obtenerEncuestados() {
 
         this._http.get('consultar-encuestados').subscribe({
@@ -506,6 +787,7 @@ export class Dashboard implements OnInit {
                 this.egresadoBK = res.lista;
 				this.fases = this.construirFases();
 				this.idFaseSeleccionada = this.obtenerIdFaseInicial();
+				this.paginaActual = 1;
 
                 this.cdr.detectChanges();
 
@@ -522,9 +804,4 @@ export class Dashboard implements OnInit {
     }
 
 }
-
-
-
-/**/
-
 

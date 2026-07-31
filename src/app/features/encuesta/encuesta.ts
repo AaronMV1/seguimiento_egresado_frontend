@@ -3,10 +3,12 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Http } from '../../core/services/http';
-import Swal from 'sweetalert2';
 import { CapitalizePipe } from '../../shared/pipes/capitalize.pipe';
 import { Strings } from '../../shared/utils/strings';
+
+import { Http } from '../../core/services/http';
+
+import Swal from 'sweetalert2';
 
 
 type Popup =

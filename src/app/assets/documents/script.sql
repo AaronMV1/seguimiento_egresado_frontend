@@ -137,6 +137,19 @@ CREATE TABLE IF NOT EXISTS seguimiento_egresado.seguimiento_fase_4 (
 );
 
 
+CREATE TABLE IF NOT EXISTS seguimiento_egresado.administrador (
+    administrador_id BIGSERIAL PRIMARY KEY,
+	numero_documento VARCHAR(20),
+    nombres_apellidos VARCHAR(50),
+    correo_electronico VARCHAR(100),
+    contrasena_hash VARCHAR(255) NOT NULL,
+    rol_usuario VARCHAR(20),
+    fecha_creacion TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    fecha_modificacion TIMESTAMPTZ,
+    activo BOOLEAN DEFAULT TRUE
+);
+
+
 --#endregion
 
 
@@ -205,6 +218,7 @@ DROP TABLE IF EXISTS seguimiento_egresado.sede;
 DROP TABLE IF EXISTS seguimiento_egresado.facultad;
 DROP TABLE IF EXISTS seguimiento_egresado.carrera;
 DROP TABLE IF EXISTS seguimiento_egresado.egresado;
+DROP TABLE IF EXISTS seguimiento_egresado.administrador;
 
 
 --#endregion

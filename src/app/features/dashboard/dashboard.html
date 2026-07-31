@@ -2,7 +2,11 @@
 
 	<header class="encabezado-dashboard">
 
-		<h2>Modelo de Competencias del Egresado</h2>
+		<div class="encabezado-dashboard-topbar">
+
+            <h2>Modelo de Competencias del Egresado</h2>
+
+		</div>
 
 		<!-- <p>
 			Fases dinámicas según el año actual ({{ anioActual }}). Al cambiar el año,
@@ -142,6 +146,18 @@
 			</div>
 
             <div class="campo-filtro">
+                <button type="button" class="boton-exportar" (click)="exportarRegistrosExcel()">Descargar Excel</button>
+            </div>
+
+            <div class="campo-filtro">
+                <button type="button" class="boton-filtrar" (click)="aplicarFiltros()">Filtrar</button>
+            </div>
+
+            <div class="acciones-filtro">
+				<button type="button" class="boton-reiniciar" (click)="reiniciarFiltros()">Reiniciar</button>
+			</div>
+
+            <div class="campo-filtro">
 				<label for="filtroAnio">Año</label>
 				<select id="filtroAnio" [(ngModel)]="seleccionAnio">
 					<option value="">Todos</option>
@@ -158,12 +174,6 @@
 			</div>
 
             <div class="campo-filtro">
-                <button type="button" class="boton-filtrar" (click)="aplicarFiltros()">Filtrar</button>
-            </div>
-
-            <div class="campo-filtro"></div>
-
-            <div class="campo-filtro">
 				<label for="filtroFacultad">Facultad</label>
 				<select id="filtroFacultad" [(ngModel)]="seleccionFacultad">
 					<option value="">Todas</option>
@@ -177,10 +187,6 @@
 					<option value="">Todas</option>
 					<option *ngFor="let carrera of opcionesCarrera" [value]="carrera">{{ carrera }}</option>
 				</select>
-			</div>
-
-			<div class="acciones-filtro">
-				<button type="button" class="boton-reiniciar" (click)="reiniciarFiltros()">Reiniciar</button>
 			</div>
 
 		</div>
@@ -209,13 +215,58 @@
 				<span>{{ egresado.carrera }}</span>
 			</div> -->
 
-            <div class="fila-tabla" *ngFor="let egresado of egresadosVisibles; trackBy: identificarEgresado">
+            <div class="fila-tabla" *ngFor="let egresado of egresadosPaginados; trackBy: identificarEgresado">
 				<span>{{ egresado.nombresApellidos }}</span>
 				<span>{{ egresado.anioEgreso }}</span>
 				<span>{{ egresado.correoElectronico }}</span>
 				<span>{{ egresado.sede }}</span>
 				<span>{{ egresado.facultad }}</span>
 				<span>{{ egresado.carrera }}</span>
+			</div>
+
+		</div>
+
+		<div class="paginador" *ngIf="egresadosVisibles.length > 0">
+
+			<div class="paginador-info">
+				Mostrando {{ indiceInicioPaginacion }} a {{ indiceFinPaginacion }} de {{ egresadosVisibles.length }} registros
+			</div>
+
+			<div class="paginador-configuracion">
+				<label for="registrosPorPagina">Filas por página</label>
+				<select
+					id="registrosPorPagina"
+					[(ngModel)]="registrosPorPagina"
+					(ngModelChange)="cambiarRegistrosPorPagina()">
+					<option *ngFor="let opcion of opcionesRegistrosPorPagina" [ngValue]="opcion">{{ opcion }}</option>
+				</select>
+			</div>
+
+			<div class="paginador-controles">
+				<button
+					type="button"
+					class="boton-paginador"
+					(click)="irAPaginaAnterior()"
+					[disabled]="paginaActual === 1">
+					Anterior
+				</button>
+
+				<button
+					type="button"
+					class="boton-paginador"
+					*ngFor="let pagina of paginasDisponibles"
+					[class.activo]="pagina === paginaActual"
+					(click)="irAPagina(pagina)">
+					{{ pagina }}
+				</button>
+
+				<button
+					type="button"
+					class="boton-paginador"
+					(click)="irAPaginaSiguiente()"
+					[disabled]="paginaActual === totalPaginas">
+					Siguiente
+				</button>
 			</div>
 
 		</div>
