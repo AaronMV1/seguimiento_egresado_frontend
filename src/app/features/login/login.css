@@ -1,0 +1,48 @@
+
+.contenedor {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    height: 100vh !important;
+    width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 3rem !important;
+    /* background-color: var(--background) !important; */
+    background-image: url("");
+}
+
+.campo {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1rem;
+}
+
+input, select, button {
+    height: 5rem;
+    width: 30rem;
+    padding: 0 1rem;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 1.6rem;
+    margin: 0 auto;
+}
+
+label {
+    font-size: 1.6rem;
+    margin-bottom: 0.5rem;
+    color: var(--text-secondary);
+}
+
+button {
+    background-color: #FF0A41;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #e6003a;
+}

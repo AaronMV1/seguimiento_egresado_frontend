@@ -9,6 +9,10 @@ import { CapitalizePipe } from '../../shared/pipes/capitalize.pipe';
 import { Strings } from '../../shared/utils/strings';
 
 
+type Popup =
+    | 'TERMINOS'
+
+
 @Component({
     selector: 'app-encuesta',
     imports: [ CapitalizePipe, CommonModule, FormsModule ],
@@ -29,7 +33,6 @@ export class Encuesta implements OnInit {
     datosEgresadoValidados = false;
 
 
-
     consentimiento: string = '';
     tipoDocumento: string = '';
     numeroDocumento: string = '';
@@ -41,11 +44,13 @@ export class Encuesta implements OnInit {
     anioEgreso: string = '';
     correoElectronico: string = '';
     numeroCelular: string = '';
+
     fase1participacion: string = '';
     fase1situacion: string = '';
     fase1trabajando: string = '';
     fase1primerempleo: string = '';
     fase1medios: string = '';
+
     fase2satisfaccionestudios: string = '';
     fase2participacion: string = '';
     fase2satisfaccionservicio: string = '';
@@ -54,12 +59,17 @@ export class Encuesta implements OnInit {
     fase2empresaempleadornombre: string = '';
     fase2empresaempleadorcorreo: string = '';
     fase2empresaempleadornumero: string = '';
+
     fase3especialidad: string = '';
     fase3participacion: string = '';
     fase3educacioncontinua: string = '';
+
     fase4investigacion: string = '';
+    fase4participacion: number[] = [];
+    fase4resultados: number[] = [];
     fase4innovacion: string = '';
-    fase4satisfaccion: string = '';
+    fase4capacitacion: string = '';
+    fase4formacion: string = '';
 
 
     nombresApellidosLabel: boolean = false;
@@ -73,6 +83,7 @@ export class Encuesta implements OnInit {
 
 
     //  LISTAS
+
 
     tipoDocumentoOptions: any[] = [];
     sedeOptions: any[] = [];
@@ -120,6 +131,52 @@ export class Encuesta implements OnInit {
             { value: 18, text: 'Ciencias de la Comunicación' },
         ],
     };
+
+
+    fase4ParticipacionOptions = [
+        { value: 1, text: 'Investigador(a) principal o líder del proyecto' },
+        { value: 2, text: 'Integrante del equipo' },
+        { value: 3, text: 'Coordinador(a)' },
+        { value: 4, text: 'Asistente de investigación' },
+        { value: 5, text: 'Consultor(a)' },
+        { value: 6, text: 'Otros' },
+    ];
+
+    fase4ResultadosOptions = [
+        { value: 1, text: 'Publicaciones científicas' },
+        { value: 2, text: 'Presentaciones o ponencias en eventos académicos' },
+        { value: 3, text: 'Libros o capítulos de libro' },
+        { value: 4, text: 'Patentes, registros de software u otros derechos de propiedad intelectual' },
+        { value: 5, text: 'Innovaciones implementadas (productos, servicios o procesos)' },
+        { value: 6, text: 'Financiamiento para proyectos' },
+        { value: 7, text: 'Ninguno de las anteriores' },
+    ];
+
+
+    cambiarCheckboxMultiple(
+        lista: number[],
+        valor: number,
+        event: Event
+    ): void {
+
+        const input = event.target as HTMLInputElement;
+
+        if (input.checked) {
+
+            if (!lista.includes(valor)) {
+                lista.push(valor);
+            }
+
+        } else {
+
+            const indice = lista.indexOf(valor);
+
+            if (indice !== -1) {
+                lista.splice(indice, 1);
+            }
+
+        }
+    }
 
 
     get carreraOptionsLista(): { value: number; text: string }[] {
@@ -206,9 +263,10 @@ export class Encuesta implements OnInit {
             // fase3especialidad: this.fase3especialidad,
             // fase3participacion: this.fase3participacion,
             // fase3educacioncontinua: this.fase3educacioncontinua,
-            // fase4investigacion: this.fase4investigacion,
-            // fase4innovacion: this.fase4innovacion,
-            // fase4satisfaccion: this.fase4satisfaccion,
+
+            // fase4participacion: this.fase4participacion,
+            // fase4resultados: this.fase4resultados,
+
         };
 
         this._http.post(req, 'enviar-encuesta').subscribe({
@@ -595,9 +653,13 @@ export class Encuesta implements OnInit {
         this.fase3participacion = '';
         this.fase3educacioncontinua = '';
 
+
         this.fase4investigacion = '';
+        this.fase4participacion = [];
+        this.fase4resultados = [];
         this.fase4innovacion = '';
-        this.fase4satisfaccion = '';
+        this.fase4capacitacion = '';
+        this.fase4formacion = '';
 
         this.seccionActual = 1;
         this.seccionFase = null;
@@ -619,6 +681,18 @@ export class Encuesta implements OnInit {
         this.cdr.detectChanges();
     }
 
+    cambioFase4Investigacion(): void {
+
+        if (this.fase4investigacion === 'No') {
+            this.fase4participacion = [];
+            this.fase4resultados = [];
+            this.fase4innovacion = '';
+            this.fase4capacitacion = '';
+            this.fase4formacion = '';
+        }
+
+    }
+
 
 
     /*  VALIDACIONES  */
@@ -637,6 +711,7 @@ export class Encuesta implements OnInit {
             !this.esTextoVacio(this.fase1medios);
 
         return valido;
+
     }
 
     if (this.seccionFase === 4) {
@@ -660,6 +735,7 @@ export class Encuesta implements OnInit {
             correoJefeValido &&
             telefonoJefeValido
         );
+
     }
 
     if (this.seccionFase === 5) {
@@ -669,15 +745,25 @@ export class Encuesta implements OnInit {
             !this.esTextoVacio(this.fase3participacion) &&
             !this.esTextoVacio(this.fase3educacioncontinua)
         );
+
     }
 
     if (this.seccionFase === 6) {
 
+
+        if (this.fase4investigacion === 'No') {
+            return true;
+        }
+
+        // Si respondió "Sí", validar el resto
         return (
-            !this.esTextoVacio(this.fase4investigacion) &&
+            this.fase4participacion.length > 0 &&
+            this.fase4resultados.length > 0 &&
             !this.esTextoVacio(this.fase4innovacion) &&
-            !this.esTextoVacio(this.fase4satisfaccion)
+            !this.esTextoVacio(this.fase4capacitacion) &&
+            !this.esTextoVacio(this.fase4formacion)
         );
+
     }
 
     return false;
@@ -709,6 +795,22 @@ export class Encuesta implements OnInit {
             anio <= anioActual
         );
     }
+
+
+
+    /*  POPUP  */
+
+
+
+    popup = false;
+    popupTipo = '';
+
+
+    functionPOPUP(activo: boolean, tipo: string): void {
+        this.popup = activo;
+        this.popupTipo = activo ? tipo : '';
+    }
+
 
 }
 

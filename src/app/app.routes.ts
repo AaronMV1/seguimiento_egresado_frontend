@@ -10,6 +10,7 @@ import { Dashboard2 } from './extras/descartados/dashboard2/dashboard2';
 import { ModeloGestion } from './features/modelo-gestion/modelo-gestion';
 import { Formulario } from './features/formulario/formulario';
 import { Elementos } from './extras/practica/elementos/elementos';
+import { Login } from './features/login/login';
 
 
 export const routes: Routes = [
@@ -18,17 +19,20 @@ export const routes: Routes = [
     {
         path: 'public',
         component: PublicContentFull,
+        children: [
+            { path: '', redirectTo: 'encuesta', pathMatch: 'full' },
+            { path: 'encuesta', component: Encuesta },
+            { path: 'modelo', component: ModeloGestion },
+            { path: 'login', component: Login },
+        ]
     },
 
     {
         path: 'private',
         component: PrivateContentFull,
         children: [
-            { path: '', redirectTo: 'encuesta', pathMatch: 'full' },
-            { path: 'encuesta', component: Encuesta },
-            // { path: 'formulario', component: Formulario },
+            { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
             { path: 'dashboard', component: Dashboard },
-            { path: 'modelo', component: ModeloGestion },
         ]
     },
 
@@ -52,7 +56,7 @@ export const routes: Routes = [
 
     {
         path: '**',
-        redirectTo: 'private'
+        redirectTo: 'public'
     }
 
 ];

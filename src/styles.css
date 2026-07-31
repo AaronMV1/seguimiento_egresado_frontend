@@ -4,7 +4,6 @@ html {
     box-sizing: border-box;
     font-size: 62.5%;
     font-family: 'poppins-bold' !important;
-    caret-color: transparent;
 }
 
 *,
@@ -14,6 +13,7 @@ html {
     box-sizing: inherit;
     margin: 0;
     padding: 0;
+    caret-color: transparent !important;    /*Oculta el cursor de texto, y tambien con F7 para hacerlo desde el navegador */
 }
 
 input {

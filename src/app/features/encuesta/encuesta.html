@@ -26,7 +26,7 @@
                 <label class="question-label" for="consentimiento">
 
                     <span class="question-number">1</span>
-                    <span>Autorizo a la UPSJB S.A.C. al tratamiento de mis datos personales de conformidad con la Política de Privacidad.</span>
+                    <span>Autorizo a la UPSJB S.A.C. al tratamiento de mis datos personales de conformidad con la <span class="enlace" (click)="functionPOPUP(true,'POLITICA')">Política de Privacidad</span>.</span>
                     <span class="question-required">*</span>
 
                 </label>
@@ -108,8 +108,26 @@
 
             <div class="question">
 
-                <label class="question-label" for="genero">
+                <label class="question-label" for="anioEgreso">
                     <span class="question-number">4</span>
+                    <span>Ingrese su año de Egreso</span>
+                    <span class="question-required">*</span>
+                </label>
+
+                <div class="question-content">
+                    <div class="question-input">
+                        <input id="anioEgreso" [(ngModel)]="anioEgreso" type="text" class="text-input documento-input" placeholder="Escriba su respuesta" disabled="true" />
+                    </div>
+                </div>
+
+                <span class="question-alert" *ngIf="anioEgresoLabel">Este campo es obligatorio o contiene un formato inválido</span>
+
+            </div>
+
+            <div class="question">
+
+                <label class="question-label" for="genero">
+                    <span class="question-number">5</span>
                     <span>Seleccione su género</span>
                     <span class="question-required">*</span>
                 </label>
@@ -124,24 +142,6 @@
                 </div>
 
                 <span class="question-alert" *ngIf="generoLabel">Este campo es obligatorio o contiene un formato inválido</span>
-
-            </div>
-
-            <div class="question">
-
-                <label class="question-label" for="anioEgreso">
-                    <span class="question-number">5</span>
-                    <span>Ingrese su año de Egreso</span>
-                    <span class="question-required">*</span>
-                </label>
-
-                <div class="question-content">
-                    <div class="question-input">
-                        <input id="anioEgreso" [(ngModel)]="anioEgreso" type="text" class="text-input documento-input" placeholder="Escriba su respuesta" disabled="true" />
-                    </div>
-                </div>
-
-                <span class="question-alert" *ngIf="anioEgresoLabel">Este campo es obligatorio o contiene un formato inválido</span>
 
             </div>
 
@@ -867,7 +867,7 @@
                 <label class="question-label" for="fase4investigacion">
 
                     <span class="question-number">11</span>
-                    <span>¿Usted realiza investigación?</span>
+                    <span>Desde su egreso. ¿Ha participado en proyectos de investigación o innovación relacionados con su profesión?</span>
                     <span class="question-required">*</span>
 
                 </label>
@@ -877,12 +877,12 @@
                     <div class="question-radio">
 
                         <label class="question-radio-option">
-                            <input type="radio" name="fase4investigacion" value="Sí" [(ngModel)]="fase4investigacion">
+                            <input type="radio" name="fase4investigacion" value="Sí" [(ngModel)]="fase4investigacion" (change)="cambioFase4Investigacion()">
                             <span>Sí</span>
                         </label>
 
                         <label class="question-radio-option">
-                            <input type="radio" name="fase4investigacion" value="No" [(ngModel)]="fase4investigacion">
+                            <input type="radio" name="fase4investigacion" value="No" [(ngModel)]="fase4investigacion" (change)="cambioFase4Investigacion()">
                             <span>No</span>
                         </label>
 
@@ -892,12 +892,82 @@
 
             </div>
 
-            <div class="question">
+            <div class="question" *ngIf="fase4investigacion == 'Sí'">
+
+                <label class="question-label" for="fase4participacion">
+
+                    <span class="question-number">12</span>
+                    <span>¿Cuál fue su participación? (Puede marcar más de una opción):</span>
+                    <span class="question-required">*</span>
+
+                </label>
+
+                <div class="question-content">
+
+                    <div class="question-checkbox">
+
+                        @for (item of fase4ParticipacionOptions; track $index) {
+
+                            <label class="question-checkbox-option">
+                                <input type="checkbox" name="fase4participacion"
+                                    [checked]="fase4participacion.includes(item.value)"
+                                    (change)="cambiarCheckboxMultiple(
+                                        fase4participacion,
+                                        item.value,
+                                        $event
+                                )">
+                                <span>{{item.text}}</span>
+                            </label>
+
+                        }
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="question" *ngIf="fase4investigacion == 'Sí'">
+
+                <label class="question-label" for="fase4resultados">
+
+                    <span class="question-number">13</span>
+                    <span>¿Qué productos o resultados ha obtenido? (Puede marcar más de una opción):</span>
+                    <span class="question-required">*</span>
+
+                </label>
+
+                <div class="question-content">
+
+                    <div class="question-checkbox">
+
+                        @for (item of fase4ResultadosOptions; track $index) {
+
+                            <label class="question-checkbox-option">
+                                <input type="checkbox" name="fase4resultados"
+                                    [checked]="fase4resultados.includes(item.value)"
+                                    (change)="cambiarCheckboxMultiple(
+                                        fase4resultados,
+                                        item.value,
+                                        $event
+                                )">
+                                <span>{{item.text}}</span>
+                            </label>
+
+                        }
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="question" *ngIf="fase4investigacion == 'Sí'">
 
                 <label class="question-label" for="fase4innovacion">
 
-                    <span class="question-number">12</span>
-                    <span>Usted participa en capacitaciones para realizar investigaciones o proyectos de innovación organizados por la UPSJB SAC:</span>
+                    <span class="question-number">14</span>
+                    <span>Actualmente, ¿Con qué frecuencia participa en actividades de investigación o innovación?:</span>
                     <span class="question-required">*</span>
 
                 </label>
@@ -907,27 +977,22 @@
                     <div class="question-radio">
 
                         <label class="question-radio-option">
-                            <input type="radio" name="fase4innovacion" value="Muy frecuentemente" [(ngModel)]="fase4innovacion">
-                            <span>Muy frecuentemente</span>
+                            <input type="radio" name="fase4innovacion" value="1" [(ngModel)]="fase4innovacion">
+                            <span>Permanentemente</span>
                         </label>
 
                         <label class="question-radio-option">
-                            <input type="radio" name="fase4innovacion" value="Frecuentemente" [(ngModel)]="fase4innovacion">
-                            <span>Frecuentemente</span>
+                            <input type="radio" name="fase4innovacion" value="2" [(ngModel)]="fase4innovacion">
+                            <span>Varias veces al año</span>
                         </label>
 
                         <label class="question-radio-option">
-                            <input type="radio" name="fase4innovacion" value="Algunas veces" [(ngModel)]="fase4innovacion">
-                            <span>Algunas veces</span>
+                            <input type="radio" name="fase4innovacion" value="3" [(ngModel)]="fase4innovacion">
+                            <span>Ocasionalmente</span>
                         </label>
 
                         <label class="question-radio-option">
-                            <input type="radio" name="fase4innovacion" value="Muy rara vez" [(ngModel)]="fase4innovacion">
-                            <span>Muy rara vez</span>
-                        </label>
-
-                        <label class="question-radio-option">
-                            <input type="radio" name="fase4innovacion" value="Nunca" [(ngModel)]="fase4innovacion">
+                            <input type="radio" name="fase4innovacion" value="4" [(ngModel)]="fase4innovacion">
                             <span>Nunca</span>
                         </label>
 
@@ -937,12 +1002,12 @@
 
             </div>
 
-            <div class="question">
+            <div class="question" *ngIf="fase4investigacion == 'Sí'">
 
-                <label class="question-label" for="fase4satisfaccion">
+                <label class="question-label" for="fase4capacitacion">
 
-                    <span class="question-number">13</span>
-                    <span>¿Qué tan satisfecho se encuentra usted con las capacitaciones para realizar investigaciones o proyectos de innovación organizados por la UPSJB SAC?</span>
+                    <span class="question-number">15</span>
+                    <span>Desde su egreso, ¿Ha participado en capacitaciones sobre investigación o innovación organizadas por la UPSJB?:</span>
                     <span class="question-required">*</span>
 
                 </label>
@@ -952,28 +1017,78 @@
                     <div class="question-radio">
 
                         <label class="question-radio-option">
-                            <input type="radio" name="fase4satisfaccion" value="Muy satisfecho" [(ngModel)]="fase4satisfaccion">
-                            <span>Muy satisfecho</span>
+                            <input type="radio" name="fase4capacitacion" value="1" [(ngModel)]="fase4capacitacion">
+                            <span>Si, y estoy muy satisfecho(a)</span>
                         </label>
 
                         <label class="question-radio-option">
-                            <input type="radio" name="fase4satisfaccion" value="Satisfecho" [(ngModel)]="fase4satisfaccion">
-                            <span>Satisfecho</span>
+                            <input type="radio" name="fase4capacitacion" value="2" [(ngModel)]="fase4capacitacion">
+                            <span>Si, y estoy satisfecho(a)</span>
                         </label>
 
                         <label class="question-radio-option">
-                            <input type="radio" name="fase4satisfaccion" value="Neutro" [(ngModel)]="fase4satisfaccion">
-                            <span>Neutro</span>
+                            <input type="radio" name="fase4capacitacion" value="3" [(ngModel)]="fase4capacitacion">
+                            <span>Si, y estoy ni satisfecho(a) ni insatisfecho(a)</span>
                         </label>
 
                         <label class="question-radio-option">
-                            <input type="radio" name="fase4satisfaccion" value="Poco satisfecho" [(ngModel)]="fase4satisfaccion">
-                            <span>Poco satisfecho</span>
+                            <input type="radio" name="fase4capacitacion" value="4" [(ngModel)]="fase4capacitacion">
+                            <span>Si, y estoy insatisfecho(a)</span>
                         </label>
 
                         <label class="question-radio-option">
-                            <input type="radio" name="fase4satisfaccion" value="Insatisfecho" [(ngModel)]="fase4satisfaccion">
-                            <span>Insatisfecho</span>
+                            <input type="radio" name="fase4capacitacion" value="5" [(ngModel)]="fase4capacitacion">
+                            <span>Si, y estoy muy insatisfecho(a)</span>
+                        </label>
+
+                        <label class="question-radio-option">
+                            <input type="radio" name="fase4capacitacion" value="6" [(ngModel)]="fase4capacitacion">
+                            <span>No he participado</span>
+                        </label>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="question" *ngIf="fase4investigacion == 'Sí'">
+
+                <label class="question-label" for="fase4formacion">
+
+                    <span class="question-number">16</span>
+                    <span>La formación recibida en la UPSJB me brindó las competencias necesarias para desarrollar actividades de investigación e innovación en mi ámbito profesional.</span>
+                    <span class="question-required">*</span>
+
+                </label>
+
+                <div class="question-content">
+
+                    <div class="question-radio">
+
+                        <label class="question-radio-option">
+                            <input type="radio" name="fase4formacion" value="1" [(ngModel)]="fase4formacion">
+                            <span>Totalmente de acuerdo</span>
+                        </label>
+
+                        <label class="question-radio-option">
+                            <input type="radio" name="fase4formacion" value="2" [(ngModel)]="fase4formacion">
+                            <span>De acuerdo</span>
+                        </label>
+
+                        <label class="question-radio-option">
+                            <input type="radio" name="fase4formacion" value="3" [(ngModel)]="fase4formacion">
+                            <span>Ni de acuerdo ni en desacuerdo</span>
+                        </label>
+
+                        <label class="question-radio-option">
+                            <input type="radio" name="fase4formacion" value="4" [(ngModel)]="fase4formacion">
+                            <span>En desacuerdo</span>
+                        </label>
+
+                        <label class="question-radio-option">
+                            <input type="radio" name="fase4formacion" value="5" [(ngModel)]="fase4formacion">
+                            <span>Totalmente en desacuerdo</span>
                         </label>
 
                     </div>
@@ -992,8 +1107,26 @@
 
     </div>
 
-
 </div>
 
+
+<div class="popup" *ngIf="popup">
+
+    <div class="popup-box" *ngIf="popupTipo === 'POLITICA'">
+
+        <h2 class="popup-title">Política de Privacidad</h2>
+
+        <div class="popup-text">
+            <p>Con su aceptación autoriza a la Universidad Privada San Juan Bautista S.A.C. (UPSJB SAC), a través de la Subdirección de Seguimiento al Egresado para que, de manera indefinida o hasta que usted solicite que se revoque su consentimiento, pueda tratar todos los datos personales que provea como egresado de nuestra casa de estudios, así como todos aquellos relacionados a cualquier otro servicio y beneficio que la UPSJB SAC le haya brindado en su calidad de miembro de la comunidad universitaria.</p>
+            <p>Sus datos personales serán tratados con la finalidad de mantener contacto con usted para informarle acerca de los servicios y beneficios ofrecidos para los egresados de la UPSJB SAC, ponerlo al tanto de oportunidades profesionales y académicas, así para recoger su valiosa opinión respecto a la universidad, siempre garantizando la seguridad y confidencialidad de sus datos.</p>
+            <p>Su información será almacenada en la base de datos de propiedad de la UPSJB SAC y será tratada de manera confidencial. La UPSJB SAC no vende ni cede a terceros la información personal recibida. Su autorización es obligatoria para llevar a cabo las actividades aquí descritas, las cuales no se podrán realizar a cabalidad en caso de negativa. Usted tiene la facultad de ejercer cualquiera de los derechos previstos en la Ley N° 29733, Ley de Protección de Datos Personales, de manera gratuita, enviando una comunicación al correo electrónico.</p>
+            <p>Correo: <span>seguimiento.egresado@upsjb.edu.pe</span></p>
+        </div>
+
+        <button class="popup-button" (click)="functionPOPUP(false, '');">Cerrar</button>
+
+    </div>
+
+</div>
 
 
