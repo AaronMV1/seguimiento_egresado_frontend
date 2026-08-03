@@ -208,6 +208,7 @@
 
 .campo-filtro {
 	display: grid;
+    min-width: 25%;
 	gap: 0.4rem;
 }
 
@@ -220,6 +221,7 @@
 .campo-filtro input,
 .campo-filtro select {
 	height: 3.6rem;
+    width: 100%;
 	padding: 0 1rem;
 	border: 1px solid #c6d9ec;
 	border-radius: 0.6rem;
@@ -322,36 +324,37 @@
 }
 
 .paginador {
-	display: grid;
-	grid-template-columns: 1fr auto;
+	display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    flex-wrap: wrap;
 	gap: 1.2rem;
 	align-items: center;
-	margin-top: 1.2rem;
+	margin-top: 5rem;
 	padding: 1rem;
 	border: 1px solid #dbe7f4;
 	border-radius: 0.8rem;
 	background: #f8fbff;
 }
 
-.paginador-info {
-	font-size: 1.2rem;
-	color: #365b78;
+
+.paginador-bloque {
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
 }
 
-.paginador-configuracion {
-	display: flex;
-	align-items: center;
-	gap: 0.8rem;
-	justify-self: end;
-}
 
-.paginador-configuracion label {
+.paginador-bloque label {
 	font-size: 1.2rem;
 	font-weight: 600;
 	color: #244762;
 }
 
-.paginador-configuracion select {
+.paginador-bloque select {
 	height: 3.2rem;
 	padding: 0 0.8rem;
 	border: 1px solid #c6d9ec;
@@ -362,15 +365,8 @@
 	outline: none;
 }
 
-.paginador-controles {
-	grid-column: 1 / -1;
-	display: flex;
-	flex-wrap: wrap;
-	gap: 0.6rem;
-}
-
 .boton-paginador {
-	height: 3.2rem;
+	height: 3rem;
 	min-width: 3.2rem;
 	padding: 0 1rem;
 	border: 1px solid #9bb6cf;

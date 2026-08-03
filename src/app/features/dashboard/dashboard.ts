@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 
 import { AuthSessionService } from '../../core/services/auth-session.service';
 import { Http } from '../../core/services/http';
+import Swal from 'sweetalert2';
 
 
 
@@ -83,15 +84,15 @@ export class Dashboard implements OnInit {
 
 	// Función: Define el año actual usado para calcular dinámicamente las cohortes.
 	readonly anioActual = new Date().getFullYear();
-	// readonly anioActual = 2036;
+	// readonly anioActual = 2030;
 
 
 	// Función: Contiene la configuración base de las fases del dashboard.
 	readonly plantillasFases: PlantillaFase[] = [
 		{ id: 'fase_1', titulo: 'Fase 1: Información', aniosMinimosDesdeEgreso: 0, aniosMaximosDesdeEgreso: 3, etiquetaCohorte: '0 - 3 años', descripcion: 'Corresponde a los egresados que inician su vida profesional. En esta etapa se realiza el seguimiento de su inserción laboral, la actualización de sus datos y el fortalecimiento de su empleabilidad mediante oportunidades de trabajo, capacitación inicial y acompañamiento profesional.', imagen: 'assets/images/fases/Fase%201.png', },
-		{ id: 'fase_2', titulo: 'Fase 2: Formación', aniosMinimosDesdeEgreso: 4, aniosMaximosDesdeEgreso: 5, etiquetaCohorte: '3 - 5 años', descripcion: 'Comprende a los egresados que han consolidado experiencia laboral. Se recopila información sobre su desempeño, logros y formación continua, además de obtener retroalimentación para contribuir a la mejora del plan curricular y de la calidad académica.', imagen: 'assets/images/fases/Fase%202.png', },
-		{ id: 'fase_3', titulo: 'Fase 3: Autocapacitación', aniosMinimosDesdeEgreso: 6, aniosMaximosDesdeEgreso: 7, etiquetaCohorte: '5 - 7 años', descripcion: 'En esta etapa se evalúa el crecimiento académico y profesional del egresado, identificando estudios de posgrado, especializaciones, certificaciones y otros procesos de actualización que fortalecen su perfil profesional.', imagen: 'assets/images/fases/Fase%203.png', },
-		{ id: 'fase_4', titulo: 'Fase 4: Innovación', aniosMinimosDesdeEgreso: 8, aniosMaximosDesdeEgreso: null, etiquetaCohorte: '7 - X años', descripcion: 'Corresponde a los egresados con una trayectoria profesional consolidada. Se identifican sus aportes en investigación, innovación, emprendimiento, liderazgo y generación de conocimiento, evidenciando su impacto en la sociedad y en el desarrollo de su profesión.', imagen: 'assets/images/fases/Fase%204.png', },
+		{ id: 'fase_2', titulo: 'Fase 2: Formación', aniosMinimosDesdeEgreso: 4, aniosMaximosDesdeEgreso: 5, etiquetaCohorte: '4 - 5 años', descripcion: 'Comprende a los egresados que han consolidado experiencia laboral. Se recopila información sobre su desempeño, logros y formación continua, además de obtener retroalimentación para contribuir a la mejora del plan curricular y de la calidad académica.', imagen: 'assets/images/fases/Fase%202.png', },
+		{ id: 'fase_3', titulo: 'Fase 3: Autocapacitación', aniosMinimosDesdeEgreso: 6, aniosMaximosDesdeEgreso: 7, etiquetaCohorte: '6 - 7 años', descripcion: 'En esta etapa se evalúa el crecimiento académico y profesional del egresado, identificando estudios de posgrado, especializaciones, certificaciones y otros procesos de actualización que fortalecen su perfil profesional.', imagen: 'assets/images/fases/Fase%203.png', },
+		{ id: 'fase_4', titulo: 'Fase 4: Innovación', aniosMinimosDesdeEgreso: 8, aniosMaximosDesdeEgreso: null, etiquetaCohorte: '8 - X años', descripcion: 'Corresponde a los egresados con una trayectoria profesional consolidada. Se identifican sus aportes en investigación, innovación, emprendimiento, liderazgo y generación de conocimiento, evidenciando su impacto en la sociedad y en el desarrollo de su profesión.', imagen: 'assets/images/fases/Fase%204.png', },
 	];
 
 
@@ -496,7 +497,238 @@ export class Dashboard implements OnInit {
 
 
 	// Función: Descarga en Excel los registros visibles de la tabla con sus columnas.
-	async exportarRegistrosExcel(): Promise<void> {
+	private agruparRegistros(
+        registros: EgresadoBK[],
+        obtenerValor: (egresado: EgresadoBK) => string,
+    ): { etiqueta: string; cantidad: number }[] {
+
+        const agrupacion = new Map<string, number>();
+
+        registros.forEach((egresado) => {
+
+            const valor = obtenerValor(egresado)?.trim() || 'Sin especificar';
+
+            agrupacion.set(
+                valor,
+                (agrupacion.get(valor) ?? 0) + 1,
+            );
+
+        });
+
+        return Array.from(agrupacion.entries())
+            .map(([etiqueta, cantidad]) => ({
+                etiqueta,
+                cantidad,
+            }))
+            .sort((a, b) => b.cantidad - a.cantidad);
+
+    }
+
+    private agruparPorAnio(
+        registros: EgresadoBK[],
+    ): { etiqueta: string; cantidad: number }[] {
+
+        return this.agruparRegistros(
+            registros,
+            (egresado) => String(egresado.anioEgreso),
+        )
+        .sort(
+            (a, b) => Number(b.etiqueta) - Number(a.etiqueta),
+        );
+
+    }
+
+    private crearHojaResumen(
+        XLSX: any,
+        registros: EgresadoBK[],
+    ): any {
+
+        const porAnio = this.agruparPorAnio(registros);
+
+        const porSede = this.agruparRegistros(
+            registros,
+            (egresado) => egresado.sede,
+        );
+
+        const porFacultad = this.agruparRegistros(
+            registros,
+            (egresado) => egresado.facultad,
+        );
+
+        const porCarrera = this.agruparRegistros(
+            registros,
+            (egresado) => egresado.carrera,
+        );
+
+        const filasResumen: unknown[][] = [
+            ['RESUMEN DE EGRESADOS'],
+            [],
+            ['Total de egresados', registros.length],
+            [],
+            ['EGRESADOS POR AÑO DE EGRESO'],
+            ['Año de egreso', 'Cantidad'],
+            ...porAnio.map((item) => [
+                Number(item.etiqueta),
+                item.cantidad,
+            ]),
+            [],
+            ['EGRESADOS POR SEDE'],
+            ['Sede', 'Cantidad'],
+            ...porSede.map((item) => [
+                item.etiqueta,
+                item.cantidad,
+            ]),
+            [],
+            ['EGRESADOS POR FACULTAD'],
+            ['Facultad', 'Cantidad'],
+            ...porFacultad.map((item) => [
+                item.etiqueta,
+                item.cantidad,
+            ]),
+            [],
+            ['EGRESADOS POR CARRERA PROFESIONAL'],
+            ['Carrera profesional', 'Cantidad'],
+            ...porCarrera.map((item) => [
+                item.etiqueta,
+                item.cantidad,
+            ]),
+        ];
+
+        const worksheetResumen =
+            XLSX.utils.aoa_to_sheet(filasResumen);
+
+        worksheetResumen['!cols'] = [
+            { wch: 60 },
+            { wch: 18 },
+        ];
+
+        // Título principal.
+        worksheetResumen['A1'].s = {
+            fill: {
+                patternType: 'solid',
+                fgColor: {
+                    rgb: 'FF0A41',
+                },
+            },
+            font: {
+                bold: true,
+                color: {
+                    rgb: 'FFFFFF',
+                },
+                sz: 16,
+            },
+            alignment: {
+                horizontal: 'center',
+                vertical: 'center',
+            },
+        };
+
+        worksheetResumen['!merges'] = [
+            {
+                s: { r: 0, c: 0 },
+                e: { r: 0, c: 1 },
+            },
+        ];
+
+        worksheetResumen['!rows'] = [
+            { hpt: 30 },
+        ];
+
+        // Colorear títulos y cabeceras de cada sección.
+        Object.keys(worksheetResumen).forEach((direccion) => {
+
+            if (direccion.startsWith('!')) {
+                return;
+            }
+
+            const celda = worksheetResumen[direccion];
+
+            if (!celda || typeof celda.v !== 'string') {
+                return;
+            }
+
+            const valor = celda.v;
+
+            const esTituloSeccion =
+                valor.startsWith('EGRESADOS POR');
+
+            const esCabecera =
+                valor === 'Año de egreso' ||
+                valor === 'Sede' ||
+                valor === 'Facultad' ||
+                valor === 'Carrera profesional' ||
+                valor === 'Cantidad';
+
+            if (esTituloSeccion) {
+
+                celda.s = {
+                    fill: {
+                        patternType: 'solid',
+                        fgColor: {
+                            rgb: 'D9E2F3',
+                        },
+                    },
+                    font: {
+                        bold: true,
+                        color: {
+                            rgb: '1F1F1F',
+                        },
+                    },
+                    alignment: {
+                        vertical: 'center',
+                    },
+                };
+
+            }
+
+            if (esCabecera) {
+
+                celda.s = {
+                    fill: {
+                        patternType: 'solid',
+                        fgColor: {
+                            rgb: 'FF0A41',
+                        },
+                    },
+                    font: {
+                        bold: true,
+                        color: {
+                            rgb: 'FFFFFF',
+                        },
+                    },
+                    alignment: {
+                        horizontal: 'center',
+                        vertical: 'center',
+                    },
+                    border: {
+                        top: {
+                            style: 'thin',
+                            color: { rgb: 'D9E2F3' },
+                        },
+                        bottom: {
+                            style: 'thin',
+                            color: { rgb: 'D9E2F3' },
+                        },
+                        left: {
+                            style: 'thin',
+                            color: { rgb: 'D9E2F3' },
+                        },
+                        right: {
+                            style: 'thin',
+                            color: { rgb: 'D9E2F3' },
+                        },
+                    },
+                };
+
+            }
+
+        });
+
+        return worksheetResumen;
+
+    }
+
+    async exportarRegistrosExcel(): Promise<void> {
 
 		const XLSX = await import('xlsx-js-style');
 
@@ -506,9 +738,10 @@ export class Dashboard implements OnInit {
         }
 
         const encabezados = [
-            'Nombre completo',
-            'Año de egreso',
-            'Correo institucional',
+            'Nombres Completos',
+            'Año de Egreso',
+            'Correo Electrónico',
+            'Número de Celular',
             'Sede',
             'Facultad',
             'Carrera profesional',
@@ -518,6 +751,7 @@ export class Dashboard implements OnInit {
             egresado.nombresApellidos,
             egresado.anioEgreso,
             egresado.correoElectronico,
+            egresado.numeroCelular,
             egresado.sede,
             egresado.facultad,
             egresado.carrera,
@@ -533,7 +767,7 @@ export class Dashboard implements OnInit {
 
         // Filtro en la cabecera.
         worksheet['!autofilter'] = {
-            ref: `A1:F${ultimaFila}`,
+            ref: `A1:G${ultimaFila}`,
         };
 
         // Estilo de la cabecera.
@@ -601,6 +835,7 @@ export class Dashboard implements OnInit {
             { wch: 15 },
             { wch: 40 },
             { wch: 20 },
+            { wch: 20 },
             { wch: 40 },
             { wch: 40 },
         ];
@@ -611,6 +846,17 @@ export class Dashboard implements OnInit {
             workbook,
             worksheet,
             'Registros',
+        );
+
+        const worksheetResumen = this.crearHojaResumen(
+            XLSX,
+            this.egresadosVisibles,
+        );
+
+        XLSX.utils.book_append_sheet(
+            workbook,
+            worksheetResumen,
+            'Resumen',
         );
 
         const fecha = new Date()
@@ -625,6 +871,188 @@ export class Dashboard implements OnInit {
             workbook,
             `egresados-${fase}-${fecha}.xlsx`,
         );
+
+    }
+
+    async exportarRegistrosExcelCompleto(): Promise<void> {
+
+		const XLSX = await import('xlsx-js-style');
+
+        if (this.egresadosVisibles.length === 0) {
+            console.warn('No hay registros visibles para exportar.');
+            return;
+        }
+
+        const encabezados = [
+            'Nombres Completos',
+            'Fase',
+            'Año de Egreso',
+            'Correo Electrónico',
+            'Número de Celular',
+            'Sede',
+            'Facultad',
+            'Carrera profesional',
+        ];
+
+        const filas = this.egresadoBK.map((egresado) => [
+            egresado.nombresApellidos,
+            egresado.anioEgreso == this.anioActual     || egresado.anioEgreso >= this.anioActual - 3 ? 'Fase 1' :
+            egresado.anioEgreso == this.anioActual - 4 || egresado.anioEgreso == this.anioActual - 5 ? 'Fase 2' :
+            egresado.anioEgreso == this.anioActual - 6 || egresado.anioEgreso == this.anioActual - 7 ? 'Fase 3' : 'Fase 4',
+            egresado.anioEgreso,
+            egresado.correoElectronico,
+            egresado.numeroCelular,
+            egresado.sede,
+            egresado.facultad,
+            egresado.carrera,
+        ]);
+
+        const worksheet = XLSX.utils.aoa_to_sheet([
+            encabezados,
+            ...filas,
+        ]);
+
+        const ultimaFila = filas.length + 1;
+        const ultimaColumna = encabezados.length - 1;
+
+        // Filtro en la cabecera.
+        worksheet['!autofilter'] = {
+            ref: `A1:H${ultimaFila}`,
+        };
+
+        // Estilo de la cabecera.
+        for (let columna = 0; columna <= ultimaColumna; columna++) {
+
+            const direccionCelda = XLSX.utils.encode_cell({
+                r: 0,
+                c: columna,
+            });
+
+            const celda = worksheet[direccionCelda];
+
+            if (!celda) {
+                continue;
+            }
+
+            celda.s = {
+                fill: {
+                    patternType: 'solid',
+                    fgColor: {
+                        rgb: 'FF0A41',
+                    },
+                },
+                font: {
+                    bold: true,
+                    color: {
+                        rgb: 'FFFFFF',
+                    },
+                },
+                alignment: {
+                    horizontal: 'center',
+                    vertical: 'center',
+                    wrapText: true,
+                },
+                border: {
+                    top: {
+                        style: 'thin',
+                        color: { rgb: 'D9E2F3' },
+                    },
+                    bottom: {
+                        style: 'thin',
+                        color: { rgb: 'D9E2F3' },
+                    },
+                    left: {
+                        style: 'thin',
+                        color: { rgb: 'D9E2F3' },
+                    },
+                    right: {
+                        style: 'thin',
+                        color: { rgb: 'D9E2F3' },
+                    },
+                },
+            };
+
+        }
+
+        // Altura de la cabecera.
+        worksheet['!rows'] = [
+            { hpt: 28 },
+        ];
+
+        // Anchos de columnas.
+        worksheet['!cols'] = [
+            { wch: 40 },
+            { wch: 15 },
+            { wch: 15 },
+            { wch: 40 },
+            { wch: 20 },
+            { wch: 20 },
+            { wch: 40 },
+            { wch: 60 },
+        ];
+
+        const workbook = XLSX.utils.book_new();
+
+        const worksheetResumen = this.crearHojaResumen(
+            XLSX,
+            this.egresadoBK,
+        );
+
+        XLSX.utils.book_append_sheet(
+            workbook,
+            worksheet,
+            'Registros',
+        );
+
+        XLSX.utils.book_append_sheet(
+            workbook,
+            worksheetResumen,
+            'Resumen',
+        );
+
+        const fecha = new Date()
+            .toISOString()
+            .slice(0, 10);
+
+        const fase = (this.faseSeleccionada?.titulo ?? 'sin-fase')
+            .toLowerCase()
+            .replace(/\s+/g, '-');
+
+        XLSX.writeFile(
+            workbook,
+            `egresados-${fase}-${fecha}.xlsx`,
+        );
+
+    }
+
+
+    popupDescargarExcel() {
+
+        Swal.fire({
+            title: 'Registro de egresados',
+            text: '¿Desea descargar todos los registros o por fase?',
+            icon: 'warning',
+
+            showDenyButton: true, // segundo botón
+            showCancelButton: true, // botón de cancelar
+
+            confirmButtonText: 'Por Fase',
+            denyButtonText: 'Completo',
+            cancelButtonText: 'Cancelar',
+        })
+        .then((result) => {
+
+            if (result.isConfirmed) {
+                // FUNCIÓN 1
+                this.exportarRegistrosExcel();
+            }
+
+            else if (result.isDenied) {
+                // FUNCIÓN 2
+                this.exportarRegistrosExcelCompleto();
+            }
+
+        });
 
     }
 
@@ -802,6 +1230,8 @@ export class Dashboard implements OnInit {
         });
 
     }
+
+
 
 }
 

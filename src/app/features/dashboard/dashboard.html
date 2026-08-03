@@ -1,3 +1,5 @@
+
+
 <section class="contenedor-dashboard">
 
 	<header class="encabezado-dashboard">
@@ -146,7 +148,7 @@
 			</div>
 
             <div class="campo-filtro">
-                <button type="button" class="boton-exportar" (click)="exportarRegistrosExcel()">Descargar Excel</button>
+                <button type="button" class="boton-exportar" (click)="popupDescargarExcel()">Descargar Excel</button>
             </div>
 
             <div class="campo-filtro">
@@ -228,21 +230,11 @@
 
 		<div class="paginador" *ngIf="egresadosVisibles.length > 0">
 
-			<div class="paginador-info">
+			<div class="paginador-bloque">
 				Mostrando {{ indiceInicioPaginacion }} a {{ indiceFinPaginacion }} de {{ egresadosVisibles.length }} registros
 			</div>
 
-			<div class="paginador-configuracion">
-				<label for="registrosPorPagina">Filas por página</label>
-				<select
-					id="registrosPorPagina"
-					[(ngModel)]="registrosPorPagina"
-					(ngModelChange)="cambiarRegistrosPorPagina()">
-					<option *ngFor="let opcion of opcionesRegistrosPorPagina" [ngValue]="opcion">{{ opcion }}</option>
-				</select>
-			</div>
-
-			<div class="paginador-controles">
+            <div class="paginador-bloque">
 				<button
 					type="button"
 					class="boton-paginador"
@@ -269,6 +261,16 @@
 				</button>
 			</div>
 
+			<div class="paginador-bloque">
+				<label for="registrosPorPagina">Filas por página</label>
+				<select
+					id="registrosPorPagina"
+					[(ngModel)]="registrosPorPagina"
+					(ngModelChange)="cambiarRegistrosPorPagina()">
+					<option *ngFor="let opcion of opcionesRegistrosPorPagina" [ngValue]="opcion">{{ opcion }}</option>
+				</select>
+			</div>
+
 		</div>
 
 		<p class="estado-vacio" *ngIf="egresadosVisibles.length === 0">
@@ -278,9 +280,4 @@
 	</section>
 
 </section>
-
-
-
-<!-- -->
-
 
