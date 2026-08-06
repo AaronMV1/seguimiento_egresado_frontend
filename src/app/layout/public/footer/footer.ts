@@ -1,9 +1,19 @@
+
+
 import { Component } from '@angular/core';
 
+
 @Component({
-  selector: 'app-public-footer',
-  imports: [],
-  templateUrl: './footer.html',
-  styleUrl: './footer.css',
+    selector: 'app-public-footer',
+    imports: [],
+    templateUrl: './footer.html',
+    styleUrl: './footer.css',
 })
-export class PublicFooter {}
+
+
+export class PublicFooter {
+
+    anio: number = new Date().getFullYear();
+
+}
+

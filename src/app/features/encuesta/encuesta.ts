@@ -26,7 +26,7 @@ type Popup =
 export class Encuesta implements OnInit {
 
 
-    seccionActual = 1;
+    seccionActual = 4;
 
 
     readonly totalSecciones = 6;
@@ -48,7 +48,7 @@ export class Encuesta implements OnInit {
     numeroCelular: string = '';
 
     fase1participacion: string = '';
-    fase1situacion: string = '';
+    fase1situacion: number[] = [];
     fase1trabajando: string = '';
     fase1primerempleo: string = '';
     fase1medios: string = '';
@@ -134,6 +134,19 @@ export class Encuesta implements OnInit {
         ],
     };
 
+
+    fase1SituacionOptions = [
+        { value: 1, text: 'Buscando trabajo' },
+        { value: 2, text: 'Estudiando otra carrera de pregrado' },
+        { value: 3, text: 'Estudiando un posgrado' },
+        { value: 4, text: 'Responsable del cuidado familiar' },
+        { value: 5, text: 'Desarrollando la tesis' },
+        { value: 6, text: 'Trabajo formal' },
+        { value: 7, text: 'Trabajos informales u ocasionales' },
+        { value: 8, text: 'Comercio, ventas' },
+        { value: 9, text: 'Desarrollando mi emprendimiento' },
+        { value: 10, text: 'Otro' },
+    ];
 
     fase4ParticipacionOptions = [
         { value: 1, text: 'Investigador(a) principal o líder del proyecto' },
@@ -637,7 +650,7 @@ export class Encuesta implements OnInit {
         this.numeroCelular = '';
 
         this.fase1participacion = '';
-        this.fase1situacion = '';
+        this.fase1situacion = [];
         this.fase1trabajando = '';
         this.fase1primerempleo = '';
         this.fase1medios = '';

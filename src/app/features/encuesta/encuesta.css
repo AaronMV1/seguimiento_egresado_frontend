@@ -4,8 +4,9 @@
     height: auto;
     width: 100%;
     background-color: white;
-    border-radius: 10px;
-    box-shadow: 0 5px 5px 5px rgba(0, 0, 0, 0.2);
+    border-radius: 1.8rem;
+    border: 1px solid #e5ebf5;
+    box-shadow: 0 24px 60px rgba(29, 59, 113, 0.12);
     padding: 5rem;
 }
 

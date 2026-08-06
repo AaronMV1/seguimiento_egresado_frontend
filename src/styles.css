@@ -3,12 +3,13 @@
 html {
     box-sizing: border-box;
     font-size: 62.5%;
-    font-family: 'poppins-bold' !important;
+
 }
 
 *,
 *::before,
 *::after {
+    /* font-family: 'poppins-bold' !important; */
     line-height: 2rem !important;
     box-sizing: inherit;
     margin: 0;
@@ -26,11 +27,16 @@ input {
 
 
 
+
 h2 {
     font-size: 3rem;
     color: var(--primary);
     text-align: center;
     margin: 2rem 0;
+}
+
+h3, h4 {
+    font-family: 'poppins-bold' !important;
 }
 
 p {

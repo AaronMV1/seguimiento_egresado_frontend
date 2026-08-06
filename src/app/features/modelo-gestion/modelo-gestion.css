@@ -1,3 +1,5 @@
+
+
 :host {
     display: block;
 }
@@ -10,7 +12,7 @@
     --amarillo: #f5d300;
     --bordes: #d8dfea;
 
-    margin: 2rem auto;
+    margin: auto;
     width: min(1500px, calc(100vw - 2rem));
     background: linear-gradient(180deg, #ffffff 0%, #fbfcff 80%, #f4f8ff 100%);
     border-radius: 1.8rem;

@@ -1,7 +1,9 @@
+
+
 .contenedor-dashboard {
 	max-width: 120rem;
-	margin: 0rem auto 4rem;
-	padding: 0 1.6rem;
+	margin: auto;
+	padding: 2rem 1.6rem;
 	display: grid;
 	gap: 4rem;
 }
@@ -15,6 +17,7 @@
 	border-radius: 1.4rem;
 	padding: 4rem;
 	text-align: center;
+    padding: 8rem 0;
 
 	h2 {
 		margin: 0rem;
@@ -37,8 +40,11 @@
 }
 
 .encabezado-dashboard-topbar h2 {
+    text-transform: uppercase;
+    font-size: clamp(1.8rem, 2.5vw, 3.2rem);
 	flex: 1 1 auto;
 	text-align: center;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .boton-cerrar-sesion {
