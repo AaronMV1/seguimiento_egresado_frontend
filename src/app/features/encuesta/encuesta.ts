@@ -96,14 +96,12 @@ export class Encuesta implements OnInit {
         { value: 'F', text: 'Femenino' },
     ];
 
-
     facultadOptions = [
         { value: 1, text: 'Ciencias de la Salud' },
         { value: 2, text: 'Ingenierías' },
         { value: 3, text: 'Derecho y Ciencias Empresariales' },
         { value: 4, text: 'Comunicación y Ciencias Administrativas' },
     ];
-
 
     carrerasOptions: Record<number, { value: number; text: string }[]> = {
         1: [

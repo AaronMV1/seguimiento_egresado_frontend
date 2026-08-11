@@ -65,10 +65,7 @@ CREATE TABLE IF NOT EXISTS seguimiento_egresado.seguimiento (
     seguimiento_id BIGSERIAL PRIMARY KEY,                                                                                           -- Identificador único del registro de seguimiento.
     egresado_id BIGINT NOT NULL REFERENCES seguimiento_egresado.egresado(egresado_id),                                              -- Egresado al que pertenece este seguimiento.
     fase SMALLINT NOT NULL CHECK (fase BETWEEN 1 AND 4),                                                                            -- Fase respondida (1=Información, 2=Formación, 3=Autocapacitación, 4=Innovación).
-    anio_seguimiento INTEGER NOT NULL DEFAULT EXTRACT(YEAR FROM CURRENT_DATE)::INTEGER,                                             -- Año en que el egresado respondió esta fase.
-    fecha_inicio TIMESTAMPTZ NOT NULL DEFAULT NOW(),                                                                                -- Fecha y hora en que inició la encuesta.
-    fecha_fin TIMESTAMPTZ,                                                                                                          -- Fecha y hora en que finalizó la encuesta.
-    completado BOOLEAN NOT NULL DEFAULT FALSE,                                                                                      -- Indica si el egresado terminó completamente la encuesta.
+    anio_seguimiento INTEGER NOT NULL DEFAULT EXTRACT(YEAR FROM CURRENT_DATE)::INTEGER,                                             -- Año en que el egresado respondió esta fase.                                                                                   -- Fecha y hora en que finalizó la encuesta.
     fecha_creacion TIMESTAMPTZ NOT NULL DEFAULT NOW(),                                                                              -- Fecha de creación del registro.
     fecha_modificacion TIMESTAMPTZ,                                                                                                 -- Última modificación del registro.
     activo BOOLEAN NOT NULL DEFAULT TRUE,                                                                                           -- Permite realizar eliminaciones lógicas.
@@ -81,11 +78,11 @@ CREATE TABLE IF NOT EXISTS seguimiento_egresado.seguimiento_fase_1 (
     seguimiento_fase_1_id BIGSERIAL PRIMARY KEY,                                                                                    -- Identificador único de las respuestas de la fase 1.
     seguimiento_id BIGINT NOT NULL UNIQUE REFERENCES seguimiento_egresado.seguimiento(seguimiento_id) ON DELETE CASCADE,            -- Seguimiento al que pertenecen estas respuestas.
 
-    fase1_participacion VARCHAR(50) NOT NULL,                                                                                       -- Frecuencia con la que participa en cursos o talleres de empleabilidad organizados por la universidad.
-    fase1_situacion VARCHAR(150) NOT NULL,                                                                                          -- Situación actual del egresado (trabajando, estudiando, emprendiendo, etc.).
-    fase1_trabajando VARCHAR(150) NOT NULL,                                                                                         -- Relación del trabajo actual con la carrera profesional.
-    fase1_primerempleo VARCHAR(150) NOT NULL,                                                                                       -- Tiempo que tardó en conseguir el primer empleo relacionado con su profesión.
-    fase1_medios VARCHAR(200) NOT NULL,                                                                                             -- Medio por el cual consiguió el empleo actual.
+    fase1_participacion VARCHAR(100),                                                                                               -- Frecuencia con la que participa en cursos o talleres de empleabilidad organizados por la universidad.
+    fase1_situacion VARCHAR(500),                                                                                                   -- Situación actual del egresado (trabajando, estudiando, emprendiendo, etc.).
+    fase1_trabajando VARCHAR(100),                                                                                                  -- Relación del trabajo actual con la carrera profesional.
+    fase1_primerempleo VARCHAR(100),                                                                                                -- Tiempo que tardó en conseguir el primer empleo relacionado con su profesión.
+    fase1_medios VARCHAR(100),                                                                                                      -- Medio por el cual consiguió el empleo actual.
 
     fecha_creacion TIMESTAMPTZ NOT NULL DEFAULT NOW(),                                                                              -- Fecha de creación.
     fecha_modificacion TIMESTAMPTZ                                                                                                  -- Última modificación.
@@ -96,14 +93,14 @@ CREATE TABLE IF NOT EXISTS seguimiento_egresado.seguimiento_fase_2 (
     seguimiento_fase_2_id BIGSERIAL PRIMARY KEY,                                                                                    -- Identificador único de las respuestas de la fase 2.
     seguimiento_id BIGINT NOT NULL UNIQUE REFERENCES seguimiento_egresado.seguimiento(seguimiento_id) ON DELETE CASCADE,            -- Seguimiento al que pertenece.
 
-    fase2_satisfaccionestudios VARCHAR(50) NOT NULL,                                                                                 -- Nivel de satisfacción con los conocimientos adquiridos durante la formación profesional.
-    fase2_participacion BOOLEAN NOT NULL,                                                                                            -- Indica si participó en procesos de gestión curricular.
-    fase2_satisfaccionservicio VARCHAR(50) NOT NULL,                                                                                 -- Nivel de satisfacción con el servicio educativo brindado por la universidad.
-    fase2_planificacion BOOLEAN NOT NULL,                                                                                            -- Indica si participó en procesos de planificación estratégica.
-    fase2_empresanombre VARCHAR(200),                                                                                                -- Empresa donde actualmente labora.
-    fase2_empresaempleadornombre VARCHAR(150),                                                                                       -- Nombre del jefe inmediato.
-    fase2_empresaempleadorcorreo VARCHAR(150),                                                                                       -- Correo electrónico del jefe inmediato.
-    fase2_empresaempleadornumero VARCHAR(150),                                                                                       -- Número de contacto del jefe inmediato.
+    fase2_satisfaccionestudios VARCHAR(50),                                                                                         -- Nivel de satisfacción con los conocimientos adquiridos durante la formación profesional.
+    fase2_participacion VARCHAR(10),                                                                                                    -- Indica si participó en procesos de gestión curricular.
+    fase2_satisfaccionservicio VARCHAR(50),                                                                                         -- Nivel de satisfacción con el servicio educativo brindado por la universidad.
+    fase2_planificacion VARCHAR(10),                                                                                                    -- Indica si participó en procesos de planificación estratégica.
+    fase2_empresanombre VARCHAR(100),                                                                                               -- Empresa donde actualmente labora.
+    fase2_empresaempleadornombre VARCHAR(100),                                                                                      -- Nombre del jefe inmediato.
+    fase2_empresaempleadorcorreo VARCHAR(100),                                                                                      -- Correo electrónico del jefe inmediato.
+    fase2_empresaempleadornumero VARCHAR(100),                                                                                      -- Número de contacto del jefe inmediato.
 
     fecha_creacion TIMESTAMPTZ NOT NULL DEFAULT NOW(),                                                                              -- Fecha de creación.
     fecha_modificacion TIMESTAMPTZ                                                                                                  -- Última modificación.
@@ -115,9 +112,9 @@ CREATE TABLE IF NOT EXISTS seguimiento_egresado.seguimiento_fase_3 (
     seguimiento_fase_3_id BIGSERIAL PRIMARY KEY,                                                                                    -- Identificador único de las respuestas de la fase 3.
     seguimiento_id BIGINT NOT NULL UNIQUE REFERENCES seguimiento_egresado.seguimiento(seguimiento_id) ON DELETE CASCADE,            -- Seguimiento al que pertenece.
 
-    fase3_especialidad VARCHAR(100) NOT NULL,                                                                                       -- Mayor nivel de especialización alcanzado (diplomado, maestría, doctorado, etc.).
-    fase3_participacion VARCHAR(50) NOT NULL,                                                                                       -- Frecuencia de participación en cursos de educación continua.
-    fase3_educacioncontinua VARCHAR(150) NOT NULL,                                                                                  -- Principal necesidad de capacitación o educación continua.
+    fase3_especialidad VARCHAR(100),                                                                                                -- Mayor nivel de especialización alcanzado (diplomado, maestría, doctorado, etc.).
+    fase3_participacion VARCHAR(50),                                                                                                -- Frecuencia de participación en cursos de educación continua.
+    fase3_educacioncontinua VARCHAR(150),                                                                                           -- Principal necesidad de capacitación o educación continua.
 
     fecha_creacion TIMESTAMPTZ NOT NULL DEFAULT NOW(),                                                                              -- Fecha de creación.
     fecha_modificacion TIMESTAMPTZ                                                                                                  -- Última modificación.
@@ -128,9 +125,12 @@ CREATE TABLE IF NOT EXISTS seguimiento_egresado.seguimiento_fase_4 (
     seguimiento_fase_4_id BIGSERIAL PRIMARY KEY,                                                                                    -- Identificador único de las respuestas de la fase 4.
     seguimiento_id BIGINT NOT NULL UNIQUE REFERENCES seguimiento_egresado.seguimiento(seguimiento_id) ON DELETE CASCADE,            -- Seguimiento al que pertenece.
 
-    fase4_investigacion BOOLEAN NOT NULL,                                                                                           -- Indica si actualmente realiza actividades de investigación.
-    fase4_innovacion VARCHAR(50) NOT NULL,                                                                                          -- Frecuencia con la que participa en capacitaciones relacionadas con investigación o innovación.
-    fase4_satisfaccion VARCHAR(50) NOT NULL,                                                                                        -- Nivel de satisfacción con las capacitaciones recibidas sobre investigación e innovación.
+    fase4_investigacion VARCHAR(10),
+    fase4_participacion VARCHAR(500),
+    fase4_resultados VARCHAR(500),
+    fase4_innovacion VARCHAR(50),
+    fase4_capacitacion VARCHAR(50),
+    fase4_formacion VARCHAR(50),
 
     fecha_creacion TIMESTAMPTZ NOT NULL DEFAULT NOW(),                                                                              -- Fecha de creación.
     fecha_modificacion TIMESTAMPTZ                                                                                                  -- Última modificación.
@@ -1348,3 +1348,7 @@ VALUES
 
 
 --#endregion
+
+
+
+
