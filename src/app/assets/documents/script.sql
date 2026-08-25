@@ -242,6 +242,9 @@ TRUNCATE TABLE IF EXISTS seguimiento_egresado.egresado;
 --#region       INSERT DATA INTO EGRESADO
 
 
+
+
+
 INSERT INTO seguimiento_egresado.egresado
     (tipo_documento, numero_documento, nombres_apellidos, genero, sede_id, facultad_id, carrera_id, anio_egreso, correo_electronico, numero_celular)
 VALUES
@@ -348,11 +351,11 @@ VALUES
     ('01', '58227297', 'Diego Álvarez Condori', 'M', 1, 2, 10, 2024, 'diego.alvarez2024@mail.com', '955421239'),
     ('01', '24596969', 'Fiorella Suárez Huamán', 'F', 3, 3, 14, 2018, 'fiorella.suarez2018@mail.com', '983011066'),
     ('01', '18235907', 'Lucía Álvarez Gutiérrez', 'F', 3, 1, 7, 2006, 'lucia.alvarez2006@mail.com', '941127169'),
-    ('01', '79952007', 'Milagros Delgado Montoya', 'F', 3, 1, 3, 2020, 'milagros.delgado2020@mail.com', '947603173'),
-    ('01', '20125126', 'Manuel García Navarro', 'M', 3, 3, 12, 2019, 'manuel.garcia2019@mail.com', '957721138'),
+    ('01', '79952007', 'Milagros Delgado Montoya', 'F', 3, 1, 3, 2022, 'milagros.delgado2020@mail.com', '947603173'),
+    ('01', '20125126', 'Manuel García Navarro', 'M', 3, 3, 12, 2018, 'manuel.garcia2019@mail.com', '957721138'),
     ('01', '34027263', 'Bruno Silva Mamani', 'M', 3, 1, 7, 2020, 'bruno.silva2020@mail.com', '981754589'),
-    ('01', '31406386', 'Fernanda Bravo Paredes', 'F', 1, 2, 8, 2020, 'fernanda.bravo2020@mail.com', '935878090'),
-    ('01', '15872999', 'Andrea Sánchez Mamani', 'F', 2, 1, 3, 2020, 'andrea.sanchez2020@mail.com', '967276721'),
+    ('01', '31406386', 'Fernanda Bravo Paredes', 'F', 1, 2, 8, 2017, 'fernanda.bravo2020@mail.com', '935878090'),
+    ('01', '15872999', 'Andrea Sánchez Mamani', 'F', 2, 1, 3, 2021, 'andrea.sanchez2020@mail.com', '967276721'),
     ('01', '75252052', 'José Suárez Mejía', 'M', 3, 1, 3, 2012, 'jose.suarez2012@mail.com', '952329144'),
     ('01', '40379827', 'Carmen Carrasco Álvarez', 'F', 3, 2, 10, 2021, 'carmen.carrasco2021@mail.com', '932501397'),
     ('01', '23787310', 'Leslie Torres Carhuancho', 'F', 3, 2, 11, 2025, 'leslie.torres2025@mail.com', '985811831'),

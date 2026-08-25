@@ -26,6 +26,10 @@ type Popup =
 export class Encuesta implements OnInit {
 
 
+
+    //  #region     VARIABLES   */
+
+
     seccionActual = 4;
 
 
@@ -84,7 +88,9 @@ export class Encuesta implements OnInit {
     numeroCelularLabel: boolean = false;
 
 
-    //  LISTAS
+    //  #endregion  VARIABLES   */
+
+    //  #region     LISTAS
 
 
     tipoDocumentoOptions: any[] = [];
@@ -132,7 +138,6 @@ export class Encuesta implements OnInit {
         ],
     };
 
-
     fase1SituacionOptions = [
         { value: 1, text: 'Buscando trabajo' },
         { value: 2, text: 'Estudiando otra carrera de pregrado' },
@@ -166,6 +171,10 @@ export class Encuesta implements OnInit {
     ];
 
 
+    //  #endregion  LISTAS
+
+
+
     cambiarCheckboxMultiple(
         lista: number[],
         valor: number,
@@ -191,11 +200,9 @@ export class Encuesta implements OnInit {
         }
     }
 
-
     get carreraOptionsLista(): { value: number; text: string }[] {
         return this.carrerasOptions[this.facultad] ?? [];
     }
-
 
     get seccionTitulo(): string {
 
@@ -224,11 +231,87 @@ export class Encuesta implements OnInit {
 
 
 
-    /*  SERVICIOS   */
+    //  #region     SERVICIOS   */
 
 
+    validarDatoEgresado() {
+
+        this.tipoDocumento = this.tipoDocumento.trim();
+        this.numeroDocumento = this.numeroDocumento.trim();
+
+        if (!this.tipoDocumento || !this.numeroDocumento) {
+
+            Swal.fire({
+                title: 'Campos incompletos',
+                text: 'Por favor, complete todos los campos requeridos.',
+                icon: 'error',
+                confirmButtonText: 'Aceptar',
+            });
+
+            return;
+
+        }
+
+        this._http.getUPSJBIntegracionesEgresado( { tipo: this.tipoDocumento, documento: this.numeroDocumento }, 'obtenerDato').subscribe({
+
+            next: (res) => {
+
+                // res.reverse();
+
+                const egresado = [...(res ?? [])].sort((a, b) => {
+                    const [anioA, cicloA] = a.descr_egreso.split('-').map(Number);
+                    const [anioB, cicloB] = b.descr_egreso.split('-').map(Number);
+                    return anioA - anioB || cicloA - cicloB;
+                })[0];
+
+                if (!egresado?.nombre_completo && !egresado?.descr_egreso) {
+
+                    Swal.fire({
+                        title: 'Datos no encontrados',
+                        text: 'No se encontraron datos del egresado.\nPor favor, verifique la información e inténtelo nuevamente.',
+                        icon: 'error',
+                        confirmButtonText: 'Aceptar',
+                    });
+
+                    return;
+
+                }
+
+                this.nombresApellidos = Strings.capitalize(egresado.nombre_completo).trim();
+                this.anioEgreso = this.obtenerAnioEgreso(egresado.descr_egreso);
+                this.seccionFase = this.calcularSeccionSegunAnioEgreso();
+
+                if (!this.seccionFase) {
+
+                    Swal.fire({
+                        title: 'Datos no encontrados',
+                        text: 'No se pudo determinar la fase del egresado.\nPor favor, verifique el año de egreso e inténtelo nuevamente.',
+                        icon: 'error',
+                        confirmButtonText: 'Aceptar',
+                    });
+
+                    return;
+
+                }
+
+                this.datosEgresadoValidados = true;
+
+                this.cdr.detectChanges();
+
+            },
+
+            error: () => {
+                alert("Ocurrió un error al validar los datos del egresado.\nPor favor, inténtelo nuevamente más tarde.");
+            },
+
+        });
+
+    }
 
     enviarEncuesta(): void {
+
+
+        let test = false;
 
 
         if (!this.validarInformacionPersonal()) {
@@ -247,40 +330,101 @@ export class Encuesta implements OnInit {
             return;
         }
 
-        const req = {
 
-            tipoDocumento: this.tipoDocumento.trim(),
-            numeroDocumento: this.numeroDocumento.trim(),
-            nombresApellidos: this.nombresApellidos.trim(),
-            genero: this.genero,
-            sede: this.sede,
-            facultad: this.facultad,
-            carrera: this.carrera,
-            anioEgreso: this.anioEgreso,
-            correoElectronico: this.correoElectronico.trim(),
-            numeroCelular: this.numeroCelular.replace(/\s+/g, ''),
+        let req;
 
-            // fase1participacion: this.fase1participacion,
-            // fase1situacion: this.fase1situacion,
-            // fase1trabajando: this.fase1trabajando,
-            // fase1primerempleo: this.fase1primerempleo,
-            // fase1medios: this.fase1medios,
-            // fase2satisfaccionestudios: this.fase2satisfaccionestudios,
-            // fase2participacion: this.fase2participacion,
-            // fase2satisfaccionservicio: this.fase2satisfaccionservicio,
-            // fase2planificacion: this.fase2planificacion,
-            // fase2empresanombre: this.fase2empresanombre.trim(),
-            // fase2empresaempleadornombre: this.fase2empresaempleadornombre.trim(),
-            // fase2empresaempleadorcorreo: this.fase2empresaempleadorcorreo.trim(),
-            // fase2empresaempleadornumero: this.fase2empresaempleadornumero.replace(/\s+/g, ''),
-            // fase3especialidad: this.fase3especialidad,
-            // fase3participacion: this.fase3participacion,
-            // fase3educacioncontinua: this.fase3educacioncontinua,
 
-            // fase4participacion: this.fase4participacion,
-            // fase4resultados: this.fase4resultados,
+        test ?
 
-        };
+            req = {
+
+                tipoDocumento: '1',
+                numeroDocumento: '75116258',
+                nombresApellidos: 'Jesús Antonio Mori Valdivia',
+                genero: 'Masculino',
+                sede: 1,
+                facultad: 3,
+                carrera: 12,
+                anioEgreso: '2024',
+                correoElectronico: 'jesusa.mori@upsjb.edu.pe',
+                numeroCelular: '912565663',
+
+                fase: this.obtenerFaseActual(),
+
+                fase1participacion: "1",
+                fase1situacion: "1",
+                fase1trabajando: "1",
+                fase1primerempleo: "1",
+                fase1medios: "1",
+
+                fase2satisfaccionestudios: "si",
+                fase2participacion: "2",
+                fase2satisfaccionservicio: "si",
+                fase2planificacion: "2",
+                fase2empresanombre: "2",
+                fase2empresaempleadornombre: "2",
+                fase2empresaempleadorcorreo: "2",
+                fase2empresaempleadornumero: "2",
+
+                fase3especialidad: "3",
+                fase3participacion: "3",
+                fase3educacioncontinua: "3",
+
+                fase4investigacion: "4",
+                fase4participacion: "4",
+                fase4resultados: "4",
+                fase4innovacion: "4",
+                fase4capacitacion: "4",
+                fase4formacion: "4"
+
+            }
+
+        :
+
+            req = {
+
+                tipoDocumento: this.tipoDocumento.trim(),
+                numeroDocumento: this.numeroDocumento.trim(),
+                nombresApellidos: this.nombresApellidos.trim(),
+                genero: this.genero,
+                sede: this.sede,
+
+                facultad: this.facultad,
+                carrera: this.carrera,
+                anioEgreso: this.anioEgreso,
+                correoElectronico: this.correoElectronico.trim(),
+                numeroCelular: this.numeroCelular.replace(/\s+/g, ''),
+
+                fase: this.obtenerFaseActual(),
+
+                fase1participacion: this.fase1participacion,
+                fase1situacion: this.fase1situacion.join(','),
+                fase1trabajando: this.fase1trabajando,
+                fase1primerempleo: this.fase1primerempleo,
+                fase1medios: this.fase1medios,
+
+                fase2satisfaccionestudios: this.fase2satisfaccionestudios,
+                fase2participacion: this.fase2participacion,
+                fase2satisfaccionservicio: this.fase2satisfaccionservicio,
+                fase2planificacion: this.fase2planificacion,
+                fase2empresanombre: this.fase2empresanombre.trim(),
+                fase2empresaempleadornombre: this.fase2empresaempleadornombre.trim(),
+                fase2empresaempleadorcorreo: this.fase2empresaempleadorcorreo.trim(),
+                fase2empresaempleadornumero: this.fase2empresaempleadornumero.replace(/\s+/g, ''),
+
+                fase3especialidad: this.fase3especialidad,
+                fase3participacion: this.fase3participacion,
+                fase3educacioncontinua: this.fase3educacioncontinua,
+
+                fase4investigacion: this.fase4investigacion,
+                fase4participacion: this.fase4participacion.join(','),
+                fase4resultados: this.fase4resultados.join(','),
+                fase4innovacion: this.fase4innovacion,
+                fase4capacitacion: this.fase4capacitacion,
+                fase4formacion: this.fase4formacion
+            }
+
+
 
         this._http.post(req, 'enviar-encuesta').subscribe({
 
@@ -359,9 +503,9 @@ export class Encuesta implements OnInit {
     }
 
 
+    //  #endregion  SERVICIOS   */
 
-    /*  FUNCIONES  */
-
+    //  #region     FUNCIONES  */
 
 
     private validarInformacionPersonal(): boolean {
@@ -416,80 +560,6 @@ export class Encuesta implements OnInit {
 
     }
 
-    validarDatoEgresado() {
-
-        this.tipoDocumento = this.tipoDocumento.trim();
-        this.numeroDocumento = this.numeroDocumento.trim();
-
-        if (!this.tipoDocumento || !this.numeroDocumento) {
-
-            Swal.fire({
-                title: 'Campos incompletos',
-                text: 'Por favor, complete todos los campos requeridos.',
-                icon: 'error',
-                confirmButtonText: 'Aceptar',
-            });
-
-            return;
-
-        }
-
-        this._http.getUPSJBIntegracionesEgresado( { tipo: this.tipoDocumento, documento: this.numeroDocumento }, 'obtenerDato').subscribe({
-
-            next: (res) => {
-
-                // res.reverse();
-
-                const egresado = [...(res ?? [])].sort((a, b) => {
-                    const [anioA, cicloA] = a.descr_egreso.split('-').map(Number);
-                    const [anioB, cicloB] = b.descr_egreso.split('-').map(Number);
-                    return anioA - anioB || cicloA - cicloB;
-                })[0];
-
-                if (!egresado?.nombre_completo && !egresado?.descr_egreso) {
-
-                    Swal.fire({
-                        title: 'Datos no encontrados',
-                        text: 'No se encontraron datos del egresado.\nPor favor, verifique la información e inténtelo nuevamente.',
-                        icon: 'error',
-                        confirmButtonText: 'Aceptar',
-                    });
-
-                    return;
-
-                }
-
-                this.nombresApellidos = Strings.capitalize(egresado.nombre_completo).trim();
-                this.anioEgreso = this.obtenerAnioEgreso(egresado.descr_egreso);
-                this.seccionFase =this.calcularSeccionSegunAnioEgreso();
-
-                if (!this.seccionFase) {
-
-                    Swal.fire({
-                        title: 'Datos no encontrados',
-                        text: 'No se pudo determinar la fase del egresado.\nPor favor, verifique el año de egreso e inténtelo nuevamente.',
-                        icon: 'error',
-                        confirmButtonText: 'Aceptar',
-                    });
-
-                    return;
-
-                }
-
-                this.datosEgresadoValidados = true;
-
-                this.cdr.detectChanges();
-
-            },
-
-            error: () => {
-                alert("Ocurrió un error al validar los datos del egresado.\nPor favor, inténtelo nuevamente más tarde.");
-            },
-
-        });
-
-    }
-
     private calcularSeccionSegunAnioEgreso(): number | null {
 
         const anio = Number(this.anioEgreso);
@@ -530,10 +600,20 @@ export class Encuesta implements OnInit {
 
     }
 
+    private obtenerFaseActual(): number | null {
+
+        if (this.seccionFase === null) {
+            return null;
+        }
+
+        return this.seccionFase - 2;
+
+    }
 
 
-    /*  NAVEGACIÓN ENTRE SECCIONES   */
+    //  #endregion  FUNCIONES  */
 
+    //  #region     NAVEGACIÓN ENTRE SECCIONES   */
 
 
     goToSection(section: number): void {
@@ -617,8 +697,9 @@ export class Encuesta implements OnInit {
     }
 
 
+    //  #endregion  NAVEGACIÓN ENTRE SECCIONES   */
 
-    /*  UTILIDADES  */
+    //  #region     UTILIDADES   */
 
 
 
@@ -707,8 +788,9 @@ export class Encuesta implements OnInit {
     }
 
 
+    //  #endregion  UTILIDADES   */
 
-    /*  VALIDACIONES  */
+    //  #region     VALIDACIONES  */
 
 
 
@@ -810,9 +892,9 @@ export class Encuesta implements OnInit {
     }
 
 
+    //  #endregion  VALIDACIONES   */
 
-    /*  POPUP  */
-
+    //  #region     POPUP  */
 
 
     popup = false;
@@ -823,6 +905,9 @@ export class Encuesta implements OnInit {
         this.popup = activo;
         this.popupTipo = activo ? tipo : '';
     }
+
+
+    //  #endregion  POPUP  */
 
 
 }
