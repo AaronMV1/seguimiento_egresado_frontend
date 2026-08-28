@@ -27,7 +27,7 @@ export class Encuesta implements OnInit {
 
 
 
-    //  #region     VARIABLES   */
+    //  #region     VARIABLES
 
 
     seccionActual = 1;
@@ -175,7 +175,7 @@ export class Encuesta implements OnInit {
 
 
 
-    cambiarCheckboxMultiple(
+    cambiarCheckboxMultiple (
         lista: number[],
         valor: number,
         event: Event
@@ -231,7 +231,7 @@ export class Encuesta implements OnInit {
 
 
 
-    //  #region     SERVICIOS   */
+    //  #region     SERVICIOS
 
 
     validarDatoEgresado() {
@@ -505,7 +505,7 @@ export class Encuesta implements OnInit {
 
     //  #endregion  SERVICIOS   */
 
-    //  #region     FUNCIONES  */
+    //  #region     FUNCIONES
 
 
     private validarInformacionPersonal(): boolean {
@@ -613,7 +613,7 @@ export class Encuesta implements OnInit {
 
     //  #endregion  FUNCIONES  */
 
-    //  #region     NAVEGACIÓN ENTRE SECCIONES   */
+    //  #region     NAVEGACIÓN ENTRE SECCIONES
 
 
     goToSection(section: number): void {
@@ -697,10 +697,9 @@ export class Encuesta implements OnInit {
     }
 
 
-    //  #endregion  NAVEGACIÓN ENTRE SECCIONES   */
+    //  #endregion  NAVEGACIÓN ENTRE SECCIONES
 
-    //  #region     UTILIDADES   */
-
+    //  #region     UTILIDADES
 
 
     camposTest(): void {
@@ -790,7 +789,7 @@ export class Encuesta implements OnInit {
 
     //  #endregion  UTILIDADES   */
 
-    //  #region     VALIDACIONES  */
+    //  #region     VALIDACIONES
 
 
 
@@ -894,7 +893,7 @@ export class Encuesta implements OnInit {
 
     //  #endregion  VALIDACIONES   */
 
-    //  #region     POPUP  */
+    //  #region     POPUP
 
 
     popup = false;

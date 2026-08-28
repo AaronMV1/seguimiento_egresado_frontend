@@ -33,6 +33,28 @@ interface EgresadoBK {
 	anioEgreso: number;
 	correoElectronico: string;
     numeroCelular: string;
+    fase1Participacion: string;
+    fase1Situacion: string;
+    fase1Trabajando: string;
+    fase1Primerempleo: string;
+    fase1Medios: string;
+    fase2Satisfaccionestudios: string;
+    fase2Participacion: string;
+    fase2Satisfaccionservicio: string;
+    fase2Planificacion: string;
+    fase2Empresanombre: string;
+    fase2Empresaempleadornombre: string;
+    fase2Empresaempleadorcorreo: string;
+    fase2Empresaempleadornumero: string;
+    fase3Especialidad: string;
+    fase3Participacion: string;
+    fase3Educacioncontinua: string;
+    fase4Investigacion: string;
+    fase4Participacion: string;
+    fase4Resultados: string;
+    fase4Innovacion: string;
+    fase4Capacitacion: string;
+    fase4Formacion: string;
 }
 
 
@@ -728,6 +750,60 @@ export class Dashboard implements OnInit {
 
     }
 
+    private obtenerEncabezadosRespuestas(): string[] {
+        return [
+            'Fase 1 - Participación',
+            'Fase 1 - Situación',
+            'Fase 1 - Trabajando',
+            'Fase 1 - Primer empleo',
+            'Fase 1 - Medios',
+            'Fase 2 - Satisfacción con estudios',
+            'Fase 2 - Participación',
+            'Fase 2 - Satisfacción con servicio',
+            'Fase 2 - Planificación',
+            'Fase 2 - Empresa',
+            'Fase 2 - Nombre del empleador',
+            'Fase 2 - Correo del empleador',
+            'Fase 2 - Número del empleador',
+            'Fase 3 - Especialidad',
+            'Fase 3 - Participación',
+            'Fase 3 - Educación continua',
+            'Fase 4 - Investigación',
+            'Fase 4 - Participación',
+            'Fase 4 - Resultados',
+            'Fase 4 - Innovación',
+            'Fase 4 - Capacitación',
+            'Fase 4 - Formación',
+        ];
+    }
+
+    private obtenerFilaRespuestas(egresado: EgresadoBK): string[] {
+        return [
+            egresado.fase1Participacion,
+            egresado.fase1Situacion,
+            egresado.fase1Trabajando,
+            egresado.fase1Primerempleo,
+            egresado.fase1Medios,
+            egresado.fase2Satisfaccionestudios,
+            egresado.fase2Participacion,
+            egresado.fase2Satisfaccionservicio,
+            egresado.fase2Planificacion,
+            egresado.fase2Empresanombre,
+            egresado.fase2Empresaempleadornombre,
+            egresado.fase2Empresaempleadorcorreo,
+            egresado.fase2Empresaempleadornumero,
+            egresado.fase3Especialidad,
+            egresado.fase3Participacion,
+            egresado.fase3Educacioncontinua,
+            egresado.fase4Investigacion,
+            egresado.fase4Participacion,
+            egresado.fase4Resultados,
+            egresado.fase4Innovacion,
+            egresado.fase4Capacitacion,
+            egresado.fase4Formacion,
+        ];
+    }
+
     async exportarRegistrosExcel(): Promise<void> {
 
 		const XLSX = await import('xlsx-js-style');
@@ -745,6 +821,7 @@ export class Dashboard implements OnInit {
             'Sede',
             'Facultad',
             'Carrera profesional',
+            ...this.obtenerEncabezadosRespuestas(),
         ];
 
         const filas = this.egresadosVisibles.map((egresado) => [
@@ -755,6 +832,7 @@ export class Dashboard implements OnInit {
             egresado.sede,
             egresado.facultad,
             egresado.carrera,
+            ...this.obtenerFilaRespuestas(egresado),
         ]);
 
         const worksheet = XLSX.utils.aoa_to_sheet([
@@ -767,7 +845,7 @@ export class Dashboard implements OnInit {
 
         // Filtro en la cabecera.
         worksheet['!autofilter'] = {
-            ref: `A1:G${ultimaFila}`,
+            ref: `A1:AC${ultimaFila}`,
         };
 
         // Estilo de la cabecera.
@@ -838,6 +916,7 @@ export class Dashboard implements OnInit {
             { wch: 20 },
             { wch: 40 },
             { wch: 40 },
+            ...Array.from({ length: 22 }, () => ({ wch: 28 })),
         ];
 
         const workbook = XLSX.utils.book_new();
@@ -892,6 +971,7 @@ export class Dashboard implements OnInit {
             'Sede',
             'Facultad',
             'Carrera profesional',
+            ...this.obtenerEncabezadosRespuestas(),
         ];
 
         const filas = this.egresadoBK.map((egresado) => [
@@ -905,6 +985,7 @@ export class Dashboard implements OnInit {
             egresado.sede,
             egresado.facultad,
             egresado.carrera,
+            ...this.obtenerFilaRespuestas(egresado),
         ]);
 
         const worksheet = XLSX.utils.aoa_to_sheet([
@@ -917,7 +998,7 @@ export class Dashboard implements OnInit {
 
         // Filtro en la cabecera.
         worksheet['!autofilter'] = {
-            ref: `A1:H${ultimaFila}`,
+            ref: `A1:AD${ultimaFila}`,
         };
 
         // Estilo de la cabecera.
@@ -989,6 +1070,7 @@ export class Dashboard implements OnInit {
             { wch: 20 },
             { wch: 40 },
             { wch: 60 },
+            ...Array.from({ length: 22 }, () => ({ wch: 28 })),
         ];
 
         const workbook = XLSX.utils.book_new();
