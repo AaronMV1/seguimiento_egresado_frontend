@@ -30,7 +30,7 @@ export class Encuesta implements OnInit {
     //  #region     VARIABLES
 
 
-    seccionActual = 1;
+    seccionActual = 6;
 
 
     readonly totalSecciones = 6;
