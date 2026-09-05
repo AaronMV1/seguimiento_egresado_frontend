@@ -6,6 +6,7 @@ import { CommonModule } from '@angular/common';
 
 import { AuthSessionService } from '../../core/services/auth-session.service';
 import { Http } from '../../core/services/http';
+import { Alertas } from '../../shared/utils/alertas';
 
 import Swal from 'sweetalert2';
 import { FormsModule } from "@angular/forms";
@@ -48,6 +49,13 @@ export class Login {
 
         if (!test) {
 
+            if (!navigator.onLine) {
+
+                Alertas.sinConexion();
+
+                return;
+
+            }
 
             this.http.post(req, 'enviar-login').subscribe({
 
@@ -107,6 +115,10 @@ export class Login {
 
                     });
 
+                },
+
+                error: (err) => {
+                    Alertas.porErrorHttp(err, 'Ocurrió un error al iniciar sesión. Inténtelo nuevamente más tarde.');
                 },
 
             });

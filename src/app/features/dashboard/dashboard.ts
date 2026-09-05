@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 
 import { AuthSessionService } from '../../core/services/auth-session.service';
 import { Http } from '../../core/services/http';
+import { Alertas } from '../../shared/utils/alertas';
 import Swal from 'sweetalert2';
 
 
@@ -750,6 +751,175 @@ export class Dashboard implements OnInit {
 
     }
 
+    // Función: Construye una tabla cruzada (Programa x Sede) con el total de egresados en cada combinación.
+    private crearHojaProgramaSede(
+        XLSX: any,
+        registros: EgresadoBK[],
+    ): any {
+
+        const normalizar = (valor: string | undefined | null) =>
+            valor?.trim() || 'Sin especificar';
+
+        const sedes = Array.from(
+            new Set(registros.map((egresado) => normalizar(egresado.sede))),
+        ).sort((a, b) => a.localeCompare(b));
+
+        const conteoPorCarreraYSede = new Map<string, Map<string, number>>();
+
+        registros.forEach((egresado) => {
+
+            const carrera = normalizar(egresado.carrera);
+            const sede = normalizar(egresado.sede);
+
+            if (!conteoPorCarreraYSede.has(carrera)) {
+                conteoPorCarreraYSede.set(carrera, new Map());
+            }
+
+            const filaCarrera = conteoPorCarreraYSede.get(carrera)!;
+            filaCarrera.set(sede, (filaCarrera.get(sede) ?? 0) + 1);
+
+        });
+
+        const carrerasConTotal = Array.from(conteoPorCarreraYSede.entries())
+            .map(([carrera, filaCarrera]) => ({
+                carrera,
+                filaCarrera,
+                total: sedes.reduce((acc, sede) => acc + (filaCarrera.get(sede) ?? 0), 0),
+            }))
+            .sort((a, b) => b.total - a.total);
+
+        const totalesPorSede = sedes.map((sede) =>
+            registros.filter((egresado) => normalizar(egresado.sede) === sede).length,
+        );
+
+        const encabezado = ['Programa', ...sedes, 'Total'];
+
+        const filas = carrerasConTotal.map(({ carrera, filaCarrera, total }) => [
+            carrera,
+            ...sedes.map((sede) => filaCarrera.get(sede) ?? 0),
+            total,
+        ]);
+
+        const filaTotal = ['TOTAL', ...totalesPorSede, registros.length];
+
+        const numColumnas = encabezado.length;
+        const filaEncabezadoIndex = 2;
+        const filaTotalIndex = filaEncabezadoIndex + filas.length + 1;
+
+        const datos: unknown[][] = [
+            ['EGRESADOS POR PROGRAMA Y SEDE'],
+            [],
+            encabezado,
+            ...filas,
+            filaTotal,
+        ];
+
+        const worksheetProgramaSede = XLSX.utils.aoa_to_sheet(datos);
+
+        worksheetProgramaSede['!cols'] = [
+            { wch: 55 },
+            ...sedes.map(() => ({ wch: 16 })),
+            { wch: 12 },
+        ];
+
+        worksheetProgramaSede['!merges'] = [
+            {
+                s: { r: 0, c: 0 },
+                e: { r: 0, c: numColumnas - 1 },
+            },
+        ];
+
+        worksheetProgramaSede['!rows'] = [
+            { hpt: 30 },
+        ];
+
+        const estiloTitulo = {
+            fill: {
+                patternType: 'solid',
+                fgColor: { rgb: 'FF0A41' },
+            },
+            font: {
+                bold: true,
+                color: { rgb: 'FFFFFF' },
+                sz: 16,
+            },
+            alignment: {
+                horizontal: 'center',
+                vertical: 'center',
+            },
+        };
+
+        const estiloCabecera = {
+            fill: {
+                patternType: 'solid',
+                fgColor: { rgb: 'FF0A41' },
+            },
+            font: {
+                bold: true,
+                color: { rgb: 'FFFFFF' },
+            },
+            alignment: {
+                horizontal: 'center',
+                vertical: 'center',
+                wrapText: true,
+            },
+            border: {
+                top: { style: 'thin', color: { rgb: 'D9E2F3' } },
+                bottom: { style: 'thin', color: { rgb: 'D9E2F3' } },
+                left: { style: 'thin', color: { rgb: 'D9E2F3' } },
+                right: { style: 'thin', color: { rgb: 'D9E2F3' } },
+            },
+        };
+
+        const estiloTotal = {
+            fill: {
+                patternType: 'solid',
+                fgColor: { rgb: 'D9E2F3' },
+            },
+            font: {
+                bold: true,
+                color: { rgb: '1F1F1F' },
+            },
+            alignment: {
+                horizontal: 'center',
+                vertical: 'center',
+            },
+        };
+
+        worksheetProgramaSede['A1'].s = estiloTitulo;
+
+        for (let columna = 0; columna < numColumnas; columna++) {
+
+            const celdaCabecera = worksheetProgramaSede[
+                XLSX.utils.encode_cell({ r: filaEncabezadoIndex, c: columna })
+            ];
+
+            if (celdaCabecera) {
+                celdaCabecera.s = estiloCabecera;
+            }
+
+            const celdaTotal = worksheetProgramaSede[
+                XLSX.utils.encode_cell({ r: filaTotalIndex, c: columna })
+            ];
+
+            if (celdaTotal) {
+
+                celdaTotal.s = {
+                    ...estiloTotal,
+                    alignment: {
+                        ...estiloTotal.alignment,
+                        horizontal: columna === 0 ? 'left' : 'center',
+                    },
+                };
+
+            }
+
+        }
+
+        return worksheetProgramaSede;
+
+    }
+
     private obtenerEncabezadosRespuestas(): string[] {
         return [
             'Fase 1 - Participación',
@@ -938,6 +1108,17 @@ export class Dashboard implements OnInit {
             'Resumen',
         );
 
+        const worksheetProgramaSede = this.crearHojaProgramaSede(
+            XLSX,
+            this.egresadosVisibles,
+        );
+
+        XLSX.utils.book_append_sheet(
+            workbook,
+            worksheetProgramaSede,
+            'Programas y Sedes',
+        );
+
         const fecha = new Date()
             .toISOString()
             .slice(0, 10);
@@ -1080,6 +1261,11 @@ export class Dashboard implements OnInit {
             this.egresadoBK,
         );
 
+        const worksheetProgramaSede = this.crearHojaProgramaSede(
+            XLSX,
+            this.egresadoBK,
+        );
+
         XLSX.utils.book_append_sheet(
             workbook,
             worksheet,
@@ -1090,6 +1276,12 @@ export class Dashboard implements OnInit {
             workbook,
             worksheetResumen,
             'Resumen',
+        );
+
+        XLSX.utils.book_append_sheet(
+            workbook,
+            worksheetProgramaSede,
+            'Programas y Sedes',
         );
 
         const fecha = new Date()
@@ -1306,6 +1498,7 @@ export class Dashboard implements OnInit {
             error: (err) => {
 
                 console.error('Error al obtener los encuestados:', err);
+                Alertas.porErrorHttp(err, 'No se pudo cargar la lista de egresados. Inténtelo nuevamente más tarde.');
 
             }
 

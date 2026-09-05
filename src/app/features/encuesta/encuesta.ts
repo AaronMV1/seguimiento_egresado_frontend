@@ -5,10 +5,9 @@ import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CapitalizePipe } from '../../shared/pipes/capitalize.pipe';
 import { Strings } from '../../shared/utils/strings';
+import { Alertas } from '../../shared/utils/alertas';
 
 import { Http } from '../../core/services/http';
-
-import Swal from 'sweetalert2';
 
 
 type Popup =
@@ -220,12 +219,12 @@ export class Encuesta implements OnInit {
     }
 
 
+
     ngOnInit(): void {
         this.obtenerSedeLista();
         this.camposTest();
         this.obtenerTipoDocumentoLista();
     }
-
 
     constructor( private _http: Http, private readonly cdr: ChangeDetectorRef ) { }
 
@@ -241,16 +240,24 @@ export class Encuesta implements OnInit {
 
         if (!this.tipoDocumento || !this.numeroDocumento) {
 
-            Swal.fire({
-                title: 'Campos incompletos',
-                text: 'Por favor, complete todos los campos requeridos.',
-                icon: 'error',
-                confirmButtonText: 'Aceptar',
-            });
+            Alertas.advertencia(
+                'Campos incompletos',
+                'Por favor, complete todos los campos requeridos.',
+            );
 
             return;
 
         }
+
+        if (!navigator.onLine) {
+
+            Alertas.sinConexion();
+
+            return;
+
+        }
+
+        this.datosEgresadoValidados = false;
 
         this._http.getUPSJBIntegracionesEgresado( { tipo: this.tipoDocumento, documento: this.numeroDocumento }, 'obtenerDato').subscribe({
 
@@ -266,12 +273,11 @@ export class Encuesta implements OnInit {
 
                 if (!egresado?.nombre_completo && !egresado?.descr_egreso) {
 
-                    Swal.fire({
-                        title: 'Datos no encontrados',
-                        text: 'No se encontraron datos del egresado.\nPor favor, verifique la información e inténtelo nuevamente.',
-                        icon: 'error',
-                        confirmButtonText: 'Aceptar',
-                    });
+                    Alertas.error(
+                        'Datos no encontrados',
+                        'No se encontraron datos del egresado.\nPor favor, verifique la información e inténtelo nuevamente.',
+                        'Aceptar',
+                    );
 
                     return;
 
@@ -283,12 +289,41 @@ export class Encuesta implements OnInit {
 
                 if (!this.seccionFase) {
 
-                    Swal.fire({
-                        title: 'Datos no encontrados',
-                        text: 'No se pudo determinar la fase del egresado.\nPor favor, verifique el año de egreso e inténtelo nuevamente.',
-                        icon: 'error',
-                        confirmButtonText: 'Aceptar',
-                    });
+                    Alertas.error(
+                        'Datos no encontrados',
+                        'No se pudo determinar la fase del egresado.\nPor favor, verifique el año de egreso e inténtelo nuevamente.',
+                        'Aceptar',
+                    );
+
+                    return;
+
+                }
+
+                this.verificarEncuestaYaCompletada();
+
+            },
+
+            error: (err) => {
+                Alertas.porErrorHttp(err, 'Ocurrió un error al validar los datos del egresado. Por favor, inténtelo nuevamente más tarde.');
+            },
+
+        });
+
+    }
+
+    //  Consulta si el egresado (según DNI y año actual) ya completó la encuesta antes de habilitar el formulario.
+    private verificarEncuestaYaCompletada(): void {
+
+        this._http.get(`verificar-encuesta?tipoDocumento=${this.tipoDocumento}&numeroDocumento=${this.numeroDocumento}`).subscribe({
+
+            next: (res) => {
+
+                if (String(res?.estado) === '409') {
+
+                    Alertas.advertencia(
+                        'Encuesta ya registrada',
+                        res?.mensaje ?? 'Ya completó la encuesta de seguimiento correspondiente a este año.',
+                    );
 
                     return;
 
@@ -300,13 +335,14 @@ export class Encuesta implements OnInit {
 
             },
 
-            error: () => {
-                alert("Ocurrió un error al validar los datos del egresado.\nPor favor, inténtelo nuevamente más tarde.");
+            error: (err) => {
+                Alertas.porErrorHttp(err, 'Ocurrió un error al verificar el estado de la encuesta. Por favor, inténtelo nuevamente más tarde.');
             },
 
         });
 
     }
+
 
     enviarEncuesta(): void {
 
@@ -320,14 +356,20 @@ export class Encuesta implements OnInit {
 
         if (!this.validarFaseActual()) {
 
-            Swal.fire({
-                title: 'Respuestas incompletas',
-                text: 'Debe responder todas las preguntas obligatorias antes de enviar la encuesta.',
-                icon: 'warning',
-                confirmButtonText: 'Entendido',
-            });
+            Alertas.advertencia(
+                'Respuestas incompletas',
+                'Debe responder todas las preguntas obligatorias antes de enviar la encuesta.',
+            );
 
             return;
+        }
+
+        if (!navigator.onLine) {
+
+            Alertas.sinConexion();
+
+            return;
+
         }
 
 
@@ -433,14 +475,10 @@ export class Encuesta implements OnInit {
                     this.limpiarFormulario();
                     this.cdr.detectChanges();
 
-                    Swal.fire({
-                        title: '¡Encuesta enviada!',
-                        text: 'Gracias por completar la encuesta. Sus respuestas fueron registradas correctamente.',
-                        icon: 'success',
-                        confirmButtonText: 'Aceptar',
-                    }).then(() => {
-
-                    });
+                    Alertas.exito(
+                        '¡Encuesta enviada!',
+                        'Gracias por completar la encuesta. Sus respuestas fueron registradas correctamente.',
+                    );
 
                 },
 
@@ -451,12 +489,7 @@ export class Encuesta implements OnInit {
                         err
                     );
 
-                    Swal.fire({
-                        title: 'No se pudo enviar',
-                        text: 'Ocurrió un error al registrar la encuesta. Inténtelo nuevamente.',
-                        icon: 'error',
-                        confirmButtonText: 'Entendido',
-                    });
+                    Alertas.porErrorHttp(err, 'Ocurrió un error al registrar la encuesta. Inténtelo nuevamente.');
 
                 }
 
@@ -475,8 +508,8 @@ export class Encuesta implements OnInit {
 
             },
 
-            error: () => {
-
+            error: (err) => {
+                Alertas.porErrorHttp(err, 'No se pudo cargar la lista de sedes. Inténtelo nuevamente más tarde.');
             },
 
         });
@@ -494,8 +527,8 @@ export class Encuesta implements OnInit {
 
             },
 
-            error: () => {
-
+            error: (err) => {
+                Alertas.porErrorHttp(err, 'No se pudo cargar la lista de tipos de documento. Inténtelo nuevamente más tarde.');
             },
 
         });
@@ -534,24 +567,20 @@ export class Encuesta implements OnInit {
 
         if (!this.datosEgresadoValidados) {
 
-            Swal.fire({
-                title: 'Validación pendiente',
-                text: 'Debe validar los datos del egresado antes de continuar.',
-                icon: 'warning',
-                confirmButtonText: 'Entendido',
-            });
+            Alertas.advertencia(
+                'Validación pendiente',
+                'Debe validar los datos del egresado antes de continuar.',
+            );
 
             return false;
         }
 
         if (hayCamposInvalidos) {
 
-            Swal.fire({
-                title: 'Información incompleta',
-                text: 'Revise los campos marcados antes de continuar.',
-                icon: 'warning',
-                confirmButtonText: 'Entendido',
-            });
+            Alertas.advertencia(
+                'Información incompleta',
+                'Revise los campos marcados antes de continuar.',
+            );
 
             return false;
         }
@@ -683,12 +712,10 @@ export class Encuesta implements OnInit {
             this.consentimiento !== 'si'
         ) {
 
-            Swal.fire({
-                title: 'Consentimiento requerido',
-                text: 'Para continuar con la encuesta, debe aceptar el consentimiento informado.',
-                icon: 'warning',
-                confirmButtonText: 'Entendido',
-            });
+            Alertas.advertencia(
+                'Consentimiento requerido',
+                'Para continuar con la encuesta, debe aceptar el consentimiento informado.',
+            );
 
             return false;
         }

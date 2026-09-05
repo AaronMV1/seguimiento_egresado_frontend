@@ -1,8 +1,8 @@
 
 
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
+import { Observable, throwError } from 'rxjs';
 import { tap, catchError } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 
@@ -26,9 +26,7 @@ export class Http {
             tap((data: any) => {
 
             }),
-            catchError(err => {
-                throw 'Error in source. Details: ' + err;
-            }),
+            catchError(this.manejarError),
         );
 
     }
@@ -49,9 +47,7 @@ export class Http {
             tap((data: any) => {
 
             }),
-            catchError(err => {
-                throw 'Error in source. Details: ' + err;
-            }),
+            catchError(this.manejarError),
         );
 
     }
@@ -75,9 +71,7 @@ export class Http {
             tap((data: any) => {
 
             }),
-            catchError(err => {
-                throw 'Error in source. Details: ' + err;
-            }),
+            catchError(this.manejarError),
         );
 
     }
@@ -99,9 +93,7 @@ export class Http {
             tap((data: any) => {
 
             }),
-            catchError(err => {
-                throw 'Error in source. Details: ' + err;
-            }),
+            catchError(this.manejarError),
         );
 
     }
@@ -117,11 +109,15 @@ export class Http {
             tap((data: any) => {
 
             }),
-            catchError(err => {
-                throw 'Error in source. Details: ' + err;
-            }),
+            catchError(this.manejarError),
         );
 
+    }
+
+
+    //  Propaga el HttpErrorResponse original para que los componentes puedan inspeccionar status/mensaje.
+    private manejarError(err: HttpErrorResponse) {
+        return throwError(() => err);
     }
 
 
