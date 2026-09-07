@@ -263,6 +263,11 @@ export class Dashboard implements OnInit {
 	readonly opcionesRegistrosPorPagina: number[] = [10, 20, 50, 100, 200];
 
 
+	// Función: Guarda la columna y la dirección de orden alfabético aplicados a la tabla y al Excel.
+	columnaOrden: 'nombresApellidos' | 'anioEgreso' | 'correoElectronico' | 'sede' | 'facultad' | 'carrera' | null = null;
+	direccionOrden: 'asc' | 'desc' = 'asc';
+
+
 	// Función: Devuelve la cantidad total de egresados registrados.
 	get cantidadEgresados(): number {
 		return this.egresadoBK.length;
@@ -283,7 +288,7 @@ export class Dashboard implements OnInit {
 
 	// Función: Devuelve los egresados que se mostrarán en la tabla.
 	get egresadosVisibles(): EgresadoBK[] {
-		return this.aplicarCriterios(this.egresadosBaseVisibles);
+		return this.aplicarOrden(this.aplicarCriterios(this.egresadosBaseVisibles));
 	}
 
 
@@ -378,9 +383,17 @@ export class Dashboard implements OnInit {
 	}
 
 
-	// Función: Devuelve las opciones dinámicas de carrera según los registros visibles.
+	// Función: Devuelve las opciones dinámicas de carrera según la facultad seleccionada (vacío si no hay facultad elegida).
 	get opcionesCarrera(): string[] {
-		return this.obtenerOpcionesUnicas(this.egresadosBaseVisibles.map((egresado) => egresado.carrera));
+		if (!this.seleccionFacultad) {
+			return [];
+		}
+
+		const egresadosDeLaFacultad = this.egresadosBaseVisibles.filter(
+			(egresado) => egresado.facultad === this.seleccionFacultad,
+		);
+
+		return this.obtenerOpcionesUnicas(egresadosDeLaFacultad.map((egresado) => egresado.carrera));
 	}
 
 
@@ -443,10 +456,31 @@ export class Dashboard implements OnInit {
 	}
 
 
+	// Función: Ordena la tabla por la columna elegida, alternando entre ascendente y descendente si se repite el clic.
+	ordenarPorColumna(columna: 'nombresApellidos' | 'anioEgreso' | 'correoElectronico' | 'sede' | 'facultad' | 'carrera'): void {
+
+		if (this.columnaOrden === columna) {
+			this.direccionOrden = this.direccionOrden === 'asc' ? 'desc' : 'asc';
+		} else {
+			this.columnaOrden = columna;
+			this.direccionOrden = 'asc';
+		}
+
+		this.paginaActual = 1;
+
+	}
+
+
 	// Función: Aplica el filtro de texto en tiempo real sobre los seis campos de la tabla.
 	aplicarFiltroTexto(): void {
 		this.filtroTexto = this.textoBusqueda.trim();
 		this.paginaActual = 1;
+	}
+
+
+	// Función: Limpia la carrera elegida al cambiar de facultad, ya que sus opciones dependen de ella.
+	cambiarFacultadSeleccionada(): void {
+		this.seleccionCarrera = '';
 	}
 
 
@@ -515,6 +549,22 @@ export class Dashboard implements OnInit {
 	irAPaginaSiguiente(): void {
 
 		this.irAPagina(this.paginaActual + 1);
+
+	}
+
+
+	// Función: Navega directamente a la primera página.
+	irAPrimeraPagina(): void {
+
+		this.irAPagina(1);
+
+	}
+
+
+	// Función: Navega directamente a la última página.
+	irAUltimaPagina(): void {
+
+		this.irAPagina(this.totalPaginas);
 
 	}
 
@@ -1155,7 +1205,7 @@ export class Dashboard implements OnInit {
             ...this.obtenerEncabezadosRespuestas(),
         ];
 
-        const filas = this.egresadoBK.map((egresado) => [
+        const filas = this.aplicarOrden(this.egresadoBK).map((egresado) => [
             egresado.nombresApellidos,
             egresado.anioEgreso == this.anioActual     || egresado.anioEgreso >= this.anioActual - 3 ? 'Fase 1' :
             egresado.anioEgreso == this.anioActual - 4 || egresado.anioEgreso == this.anioActual - 5 ? 'Fase 2' :
@@ -1448,6 +1498,29 @@ export class Dashboard implements OnInit {
 
 			return coincideTexto && coincideCarrera && coincideFacultad && coincideSede && coincideAnio;
 		});
+	}
+
+
+	// Función: Ordena alfabéticamente (o numéricamente para el año) según la columna y dirección seleccionadas.
+	private aplicarOrden(egresados: EgresadoBK[]): EgresadoBK[] {
+
+		if (!this.columnaOrden) {
+			return egresados;
+		}
+
+		const columna = this.columnaOrden;
+		const signo = this.direccionOrden === 'asc' ? 1 : -1;
+
+		return [...egresados].sort((a, b) => {
+
+			if (columna === 'anioEgreso') {
+				return (Number(a.anioEgreso) - Number(b.anioEgreso)) * signo;
+			}
+
+			return this.normalizarTexto(a[columna] ?? '').localeCompare(this.normalizarTexto(b[columna] ?? '')) * signo;
+
+		});
+
 	}
 
 

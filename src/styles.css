@@ -122,6 +122,11 @@ p {
 
 .swal2-popup button {
     background-color: var(--primary) !important;
-    background-color: #FF0A41 !important;
+    background-color: #006aff !important;
     font-size: 1.6rem !important;
+}
+
+
+.swal2-popup button:nth-last-of-type(1) {
+    background-color: #FF0A41 !important;
 }

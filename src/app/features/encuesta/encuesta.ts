@@ -271,12 +271,47 @@ export class Encuesta implements OnInit {
                     return anioA - anioB || cicloA - cicloB;
                 })[0];
 
+                this.cdr.detectChanges();
+
                 if (!egresado?.nombre_completo && !egresado?.descr_egreso) {
 
                     Alertas.error(
                         'Datos no encontrados',
                         'No se encontraron datos del egresado.\nPor favor, verifique la información e inténtelo nuevamente.',
                         'Aceptar',
+                    );
+
+                    return;
+
+                }
+
+                this.cdr.detectChanges();
+
+                this.verificarEncuestaYaCompletada(egresado);
+
+            },
+
+            error: (err) => {
+                Alertas.porErrorHttp(err, 'Ocurrió un error al validar los datos del egresado. Por favor, inténtelo nuevamente más tarde.');
+            },
+
+        });
+
+    }
+
+    //  Consulta si el egresado (según DNI y año actual) ya completó la encuesta antes de habilitar el formulario.
+    //  Los datos del egresado solo se asignan al formulario si la encuesta aún no fue completada.
+    private verificarEncuestaYaCompletada(egresado: any): void {
+
+        this._http.get(`verificar-encuesta?tipoDocumento=${this.tipoDocumento}&numeroDocumento=${this.numeroDocumento}`).subscribe({
+
+            next: (res) => {
+
+                if (String(res?.estado) === '409') {
+
+                    Alertas.advertencia(
+                        'Encuesta ya registrada',
+                        res?.mensaje ?? 'Ya completó la encuesta de seguimiento correspondiente a este año.',
                     );
 
                     return;
@@ -295,35 +330,8 @@ export class Encuesta implements OnInit {
                         'Aceptar',
                     );
 
-                    return;
-
-                }
-
-                this.verificarEncuestaYaCompletada();
-
-            },
-
-            error: (err) => {
-                Alertas.porErrorHttp(err, 'Ocurrió un error al validar los datos del egresado. Por favor, inténtelo nuevamente más tarde.');
-            },
-
-        });
-
-    }
-
-    //  Consulta si el egresado (según DNI y año actual) ya completó la encuesta antes de habilitar el formulario.
-    private verificarEncuestaYaCompletada(): void {
-
-        this._http.get(`verificar-encuesta?tipoDocumento=${this.tipoDocumento}&numeroDocumento=${this.numeroDocumento}`).subscribe({
-
-            next: (res) => {
-
-                if (String(res?.estado) === '409') {
-
-                    Alertas.advertencia(
-                        'Encuesta ya registrada',
-                        res?.mensaje ?? 'Ya completó la encuesta de seguimiento correspondiente a este año.',
-                    );
+                    this.nombresApellidos = '';
+                    this.anioEgreso = '';
 
                     return;
 

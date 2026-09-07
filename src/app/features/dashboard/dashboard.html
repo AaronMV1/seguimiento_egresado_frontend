@@ -177,7 +177,7 @@
 
             <div class="campo-filtro">
 				<label for="filtroFacultad">Facultad</label>
-				<select id="filtroFacultad" [(ngModel)]="seleccionFacultad">
+				<select id="filtroFacultad" [(ngModel)]="seleccionFacultad" (change)="cambiarFacultadSeleccionada()">
 					<option value="">Todas</option>
 					<option *ngFor="let facultad of opcionesFacultad" [value]="facultad">{{ facultad }}</option>
 				</select>
@@ -185,8 +185,8 @@
 
 			<div class="campo-filtro">
 				<label for="filtroCarrera">Carrera</label>
-				<select id="filtroCarrera" [(ngModel)]="seleccionCarrera">
-					<option value="">Todas</option>
+				<select id="filtroCarrera" [(ngModel)]="seleccionCarrera" [disabled]="!seleccionFacultad">
+					<option value="">{{ seleccionFacultad ? 'Todas' : 'Selecciona primero una facultad' }}</option>
 					<option *ngFor="let carrera of opcionesCarrera" [value]="carrera">{{ carrera }}</option>
 				</select>
 			</div>
@@ -200,12 +200,30 @@
 		<div class="tabla-egresados" *ngIf="egresadosVisibles.length > 0">
 
 			<div class="cabecera-tabla">
-				<span>Nombre completo</span>
-				<span>Egreso</span>
-				<span>Correo Institucional</span>
-				<span>Sede</span>
-				<span>Facultad</span>
-				<span>Carrera Profesional</span>
+				<span class="columna-ordenable" (click)="ordenarPorColumna('nombresApellidos')">
+					NOMBRE COMPLETO
+					<span class="icono-orden" *ngIf="columnaOrden === 'nombresApellidos'">{{ direccionOrden === 'asc' ? '▲' : '▼' }}</span>
+				</span>
+				<span class="columna-ordenable" (click)="ordenarPorColumna('anioEgreso')">
+					EGRESO
+					<span class="icono-orden" *ngIf="columnaOrden === 'anioEgreso'">{{ direccionOrden === 'asc' ? '▲' : '▼' }}</span>
+				</span>
+				<span class="columna-ordenable" (click)="ordenarPorColumna('correoElectronico')">
+					CORREO INSTITUCIONAL
+					<span class="icono-orden" *ngIf="columnaOrden === 'correoElectronico'">{{ direccionOrden === 'asc' ? '▲' : '▼' }}</span>
+				</span>
+				<span class="columna-ordenable" (click)="ordenarPorColumna('sede')">
+					SEDE
+					<span class="icono-orden" *ngIf="columnaOrden === 'sede'">{{ direccionOrden === 'asc' ? '▲' : '▼' }}</span>
+				</span>
+				<span class="columna-ordenable" (click)="ordenarPorColumna('facultad')">
+					FACULTAD
+					<span class="icono-orden" *ngIf="columnaOrden === 'facultad'">{{ direccionOrden === 'asc' ? '▲' : '▼' }}</span>
+				</span>
+				<span class="columna-ordenable" (click)="ordenarPorColumna('carrera')">
+					CARRERA PROFESIONAL
+					<span class="icono-orden" *ngIf="columnaOrden === 'carrera'">{{ direccionOrden === 'asc' ? '▲' : '▼' }}</span>
+				</span>
 			</div>
 
 			<!-- <div class="fila-tabla" *ngFor="let egresado of egresadosVisibles; trackBy: identificarEgresado">
@@ -239,9 +257,17 @@
 				<button
 					type="button"
 					class="boton-paginador"
+					(click)="irAPrimeraPagina()"
+					[disabled]="paginaActual === 1">
+					&#60;&#60;
+				</button>
+
+				<button
+					type="button"
+					class="boton-paginador"
 					(click)="irAPaginaAnterior()"
 					[disabled]="paginaActual === 1">
-					Anterior
+					&#60;
 				</button>
 
 				<button
@@ -258,7 +284,15 @@
 					class="boton-paginador"
 					(click)="irAPaginaSiguiente()"
 					[disabled]="paginaActual === totalPaginas">
-					Siguiente
+					&#62;
+				</button>
+
+				<button
+					type="button"
+					class="boton-paginador"
+					(click)="irAUltimaPagina()"
+					[disabled]="paginaActual === totalPaginas">
+					&#62;&#62;
 				</button>
 
 			</div>

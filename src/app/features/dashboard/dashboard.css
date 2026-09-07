@@ -324,6 +324,22 @@
 	font-weight: 700;
 }
 
+.columna-ordenable {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.4rem;
+	cursor: pointer;
+	user-select: none;
+}
+
+.columna-ordenable:hover {
+	text-decoration: underline;
+}
+
+.icono-orden {
+	font-size: 0.75rem;
+}
+
 .fila-tabla {
 	background: #f8fbff;
 	color: #274b67;
