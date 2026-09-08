@@ -1,0 +1,30 @@
+
+
+
+Publicar en Docker
+
+
+1. Crear el dockerfile en ambos entornos, pedirle a Copilot que analice cada uno y cree el archivo.
+2. Posicionarse en la carpeta raíz o abrir la terminal del VSC (Frontend) y IntellijIdea (Backend)
+
+
+1) Frontend
+
+   Crear imagen:   	docker build -t aplicacion_frontend .
+   Crear contenedor: 	docker run -d -p 4200:80 aplicacion_frontend			:80 (dockerfile)
+
+2) Backend
+
+   Crear imagen:   	docker build -t aplicacion_frontend .
+   Crear contenedor: 	docker run -d -p 8080:8080 aplicacion_frontend			:8080 (dockerfile)
+
+
+
+en el dist del frontend, debe haberse creado como ruta "dist\browser", según la estructura del dockerfile
+
+
+
+
+
+Despliegue de Java Spring Boot en Docker
+https://www.youtube.com/watch?v=qcE4A81OAI0&t=105s
