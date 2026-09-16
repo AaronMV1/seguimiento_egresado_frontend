@@ -32,11 +32,11 @@ export class Alertas {
     //  Popup para cuando el navegador no tiene conexión a internet.
     static sinConexion() {
 
-        return this.error(
-            'Sin conexión a internet',
-            'No se detectó conexión a internet. Verifique su red e inténtelo nuevamente.',
-            'Entendido',
-        );
+        // return this.error(
+        //     'Sin conexión a internet',
+        //     'No se detectó conexión a internet. Verifique su red e inténtelo nuevamente.',
+        //     'Entendido',
+        // );
 
     }
 
