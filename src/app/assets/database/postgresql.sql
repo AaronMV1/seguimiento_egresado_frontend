@@ -26,3 +26,17 @@ TRUNCATE TABLE seguimiento_egresado.facultad RESTART IDENTITY CASCADE;
 TRUNCATE TABLE seguimiento_egresado.carrera  RESTART IDENTITY CASCADE;
 TRUNCATE TABLE seguimiento_egresado.egresado RESTART IDENTITY CASCADE;
 
+
+
+
+
+DROP TABLE seguimiento_egresado.seguimiento_fase_1;
+DROP TABLE seguimiento_egresado.seguimiento_fase_2;
+DROP TABLE seguimiento_egresado.seguimiento_fase_3;
+DROP TABLE seguimiento_egresado.seguimiento_fase_4;
+DROP TABLE seguimiento_egresado.seguimiento;
+DROP TABLE seguimiento_egresado.egresado;
+DROP TABLE seguimiento_egresado.sede;
+DROP TABLE seguimiento_egresado.carrera;
+DROP TABLE seguimiento_egresado.facultad;
+DROP TABLE seguimiento_egresado.administrador;
