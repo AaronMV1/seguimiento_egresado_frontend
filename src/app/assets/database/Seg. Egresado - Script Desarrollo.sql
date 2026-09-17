@@ -170,8 +170,8 @@ INSERT INTO seguimiento_egresado.facultad
 VALUES
     ('Ciencias de la Salud'),
     ('Ingenierías'),
-    ('Derecho y Ciencias Empresariales'),
-    ('Comunicación y Ciencias Administrativas');
+    ('Derecho y Ciencias Empresariales');
+    -- ('Comunicación y Ciencias Administrativas');
 
 
 INSERT INTO seguimiento_egresado.carrera
@@ -194,7 +194,7 @@ VALUES
     (3, 'Administración y Negocios Internacionales'),
     (3, 'Administración y Marketing'),
     (3, 'Turismo, Hotelería y Gastronomía'),
-    (4, 'Ciencias de la Comunicación');
+    (3, 'Ciencias de la Comunicación');
 
 
 

@@ -5,7 +5,8 @@ export const environment = {
     production: true,
 
     apiBackend: {
-        backend: "http://172.20.38.31:8080/"
+        backend: "http://172.20.14.250:8080/"
+        // backend: "http://172.20.38.31:8080/"
     },
 
     apiUniversidad: {

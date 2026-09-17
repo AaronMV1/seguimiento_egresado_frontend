@@ -24,10 +24,10 @@
 
             <div class="campo-contenedor">
 
-                <h4>Carrera</h4>
+                <h4>Programa</h4>
 
                 <select class="form-control" [(ngModel)]="carrera">
-                    <option value="0" selected disabled>Seleccione una Carrera</option>
+                    <option value="0" selected disabled>Seleccione un Programa</option>
                     <option *ngFor="let option of carreraOptionsLista" [value]="option.value">{{ option.text }}</option>
                 </select>
 

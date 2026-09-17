@@ -133,7 +133,7 @@ export const FORMULARIO_SECTIONS: FormSection[] = [
             {
                 id: 'carrera',
                 numero: 8,
-                label: '¿Qué carrera estudió?',
+                label: '¿Qué programa estudió?',
                 type: 'select',
                 required: true,
                 placeholder: 'Primero seleccione una facultad',

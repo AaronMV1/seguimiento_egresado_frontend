@@ -144,7 +144,7 @@
 					type="text"
 					[(ngModel)]="textoBusqueda"
 					(input)="aplicarFiltroTexto()"
-					placeholder="Nombre, Año, Sede, Facultad, Correo, Carrera" />
+					placeholder="Nombre, Año, Sede, Facultad, Correo, Programa" />
 			</div>
 
             <div class="campo-filtro">
@@ -184,7 +184,7 @@
 			</div>
 
 			<div class="campo-filtro">
-				<label for="filtroCarrera">Carrera</label>
+				<label for="filtroCarrera">Programa</label>
 				<select id="filtroCarrera" [(ngModel)]="seleccionCarrera" [disabled]="!seleccionFacultad">
 					<option value="">{{ seleccionFacultad ? 'Todas' : 'Selecciona primero una facultad' }}</option>
 					<option *ngFor="let carrera of opcionesCarrera" [value]="carrera">{{ carrera }}</option>
@@ -221,7 +221,7 @@
 					<span class="icono-orden" *ngIf="columnaOrden === 'facultad'">{{ direccionOrden === 'asc' ? '▲' : '▼' }}</span>
 				</span>
 				<span class="columna-ordenable" (click)="ordenarPorColumna('carrera')">
-					CARRERA PROFESIONAL
+					PROGRAMA
 					<span class="icono-orden" *ngIf="columnaOrden === 'carrera'">{{ direccionOrden === 'asc' ? '▲' : '▼' }}</span>
 				</span>
 			</div>

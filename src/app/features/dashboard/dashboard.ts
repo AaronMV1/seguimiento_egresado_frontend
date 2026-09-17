@@ -659,8 +659,8 @@ export class Dashboard implements OnInit {
                 item.cantidad,
             ]),
             [],
-            ['EGRESADOS POR CARRERA PROFESIONAL'],
-            ['Carrera profesional', 'Cantidad'],
+            ['EGRESADOS POR PROGRAMA'],
+            ['Programa', 'Cantidad'],
             ...porCarrera.map((item) => [
                 item.etiqueta,
                 item.cantidad,
@@ -729,7 +729,7 @@ export class Dashboard implements OnInit {
                 valor === 'Año de egreso' ||
                 valor === 'Sede' ||
                 valor === 'Facultad' ||
-                valor === 'Carrera profesional' ||
+                valor === 'Programa' ||
                 valor === 'Cantidad';
 
             if (esTituloSeccion) {
@@ -1040,7 +1040,7 @@ export class Dashboard implements OnInit {
             'Número de Celular',
             'Sede',
             'Facultad',
-            'Carrera profesional',
+            'Programa',
             ...this.obtenerEncabezadosRespuestas(),
         ];
 
@@ -1201,7 +1201,7 @@ export class Dashboard implements OnInit {
             'Número de Celular',
             'Sede',
             'Facultad',
-            'Carrera profesional',
+            'Programa',
             ...this.obtenerEncabezadosRespuestas(),
         ];
 
